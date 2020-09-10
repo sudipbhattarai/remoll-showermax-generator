@@ -129,14 +129,21 @@ out+="\t</xtru>\n"
 out+="\t<box name=\"solid_tungsten\" lunit=\"mm\" x=\""+str(length_tungsten)+"\" y=\""+str(width_tungsten)+"\" z=\""+str(thick_tungsten)+"\"/>\n"
 
 
-out+="\t<box name=\"solid_logic_mirror_box\" lunit=\"mm\" x=\""+str(length_logic_mirror_box)+"\" y=\""+str(width_mirror_box_tungstenquartz+2*thick_wall_mirror_box_tungstenquartz)+"\" z=\""+str(thick_mirror_box_bot+2*thick_wall_mirror_box_tungstenquartz)+"\"/>\n"
+out+="\t<box name=\"solid_logic_mirror_box_3\" lunit=\"mm\" x=\""+str(length_mirror_box_bot)+"\" y=\""+str(width_mirror_box_tungstenquartz+2*thick_wall_mirror_box_tungstenquartz)+"\" z=\""+str(thick_mirror_box_bot+2*thick_wall_mirror_box_tungstenquartz)+"\"/>\n"
+out+="\t<box name=\"solid_logic_mirror_box_4\" lunit=\"mm\" z=\""+str(length_logic_mirror_box-length_mirror_box_bot)+"\" y=\""+str(width_mirror_box_tungstenquartz+2*thick_wall_mirror_box_tungstenquartz)+"\" x=\""+str(thick_mirror_box_bot+2*thick_wall_mirror_box_tungstenquartz)+"\"/>\n"
+out+="\t<union name=\"solid_logic_mirror_box\">"
+out+="\n\t\t<first ref=\"solid_mirror_box_bot_1\"/>"
+out+="\n\t\t<second ref=\"solid_logic_mirror_box_4\"/>"
+out+="\n\t\t<position name=\"pos_logic_mirror_box_union\" z=\""+str(length_logic_mirror_box/2.0)+"\" y=\""+str(0)+"\" x=\"0\"/>"
+out+="\n\t\t<rotation name=\"rot_logic_mirror_box_union\" x=\"0\" y=\"0\" z=\"0\"/>"
+out+="\n\t</union>\n"
 
 
 out+="\t<union name=\"solid_logic_mirror_box_union\">"
 out+="\n\t\t<first ref=\"solid_mirror_box_tungstenquartz_1\"/>"
 out+="\n\t\t<second ref=\"solid_logic_mirror_box\"/>"
-out+="\n\t\t<position name=\"pos_logic_mirror_box_union\" x=\""+str(length_quartz/2.0+length_logic_mirror_box/2.0)+"\" y=\""+str(0)+"\" z=\"0\"/>"
-out+="\n\t\t<rotation name=\"rot_logic_mirror_box_union\" x=\"0\" y=\"0\" z=\"0\"/>"
+out+="\n\t\t<position name=\"pos_logic_mirror_box_union\" x=\""+str(length_quartz/2.0+length_mirror_box_bot/2.0)+"\" y=\""+str(0)+"\" z=\"0\"/>"
+out+="\n\t\t<rotation name=\"rot_logic_mirror_box_union\" x=\"0\" y=\"pi/2\" z=\"0\"/>"
 out+="\n\t</union>\n"
 
 
