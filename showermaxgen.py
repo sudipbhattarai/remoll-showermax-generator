@@ -60,8 +60,8 @@ print(932.5+length_quartz+length_logic_mirror_box)
 
 zstagger=(thick_mirror_box_bot+2.0*thick_wall_mirror_box_tungstenquartz)/2-36.243-10 # FIX ME: Hard Code this and chcheck for overlaps
 print(zstagger)
-print(24498-2*(thick_quartz+thick_tungsten)+zstagger)
-print(24498-2*(thick_quartz+thick_tungsten)-zstagger)
+print(24076-2*(thick_quartz+thick_tungsten)+zstagger)
+print(24076-2*(thick_quartz+thick_tungsten)-zstagger)
 
 len_mother=2*thick_mirror_box_bot+2*zstagger+5
 
