@@ -66,7 +66,7 @@ print(24076-2*(thick_quartz+thick_tungsten)-zstagger)
 len_mother=2*thick_mirror_box_bot+2*zstagger+5
 
 z_origin = 0
-pos=1020.0+length_quartz/2
+pos=1010.0+length_quartz/2
 
 f=open(output_file+".gdml", "w+")
 
