@@ -76,6 +76,8 @@ out+="\n\txmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\""
 out+="\n\txsi:noNamespaceSchemaLocation=\"http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd\">\n"
 out+="\n\n<define>"
 out+="\n</define>"
+out+="\n\n<materials>"
+out+="\n</materials>"
 
 
 out+="\n\n<solids>\n"
@@ -134,8 +136,8 @@ out+="\t<box name=\"solid_logic_mirror_box_4\" lunit=\"mm\" z=\""+str(length_log
 out+="\t<union name=\"solid_logic_mirror_box\">"
 out+="\n\t\t<first ref=\"solid_mirror_box_bot_1\"/>"
 out+="\n\t\t<second ref=\"solid_logic_mirror_box_4\"/>"
-out+="\n\t\t<position name=\"pos_logic_mirror_box_union\" z=\""+str(length_logic_mirror_box/2.0)+"\" y=\""+str(0)+"\" x=\"0\"/>"
-out+="\n\t\t<rotation name=\"rot_logic_mirror_box_union\" x=\"0\" y=\"0\" z=\"0\"/>"
+out+="\n\t\t<position name=\"pos_logic_mirror_box\" z=\""+str(length_logic_mirror_box/2.0)+"\" y=\""+str(0)+"\" x=\"0\"/>"
+out+="\n\t\t<rotation name=\"rot_logic_mirror_box\" x=\"0\" y=\"0\" z=\"0\"/>"
 out+="\n\t</union>\n"
 
 
@@ -230,7 +232,6 @@ for i in range(0,28):
         out+="\t<volume name=\"logic_singledet_"+str(i)+"\">"
         out+="\n\t\t<materialref ref=\"G4_AIR\"/>"
         out+="\n\t\t<solidref ref=\"solid_logic_mirror_box_union\"/>"
-        out+="\n\t\t<auxiliary auxtype=\"Alpha\" auxvalue=\"0.0\"/>"
 
 
 #        out+="\n\t\t<physvol name=\"mirror_box_tungstenquartz_"+str(i)+"\">"
@@ -279,13 +280,13 @@ for i in range(0,28):
                 out+="\n\t\t\t<rotation name=\"rot_logic_tungsten_"+str(i)+"_"+str(j)+"\" x=\"0\" y=\"0\" z=\"0\"/>"
                 out+="\n\t\t</physvol>"
 
+        out+="\n\t\t<auxiliary auxtype=\"Alpha\" auxvalue=\"0.0\"/>"
         out+="\n\t</volume>\n"
         
 
 out+="\t<volume name=\"showerMaxMother\">"
 out+="\n\t\t<materialref ref=\"G4_AIR\"/>"
 out+="\n\t\t<solidref ref=\"solid_showerMaxMother\"/>"
-out+="\n\t\t<auxiliary auxtype=\"Alpha\" auxvalue=\"0.0\"/>"
 
 for i in range(0,28):
         rpos=pos
@@ -302,6 +303,7 @@ for i in range(0,28):
         out+="\n\t\t\t<rotation name=\"rot_singledet_"+str(i)+"\" x=\""+str(math.asin(-math.sin(theta)*math.sin(detector_tilt)))+"\" y=\""+str(math.asin(math.cos(theta)*math.sin(detector_tilt)))+"\" z=\""+str(-theta)+"\"/>"
         out+="\n\t\t</physvol>"
 
+out+="\n\t\t<auxiliary auxtype=\"Alpha\" auxvalue=\"0.0\"/>"
 out+="\n\t</volume>"
 
 
