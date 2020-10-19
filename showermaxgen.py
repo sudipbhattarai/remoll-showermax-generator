@@ -76,8 +76,24 @@ out+="\n\txmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\""
 out+="\n\txsi:noNamespaceSchemaLocation=\"http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd\">\n"
 out+="\n\n<define>"
 out+="\n</define>"
-out+="\n\n<materials>"
-out+="\n</materials>"
+
+out+="\n\n<materials>\n"
+out+="\t<material name=\"G4_Quartz\" state=\"solid\">\n"
+out+="\t\t<MEE unit=\"eV\" value=\"139.2\"/>\n"
+out+="\t\t<D value=\"2.2\" unit=\"g/cm3\"/>\n"
+out+="\t\t<fraction n=\"0.467465468463971\" ref=\"G4_Si\"/>\n"
+out+="\t\t<fraction n=\"0.532534531536029\" ref=\"G4_O\"/>\n"
+out+="\t</material>\n"
+
+out+="\t<material name=\"G4_Cathode\" state=\"solid\">\n"
+#out+="\t\t<MEE unit=\"eV\" value=\"380.1876\"/>\n"
+out+="\t\t<D value=\"0.8223\" unit=\"g/cm3\"/>\n"
+out+="\t\t<fraction n=\"0.2349\" ref=\"G4_K\"/>\n"
+out+="\t\t<fraction n=\"0.3993\" ref=\"G4_Cs\"/>\n"
+out+="\t\t<fraction n=\"0.3658\" ref=\"G4_Sb\"/>\n"
+out+="\t</material>\n"
+
+out+="</materials>\n"
 
 
 out+="\n\n<solids>\n"
@@ -153,25 +169,6 @@ out+="\n\t</union>\n"
 
 out+="\t<cone name=\"solid_showerMaxMother\" rmin1=\""+str(730)+"\"  rmax1=\""+str(1900)+"\" rmin2=\""+str(730)+"\" rmax2=\""+str(1900)+"\"  z=\""+str(len_mother)+"\" startphi=\"0\" deltaphi=\"360\" aunit=\"deg\" lunit=\"mm\"/>\n" #Make sure this mother volume doesn't interfere with coils
 out+="</solids>\n"
-
-
-out+="\n\n<materials>\n"
-out+="\t<material name=\"G4_Quartz\" state=\"solid\">\n"
-out+="\t\t<MEE unit=\"eV\" value=\"139.2\"/>\n"
-out+="\t\t<D value=\"2.2\" unit=\"g/cm3\"/>\n"
-out+="\t\t<fraction n=\"0.467465468463971\" ref=\"G4_Si\"/>\n"
-out+="\t\t<fraction n=\"0.532534531536029\" ref=\"G4_O\"/>\n"
-out+="\t</material>\n"
-
-out+="\t<material name=\"G4_Cathode\" state=\"solid\">\n"
-#out+="\t\t<MEE unit=\"eV\" value=\"380.1876\"/>\n"
-out+="\t\t<D value=\"0.8223\" unit=\"g/cm3\"/>\n"
-out+="\t\t<fraction n=\"0.2349\" ref=\"G4_K\"/>\n"
-out+="\t\t<fraction n=\"0.3993\" ref=\"G4_Cs\"/>\n"
-out+="\t\t<fraction n=\"0.3658\" ref=\"G4_Sb\"/>\n"
-out+="\t</material>\n"
-
-out+="</materials>\n"
 
 
 
