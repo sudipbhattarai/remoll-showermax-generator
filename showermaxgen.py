@@ -287,9 +287,9 @@ for i in range(0,28):
         xpos=rpos*(math.cos(theta))
         ypos=rpos*(math.sin(theta)) 
         if (i%2==0):    
-                zpos=zstagger
-        if (i%2==1):
                 zpos=-zstagger
+        if (i%2==1):
+                zpos=zstagger
         out+="\n\t\t<physvol name=\"singledet_"+str(i)+"\">"
         out+="\n\t\t\t<volumeref ref=\"logic_singledet_"+str(i)+"\"/>"
         out+="\n\t\t\t<position name=\"pos_singledet_"+str(i)+"\" x=\""+str(xpos)+"\" y=\""+str(ypos)+"\" z=\""+str(zpos)+"\"/>"
