@@ -3,7 +3,7 @@ import sys
 import os
 import math
 
-output_file = "showerMaxGen"
+output_file = "showerMaxGen1"
 
 ####    radial extent
 #### dimentions based on ISU elog 576
@@ -216,6 +216,8 @@ for i in range(0,28):
                 out+="\n\t\t<materialref ref=\"G4_Quartz\"/>"
                 out+="\n\t\t<solidref ref=\"solid_quartz\"/>"
                 out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"blue\"/>"
+                out+="\n\t\t<auxiliary auxtype=\"SensDet\" auxvalue=\"showerMaxQuartz\" />"
+                out+="\n\t\t<auxiliary auxtype=\"DetNo\" auxvalue=\""+"7"+str(i).zfill(2)+str(3-j)+"\"/>"
                 out+="\n\t</volume>\n"
       
                 out+="\t<volume name=\"logic_tungsten_"+str(i)+"_"+str(j)+"\">"
