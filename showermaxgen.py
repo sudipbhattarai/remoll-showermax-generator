@@ -202,6 +202,8 @@ for i in range(0,28):
         out+="\t<volume name=\"logic_pmt_cathode_"+str(i)+"\">"
         out+="\n\t\t<materialref ref=\"G4_Cathode\"/>"
         out+="\n\t\t<solidref ref=\"solid_pmt_cathode\"/>"
+        out+="\n\t\t<auxiliary auxtype=\"SensDet\" auxvalue=\"showerMaxPMT\" />"
+        out+="\n\t\t<auxiliary auxtype=\"DetNo\" auxvalue=\""+"7"+str(i).zfill(2)+"0"+"\"/>"
         out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"green\"/>"
         out+="\n\t</volume>\n"
 
@@ -217,12 +219,15 @@ for i in range(0,28):
                 out+="\n\t\t<solidref ref=\"solid_quartz\"/>"
                 out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"blue\"/>"
                 out+="\n\t\t<auxiliary auxtype=\"SensDet\" auxvalue=\"showerMaxQuartz\" />"
-                out+="\n\t\t<auxiliary auxtype=\"DetNo\" auxvalue=\""+"7"+str(i).zfill(2)+str(3-j)+"\"/>"
+                out+="\n\t\t<auxiliary auxtype=\"DetNo\" auxvalue=\""+"7"+str(i).zfill(2)+str(2*(4-j))+"\"/>"
                 out+="\n\t</volume>\n"
       
                 out+="\t<volume name=\"logic_tungsten_"+str(i)+"_"+str(j)+"\">"
                 out+="\n\t\t<materialref ref=\"G4_W\"/>"
                 out+="\n\t\t<solidref ref=\"solid_tungsten\"/>"
+                if (j == 3):
+                        out+="\n\t\t<auxiliary auxtype=\"SensDet\" auxvalue=\"showerMaxTungsten\" />"
+                        out+="\n\t\t<auxiliary auxtype=\"DetNo\" auxvalue=\""+"7"+str(i).zfill(2)+str(2*(4-j)-1)+"\"/>"
                 out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"red\"/>"
                 out+="\n\t</volume>\n"
 
