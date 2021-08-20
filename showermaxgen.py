@@ -3,7 +3,7 @@ import sys
 import os
 import math
 
-output_file = "showerMaxGen1"
+output_file = "showerMaxGen"
 
 ####    radial extent
 #### dimentions based on ISU elog 576
