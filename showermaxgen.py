@@ -3,7 +3,7 @@ import sys
 import os
 import math
 
-output_file = "showerMaxGen1"
+output_file = "showerMaxGen"
 
 ####    radial extent
 #### dimentions based on ISU elog 576
@@ -44,24 +44,21 @@ pmt_cathode_extent = 3e-6
 length_mirror_box_top = 183.058
 thick_mirror_box_top = 69.866
 
-thick_front_back_plate = 6.35###plates in the front and back of quartz-tungsten stack
-length_front_back_plate = 181.61###
-width_front_back_plate = 313.944###
+thick_front_back_plate = 6.35   #plates in the front and back of quartz-tungsten stack
+length_front_back_plate = 181.61
+width_front_back_plate = 313.944
 
 length_logic_mirror_box = length_mirror_box_bot+length_mirror_box_top+pmt_window_extent+pmt_cathode_extent
-print(length_mirror_box_bot)
-print(length_mirror_box_top)
-print(932.5+length_quartz+length_logic_mirror_box)
 
 zstagger = (thick_mirror_box_bot+2.0*thick_wall_mirror_box_tungstenquartz)/2 # FIX ME: May need to recheck
 print(zstagger)
-print(24076-2*(thick_quartz+thick_tungsten)+zstagger)
-print(24076-2*(thick_quartz+thick_tungsten)-zstagger)
+print(23917-2*(thick_quartz+thick_tungsten)+zstagger)
+print(23917-2*(thick_quartz+thick_tungsten)-zstagger)
 
 len_mother=2*thick_mirror_box_bot+2*zstagger+5
 
 z_origin = 0 
-pos=1010.0+length_quartz/2
+pos=1020.0+length_quartz/2
 
 f=open(output_file+".gdml", "w+")
 
@@ -207,11 +204,11 @@ for i in range(0,28):
         out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"green\"/>"
         out+="\n\t</volume>\n"
 
-        out+="\t<volume name=\"logic_front_back_plate_"+str(i)+"\">"###
-        out+="\n\t\t<materialref ref=\"G4_Al\"/>"###
-        out+="\n\t\t<solidref ref=\"solid_front_back_plate\"/>"###
-        out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"orange\"/>"###
-        out+="\n\t</volume>\n"###
+        out+="\t<volume name=\"logic_front_back_plate_"+str(i)+"\">"
+        out+="\n\t\t<materialref ref=\"G4_Al\"/>"
+        out+="\n\t\t<solidref ref=\"solid_front_back_plate\"/>"
+        out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"orange\"/>"
+        out+="\n\t</volume>\n"
 
         for j in range(0,4):
                 out+="\t<volume name=\"logic_quartz_"+str(i)+"_"+str(j)+"\">"
@@ -299,14 +296,15 @@ out+="\n\t\t<materialref ref=\"G4_AIR\"/>"
 out+="\n\t\t<solidref ref=\"solid_showerMaxMother\"/>"
 
 for i in range(0,28):
-        rpos=pos
+        if (i%2==0):    
+                zpos=-zstagger
+                rpos=pos
+        if (i%2==1):
+                zpos=zstagger
+                rpos=pos + 4
         theta=math.pi+2*i*math.pi/28
         xpos=rpos*(math.cos(theta))
         ypos=rpos*(math.sin(theta)) 
-        if (i%2==0):    
-                zpos=-zstagger
-        if (i%2==1):
-                zpos=zstagger
         out+="\n\t\t<physvol name=\"singledet_"+str(i)+"\">"
         out+="\n\t\t\t<volumeref ref=\"logic_singledet_"+str(i)+"\"/>"
         out+="\n\t\t\t<position name=\"pos_singledet_"+str(i)+"\" x=\""+str(xpos)+"\" y=\""+str(ypos)+"\" z=\""+str(zpos)+"\"/>"
@@ -355,14 +353,3 @@ for i in range(0,1):
         out+=" <rotation name=\"lintel"+str(i+1)+"rot\" x=\"0\" y=\"0\" z=\""+str(-th)+"\"/>\n"
         out+="</physvol>\n"
 """
-
-
-
-
-
-
-
-
-
-
-
