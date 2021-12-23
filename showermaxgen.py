@@ -33,7 +33,7 @@ quartz_rotate = ["pi/2", "-pi/2", "pi/2", "-pi/2"]
 
 ### mirror parameter
 
-length_mirror_box_bot = 67.462
+length_mirror_box_bot = 67.462  #mirror box is named for upper part of the light guide
 thick_mirror_box_bot = 85.868
 
 pmt_radius = 38.1 ### Radius of 1.5 inches
@@ -50,15 +50,18 @@ width_front_back_plate = 313.944
 
 length_logic_mirror_box = length_mirror_box_bot+length_mirror_box_top+pmt_window_extent+pmt_cathode_extent
 
-zstagger = (thick_mirror_box_bot+2.0*thick_wall_mirror_box_tungstenquartz)/2 # FIX ME: May need to recheck
-print(zstagger)
-print(23917-2*(thick_quartz+thick_tungsten)+zstagger)
-print(23917-2*(thick_quartz+thick_tungsten)-zstagger)
+#zstagger = (thick_mirror_box_bot+2.0*thick_wall_mirror_box_tungstenquartz)/2 # FIX ME: May need to recheck
+zstagger = 41   # distance between center of a SM module and the center of two SM rings(Value adjusted to fit support Larry's support structure)
+#print(zstagger)
+print(23920-2*(thick_quartz+thick_tungsten)+zstagger)
+print(23920-2*(thick_quartz+thick_tungsten)-zstagger)
 
 len_mother=2*thick_mirror_box_bot+2*zstagger+5
 
 z_origin = 0 
 pos=1020.0+length_quartz/2
+#angle_envelope = 3.2*math.pi/180   #scattered beam divergence angle(from pion group)
+#stepheight_stack_tungstenquartz = math.tan(angle_envelope)*(thick_quartz+thick_tungsten)
 
 f=open(output_file+".gdml", "w+")
 
