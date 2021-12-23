@@ -52,7 +52,6 @@ length_logic_mirror_box = length_mirror_box_bot+length_mirror_box_top+pmt_window
 
 #zstagger = (thick_mirror_box_bot+2.0*thick_wall_mirror_box_tungstenquartz)/2 # FIX ME: May need to recheck
 zstagger = 41   # distance between center of a SM module and the center of two SM rings(Value adjusted to fit support Larry's support structure)
-#print(zstagger)
 print(23920-2*(thick_quartz+thick_tungsten)+zstagger)
 print(23920-2*(thick_quartz+thick_tungsten)-zstagger)
 
@@ -60,8 +59,6 @@ len_mother=2*thick_mirror_box_bot+2*zstagger+5
 
 z_origin = 0 
 pos=1020.0+length_quartz/2
-#angle_envelope = 3.2*math.pi/180   #scattered beam divergence angle(from pion group)
-#stepheight_stack_tungstenquartz = math.tan(angle_envelope)*(thick_quartz+thick_tungsten)
 
 f=open(output_file+".gdml", "w+")
 
