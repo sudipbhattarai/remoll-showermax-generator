@@ -9,9 +9,9 @@ python showermaxgen.py
 
 By default, the position is set to
 ```
-pos=1010.0+length_quartz/2
+pos=radial_extent+length_quartz/2
 ```
-So, the detector active area ranges from 1010 to 1170 mm by default. Make sure that this range is in the shadow of the main detector ring 5 (900-1060 mm) at 22 m. 
+So, the detector active area ranges from 1020 to 1180 mm for upstream ring(open and close sector) and 1024 to 1184 for downstream ring (trans sectors) . Make sure that this range is in the shadow of the main detector ring 5 (920-1060 mm) at 22 m. 
 
 To introduce detector tilt, change the detector_tilt variable. By default, it is set to 0. In the picture below, it's set to -math.pi/6 or -30 degrees. For shallow angles, the existing stagger and mother volume extent might be fine. Check for overlaps if you are going to large angles as shown and increase the mother volume extent (len_mother) and zstagger variables.
 ```
