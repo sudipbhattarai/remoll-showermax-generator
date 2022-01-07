@@ -19,10 +19,10 @@ length_tungsten = length_quartz
 width_tungsten = width_quartz
 thick_tungsten = 8.0
 
-## Mirror_box (combined name for tungsten-quartz stack)
-length_mirror_box_tungstenquartz = length_quartz
-width_mirror_box_tungstenquartz = width_quartz
-thick_mirror_box_tungstenquartz = 4*(thick_quartz+thick_tungsten)
+## Tungsten-quartz stack
+length_stack_tungstenquartz = length_quartz
+width_stack_tungstenquartz = width_quartz
+thick_stack_tungstenquartz = 4*(thick_quartz+thick_tungsten)
 
 ## Mirror box bottom (lower part of the light guide)
 length_mirror_box_bot = 67.462  
@@ -106,9 +106,9 @@ out+="\t<tube name=\"solid_pmt\" rmin=\"0\" rmax=\""+str(pmt_radius)+"\" z=\""+s
 
 out+="\t<tube name=\"solid_pmt_base\" rmin=\"0\" rmax=\""+str(pmt_radius)+"\" z=\""+str(pmt_base_extent)+"\" deltaphi=\"2*pi\" startphi=\"0\" aunit=\"rad\" lunit=\"mm\"/>\n"
 
-out+="\t<box name=\"solid_mirror_box_tungstenquartz_1\" lunit=\"mm\" x=\""+str(length_mirror_box_tungstenquartz)+"\" y=\""+str(width_mirror_box_tungstenquartz+2*thick_wall_mirror)+"\" z=\""+str(thick_mirror_box_tungstenquartz+2*thick_wall_mirror)+"\"/>\n"
+out+="\t<box name=\"solid_mirror_box_tungstenquartz_1\" lunit=\"mm\" x=\""+str(length_stack_tungstenquartz)+"\" y=\""+str(width_stack_tungstenquartz+2*thick_wall_mirror)+"\" z=\""+str(thick_stack_tungstenquartz+2*thick_wall_mirror)+"\"/>\n"
 
-out+="\t<box name=\"solid_mirror_box_tungstenquartz_2\" lunit=\"mm\" x=\""+str(length_mirror_box_tungstenquartz+1)+"\" y=\""+str(width_mirror_box_tungstenquartz)+"\" z=\""+str(thick_mirror_box_tungstenquartz)+"\"/>\n"
+out+="\t<box name=\"solid_mirror_box_tungstenquartz_2\" lunit=\"mm\" x=\""+str(length_stack_tungstenquartz+1)+"\" y=\""+str(width_stack_tungstenquartz)+"\" z=\""+str(thick_stack_tungstenquartz)+"\"/>\n"
 
 out+="\t<subtraction name=\"solid_mirror_box_tungstenquartz\">"
 out+="\n\t\t<first ref=\"solid_mirror_box_tungstenquartz_1\"/>"
@@ -117,9 +117,9 @@ out+="\n\t\t<position name=\"pos_subtract_mirror_box_tungstenquartz_12\" x=\"0\"
 out+="\n\t\t<rotation name=\"rot_subtract_mirror_box_tungstenquartz_12\" x=\"0\" y=\"0\" z=\"0\"/>"
 out+="\n\t</subtraction>\n"
 
-out+="\t<trd name=\"solid_mirror_box_bot_1\" lunit=\"mm\" x1=\""+str(thick_mirror_box_tungstenquartz-thick_tungsten+2*thick_wall_mirror)+"\"  x2=\""+str(thick_mirror_box_bot+2*thick_wall_mirror)+"\" y1=\""+str(width_mirror_box_tungstenquartz+2*thick_wall_mirror)+"\"  y2=\""+str(width_mirror_box_tungstenquartz+2*thick_wall_mirror)+"\" z=\""+str(length_mirror_box_bot)+"\"/>\n"
+out+="\t<trd name=\"solid_mirror_box_bot_1\" lunit=\"mm\" x1=\""+str(thick_stack_tungstenquartz-thick_tungsten+2*thick_wall_mirror)+"\"  x2=\""+str(thick_mirror_box_bot+2*thick_wall_mirror)+"\" y1=\""+str(width_stack_tungstenquartz+2*thick_wall_mirror)+"\"  y2=\""+str(width_stack_tungstenquartz+2*thick_wall_mirror)+"\" z=\""+str(length_mirror_box_bot)+"\"/>\n"
 
-out+="\t<trd name=\"solid_mirror_box_bot_2\" lunit=\"mm\" x1=\""+str(thick_mirror_box_tungstenquartz-thick_tungsten)+"\"  x2=\""+str(thick_mirror_box_bot)+"\" y1=\""+str(width_mirror_box_tungstenquartz)+"\"  y2=\""+str(width_mirror_box_tungstenquartz)+"\" z=\""+str(length_mirror_box_bot+1)+"\"/>\n"
+out+="\t<trd name=\"solid_mirror_box_bot_2\" lunit=\"mm\" x1=\""+str(thick_stack_tungstenquartz-thick_tungsten)+"\"  x2=\""+str(thick_mirror_box_bot)+"\" y1=\""+str(width_stack_tungstenquartz)+"\"  y2=\""+str(width_stack_tungstenquartz)+"\" z=\""+str(length_mirror_box_bot+1)+"\"/>\n"
 
 out+="\t<subtraction name=\"solid_mirror_box_bot\">"
 out+="\n\t\t<first ref=\"solid_mirror_box_bot_1\"/>"
@@ -128,9 +128,9 @@ out+="\n\t\t<position name=\"pos_subtract_mirror_box_bot_12\" x=\"0\" y=\"0\" z=
 out+="\n\t\t<rotation name=\"rot_subtract_mirror_box_bot_12\" x=\"0\" y=\"0\" z=\"0\"/>"
 out+="\n\t</subtraction>\n"
 
-out+="\t<trd name=\"solid_mirror_box_top_1\" lunit=\"mm\" x1=\""+str(thick_mirror_box_bot+2*thick_wall_mirror)+"\"  x2=\""+str(thick_mirror_box_top+2*thick_wall_mirror)+"\" y1=\""+str(width_mirror_box_tungstenquartz+2*thick_wall_mirror)+"\"  y2=\""+str(thick_mirror_box_top+2*thick_wall_mirror)+"\" z=\""+str(length_mirror_box_top)+"\"/>\n"
+out+="\t<trd name=\"solid_mirror_box_top_1\" lunit=\"mm\" x1=\""+str(thick_mirror_box_bot+2*thick_wall_mirror)+"\"  x2=\""+str(thick_mirror_box_top+2*thick_wall_mirror)+"\" y1=\""+str(width_stack_tungstenquartz+2*thick_wall_mirror)+"\"  y2=\""+str(thick_mirror_box_top+2*thick_wall_mirror)+"\" z=\""+str(length_mirror_box_top)+"\"/>\n"
 
-out+="\t<trd name=\"solid_mirror_box_top_2\" lunit=\"mm\" x1=\""+str(thick_mirror_box_bot)+"\"  x2=\""+str(thick_mirror_box_top)+"\" y1=\""+str(width_mirror_box_tungstenquartz)+"\"  y2=\""+str(thick_mirror_box_top)+"\" z=\""+str(length_mirror_box_top+1)+"\"/>\n"
+out+="\t<trd name=\"solid_mirror_box_top_2\" lunit=\"mm\" x1=\""+str(thick_mirror_box_bot)+"\"  x2=\""+str(thick_mirror_box_top)+"\" y1=\""+str(width_stack_tungstenquartz)+"\"  y2=\""+str(thick_mirror_box_top)+"\" z=\""+str(length_mirror_box_top+1)+"\"/>\n"
 
 out+="\t<subtraction name=\"solid_mirror_box_top\">"
 out+="\n\t\t<first ref=\"solid_mirror_box_top_1\"/>"
@@ -151,7 +151,7 @@ out+="\t</xtru>\n"
 out+="\t<box name=\"solid_tungsten\" lunit=\"mm\" x=\""+str(length_tungsten)+"\" y=\""+str(width_tungsten)+"\" z=\""+str(thick_tungsten)+"\"/>\n"
 
 #-----------------------#
-out+="\t<box name=\"solid_logic_mirror_box_3\" lunit=\"mm\" x=\""+str(length_front_back_plate)+"\" y=\""+str(width_front_back_plate)+"\" z=\""+str(thick_mirror_box_tungstenquartz+2*thick_wall_mirror+2*thick_front_back_plate)+"\"/>\n"
+out+="\t<box name=\"solid_logic_mirror_box_3\" lunit=\"mm\" x=\""+str(length_front_back_plate)+"\" y=\""+str(width_front_back_plate)+"\" z=\""+str(thick_stack_tungstenquartz+2*thick_wall_mirror+2*thick_front_back_plate)+"\"/>\n"
 
 out+="\t<union name=\"solid_logic_mirror_box_tungstenquartz_frontplate_backplate\">"
 out+="\n\t\t<first ref=\"solid_mirror_box_tungstenquartz_1\"/>"
@@ -161,7 +161,7 @@ out+="\n\t\t<rotation name=\"rot_logic_mirror_box_tungstenquartz_frontplate_back
 out+="\n\t</union>\n"
 #-----------------------#
 
-out+="\t<box name=\"solid_logic_mirror_box_4\" lunit=\"mm\" z=\""+str(length_logic_mirror_box-length_mirror_box_bot)+"\" y=\""+str(width_mirror_box_tungstenquartz+2*thick_wall_mirror)+"\" x=\""+str(thick_mirror_box_bot+2*thick_wall_mirror)+"\"/>\n"
+out+="\t<box name=\"solid_logic_mirror_box_4\" lunit=\"mm\" z=\""+str(length_logic_mirror_box-length_mirror_box_bot)+"\" y=\""+str(width_stack_tungstenquartz+2*thick_wall_mirror)+"\" x=\""+str(thick_mirror_box_bot+2*thick_wall_mirror)+"\"/>\n"
 out+="\t<union name=\"solid_logic_mirror_box\">"
 out+="\n\t\t<first ref=\"solid_mirror_box_bot_1\"/>"
 out+="\n\t\t<second ref=\"solid_logic_mirror_box_4\"/>"
@@ -319,13 +319,13 @@ for i in range(0,28):
 
         out+="\n\t\t<physvol name=\"front_plate_"+str(i)+"\">"
         out+="\n\t\t\t<volumeref ref=\"logic_front_back_plate_"+str(i)+"\"/>"
-        out+="\n\t\t\t<position name=\"pos_logic_front_plate_"+str(i)+"\" x=\""+str(-(length_front_back_plate-length_quartz)/2)+"\" y=\""+str(0)+"\" z=\""+str(-(thick_mirror_box_tungstenquartz+2*thick_wall_mirror+thick_front_back_plate)/2)+"\"/>"
+        out+="\n\t\t\t<position name=\"pos_logic_front_plate_"+str(i)+"\" x=\""+str(-(length_front_back_plate-length_quartz)/2)+"\" y=\""+str(0)+"\" z=\""+str(-(thick_stack_tungstenquartz+2*thick_wall_mirror+thick_front_back_plate)/2)+"\"/>"
         out+="\n\t\t\t<rotation name=\"rot_logic_front_plate_"+str(i)+"\" x=\""+str(0)+"\" y=\"0\" z=\"0\"/>"
         out+="\n\t\t</physvol>"
 
         out+="\n\t\t<physvol name=\"back_plate_"+str(i)+"\">"
         out+="\n\t\t\t<volumeref ref=\"logic_front_back_plate_"+str(i)+"\"/>"
-        out+="\n\t\t\t<position name=\"pos_logic_back_plate_"+str(i)+"\" x=\""+str(-(length_front_back_plate-length_quartz)/2)+"\" y=\""+str(0)+"\" z=\""+str((thick_mirror_box_tungstenquartz+2*thick_wall_mirror+thick_front_back_plate)/2)+"\"/>"
+        out+="\n\t\t\t<position name=\"pos_logic_back_plate_"+str(i)+"\" x=\""+str(-(length_front_back_plate-length_quartz)/2)+"\" y=\""+str(0)+"\" z=\""+str((thick_stack_tungstenquartz+2*thick_wall_mirror+thick_front_back_plate)/2)+"\"/>"
         out+="\n\t\t\t<rotation name=\"rot_logic_back_plate_"+str(i)+"\" x=\""+str(0)+"\" y=\"0\" z=\"0\"/>"
         out+="\n\t\t</physvol>"
 
