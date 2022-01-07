@@ -208,13 +208,15 @@ for i in range(0,28):
         out+="\n\t\t<materialref ref=\"G4_Quartz\"/>"
         out+="\n\t\t<solidref ref=\"solid_pmt_filter\"/>"
         out+="\n\t\t<auxiliary auxtype=\"SensDet\" auxvalue=\"showerMaxPMTFilter\" />"
-        out+="\n\t\t<auxiliary auxtype=\"DetNo\" auxvalue=\""+"7"+str(i).zfill(2)+"9"+"\"/>"
+        out+="\n\t\t<auxiliary auxtype=\"DetNo\" auxvalue=\""+"7"+str(i).zfill(2)+"10"+"\"/>"
         out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"magenta\"/>"
         out+="\n\t</volume>\n"
 
         out+="\t<volume name=\"logic_pmt_window_"+str(i)+"\">"
         out+="\n\t\t<materialref ref=\"G4_Quartz\"/>"
         out+="\n\t\t<solidref ref=\"solid_pmt_window\"/>"
+        out+="\n\t\t<auxiliary auxtype=\"SensDet\" auxvalue=\"showerMaxPMTwindow\" />"
+        out+="\n\t\t<auxiliary auxtype=\"DetNo\" auxvalue=\""+"7"+str(i).zfill(2)+"11"+"\"/>"
         out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"blue\"/>"
         out+="\n\t</volume>\n"
 
@@ -228,7 +230,7 @@ for i in range(0,28):
         out+="\n\t\t<materialref ref=\"G4_Galactic\"/>"
         out+="\n\t\t<solidref ref=\"solid_pmt\"/>"
         out+="\n\t\t<auxiliary auxtype=\"SensDet\" auxvalue=\"showerMaxPMT\" />"
-        out+="\n\t\t<auxiliary auxtype=\"DetNo\" auxvalue=\""+"7"+str(i).zfill(2)+"10"+"\"/>"
+        out+="\n\t\t<auxiliary auxtype=\"DetNo\" auxvalue=\""+"7"+str(i).zfill(2)+"12"+"\"/>"
         out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"yellow\"/>"
         out+="\n\t</volume>\n"
 
@@ -236,7 +238,7 @@ for i in range(0,28):
         out+="\n\t\t<materialref ref=\"G4_Galactic\"/>"
         out+="\n\t\t<solidref ref=\"solid_pmt_base\"/>"
         out+="\n\t\t<auxiliary auxtype=\"SensDet\" auxvalue=\"showerMaxPMTbase\" />"
-        out+="\n\t\t<auxiliary auxtype=\"DetNo\" auxvalue=\""+"7"+str(i).zfill(2)+"11"+"\"/>"
+        out+="\n\t\t<auxiliary auxtype=\"DetNo\" auxvalue=\""+"7"+str(i).zfill(2)+"13"+"\"/>"
         out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"red\"/>"
         out+="\n\t</volume>\n"
 
