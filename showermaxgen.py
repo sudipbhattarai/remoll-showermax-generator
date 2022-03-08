@@ -32,8 +32,8 @@ thick_mirror_box_bot = 85.868
 length_mirror_box_top = 183.058
 thick_mirror_box_top = 69.866
 
-## PMT
-pmt_radius = 38.1 # Radius of 1.5 inches for 3 inches PMT
+## PMT region
+pmt_radius = 38.1 # Radius of 1.5 inches (for 3 inches PMT)
 pmt_base_extent = 50
 pmt_extent = 150
 #pmt_cathode_extent = 3e-6
@@ -59,7 +59,7 @@ zstagger = 41   # distance between center of a SM module and the center of two S
 print(23920-2*(thick_quartz+thick_tungsten)+zstagger)
 print(23920-2*(thick_quartz+thick_tungsten)-zstagger)
 
-len_mother=2*thick_mirror_box_bot+2*zstagger+5
+length_mother=2*thick_mirror_box_bot+2*zstagger+5
 
 pos=radial_extent+length_quartz/2
 
@@ -178,7 +178,7 @@ out+="\n\t\t<position name=\"pos_logic_mirror_box_union\" x=\""+str(length_quart
 out+="\n\t\t<rotation name=\"rot_logic_mirror_box_union\" x=\"0\" y=\"pi/2\" z=\"0\"/>"
 out+="\n\t</union>\n"
 
-out+="\t<cone name=\"solid_showerMaxMother\" rmin1=\""+str(730)+"\"  rmax1=\""+str(1900)+"\" rmin2=\""+str(730)+"\" rmax2=\""+str(1900)+"\"  z=\""+str(len_mother)+"\" startphi=\"0\" deltaphi=\"360\" aunit=\"deg\" lunit=\"mm\"/>\n" #Make sure this mother volume doesn't interfere with coils
+out+="\t<cone name=\"solid_showerMaxMother\" rmin1=\""+str(730)+"\"  rmax1=\""+str(1900)+"\" rmin2=\""+str(730)+"\" rmax2=\""+str(1900)+"\"  z=\""+str(length_mother)+"\" startphi=\"0\" deltaphi=\"360\" aunit=\"deg\" lunit=\"mm\"/>\n" #Make sure this mother volume doesn't interfere with coils
 
 out+="</solids>\n"
 
