@@ -389,15 +389,27 @@ for i in range(0,28):
         out+="\n\t\t\t<rotation name=\"rot_logic_back_plate_"+str(i)+"\" x=\""+str(0)+"\" y=\"0\" z=\"0\"/>"
         out+="\n\t\t</physvol>"
 
-        out+="\n\t\t<physvol name=\"web_plate_"+str(i)+"\">"
+        out+="\n\t\t<physvol name=\"web_plate_right_"+str(i)+"\">"
         out+="\n\t\t\t<volumeref ref=\"logic_web_plate_"+str(i)+"\"/>"
         out+="\n\t\t\t<position name=\"pos_web_plate_"+str(i)+"\" x=\""+str((length_web_plate-length_front_back_plate)/2)+"\" y=\""+str((width_front_back_plate-width_web_plate)/2)+"\" z=\""+str(0)+"\"/>"
         out+="\n\t\t\t<rotation name=\"rot_web_plate_"+str(i)+"\" x=\""+str(0)+"\" y=\"0\" z=\"0\"/>"
         out+="\n\t\t</physvol>"
 
+        out+="\n\t\t<physvol name=\"web_plate_left_"+str(i)+"\">"
+        out+="\n\t\t\t<volumeref ref=\"logic_web_plate_"+str(i)+"\"/>"
+        out+="\n\t\t\t<position name=\"pos_web_plate_"+str(i)+"\" x=\""+str((length_web_plate-length_front_back_plate)/2)+"\" y=\""+str(-(width_front_back_plate-width_web_plate)/2)+"\" z=\""+str(0)+"\"/>"
+        out+="\n\t\t\t<rotation name=\"rot_web_plate_"+str(i)+"\" x=\""+str(0)+"\" y=\"0\" z=\"0\"/>"
+        out+="\n\t\t</physvol>"
+
         out+="\n\t\t<physvol name=\"ledge_right_"+str(i)+"\">"
         out+="\n\t\t\t<volumeref ref=\"logic_ledge_"+str(i)+"\"/>"
-        out+="\n\t\t\t<position name=\"pos_ledge_"+str(i)+"\" x=\""+str((length_quartz)/2)+"\" y=\""+str((width_quartz+width_ledge)/2+0.2)+"\" z=\""+str(0)+"\"/>"
+        out+="\n\t\t\t<position name=\"pos_ledge_"+str(i)+"\" x=\""+str((length_quartz)/2)+"\" y=\""+str((width_quartz+width_ledge)/2+thick_wall_mirror+0.2)+"\" z=\""+str(0)+"\"/>"
+        out+="\n\t\t\t<rotation name=\"rot_ledge_"+str(i)+"\" x=\""+str(0)+"\" y=\"0\" z=\"0\"/>"
+        out+="\n\t\t</physvol>"
+
+        out+="\n\t\t<physvol name=\"ledge_left_"+str(i)+"\">"
+        out+="\n\t\t\t<volumeref ref=\"logic_ledge_"+str(i)+"\"/>"
+        out+="\n\t\t\t<position name=\"pos_ledge_"+str(i)+"\" x=\""+str((length_quartz)/2)+"\" y=\""+str(-(width_quartz+width_ledge)/2-thick_wall_mirror-0.2)+"\" z=\""+str(0)+"\"/>"
         out+="\n\t\t\t<rotation name=\"rot_ledge_"+str(i)+"\" x=\""+str(0)+"\" y=\"0\" z=\"0\"/>"
         out+="\n\t\t</physvol>"
 
