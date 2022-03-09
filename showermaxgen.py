@@ -64,6 +64,12 @@ length_ledge = (length_front_back_plate-length_quartz)
 width_ledge = 6.35
 thick_ledge = thick_web_plate
 
+# Outer radial top support
+length_top_support = 6.350
+width_top_support = 370.878
+thick_top_support = 114.3
+radius_top_support_hole = 86.360/2
+
 ## Mirror box and PMT combined logical volume
 length_logic_mirror_box = length_ledge+length_mirror_box_bot+length_mirror_box_top+pmt_filter_extent+pmt_window_extent+pmt_extent+pmt_base_extent
 
@@ -196,6 +202,16 @@ out+="\t<box name=\"solid_web_plate\" lunit=\"mm\" x=\""+str(length_web_plate)+"
 
 out+="\t<box name=\"solid_ledge\" lunit=\"mm\" x=\""+str(length_ledge)+"\" y=\""+str(width_ledge)+"\" z=\""+str(thick_ledge)+"\"/>\n"
 
+out+="\t<box name=\"solid_top_support_1\" lunit=\"mm\" x=\""+str(length_top_support)+"\" y=\""+str(width_top_support)+"\" z=\""+str(thick_top_support)+"\"/>\n"
+out+="\t<cone name=\"solid_top_support_hole\" rmin1=\""+str(0)+"\"  rmax1=\""+str(radius_top_support_hole)+"\" rmin2=\""+str(0)+"\" rmax2=\""+str(radius_top_support_hole)+"\"  z=\""+str(length_top_support+1.0)+"\" startphi=\"0\" deltaphi=\"360\" aunit=\"deg\" lunit=\"mm\"/>\n"
+
+out+="\t<subtraction name=\"solid_top_support\">"
+out+="\n\t\t<first ref=\"solid_top_support_1\"/>"
+out+="\n\t\t<second ref=\"solid_top_support_hole\"/>"
+out+="\n\t\t<position name=\"pos_subtract_top_support\" x=\"0\" y=\"0\" z=\"0\"/>" 
+out+="\n\t\t<rotation name=\"rot_subtract_top_support\" x=\"0\" y=\"pi/2\" z=\"0\"/>"
+out+="\n\t</subtraction>\n"
+
 out+="\t<cone name=\"solid_showerMaxMother\" rmin1=\""+str(730)+"\"  rmax1=\""+str(1900)+"\" rmin2=\""+str(730)+"\" rmax2=\""+str(1900)+"\"  z=\""+str(thick_mother)+"\" startphi=\"0\" deltaphi=\"360\" aunit=\"deg\" lunit=\"mm\"/>\n" #Make sure this mother volume doesn't interfere with coils
 
 out+="</solids>\n"
@@ -278,6 +294,12 @@ for i in range(0,28):
         out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"brown\"/>"
         out+="\n\t</volume>\n"
 
+        out+="\t<volume name=\"logic_top_support_"+str(i)+"\">"
+        out+="\n\t\t<materialref ref=\"G4_Al\"/>"
+        out+="\n\t\t<solidref ref=\"solid_top_support\"/>"
+        out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"grey\"/>"
+        out+="\n\t</volume>\n"
+
         for j in range(0,4):
                 out+="\t<volume name=\"logic_quartz_"+str(i)+"_"+str(j)+"\">"
                 out+="\n\t\t<materialref ref=\"G4_Quartz\"/>"
@@ -319,15 +341,21 @@ for i in range(0,28):
         out+="\n\t\t\t<rotation name=\"rot_logic_mirror_box_top_"+str(i)+"\" x=\""+str(0)+"\" y=\"-pi/2\" z=\"0\"/>"
         out+="\n\t\t</physvol>"
 
+        out+="\n\t\t<physvol name=\"top_support_"+str(i)+"\">"
+        out+="\n\t\t\t<volumeref ref=\"logic_top_support_"+str(i)+"\"/>"
+        out+="\n\t\t\t<position name=\"pos_top_support_"+str(i)+"\" x=\""+str(length_quartz/2+length_ledge/2+length_mirror_box_bot+length_mirror_box_top+length_top_support/2)+"\" y=\""+str(0)+"\" z=\""+str(thick_tungsten/2)+"\"/>"
+        out+="\n\t\t\t<rotation name=\"rot_top_support_"+str(i)+"\" x=\""+str(0)+"\" y=\"0\" z=\"0\"/>"
+        out+="\n\t\t</physvol>"
+
         out+="\n\t\t<physvol name=\"pmt_filter_"+str(i)+"\">"
         out+="\n\t\t\t<volumeref ref=\"logic_pmt_filter_"+str(i)+"\"/>"
-        out+="\n\t\t\t<position name=\"pos_logic_pmt_filter"+str(i)+"\" x= \""+str(length_quartz/2+length_ledge/2+length_mirror_box_bot+length_mirror_box_top+pmt_filter_extent/2)+"\" y=\"0\" z=\""+str(thick_tungsten/2)+"\"/>"
+        out+="\n\t\t\t<position name=\"pos_logic_pmt_filter"+str(i)+"\" x= \""+str(length_quartz/2+length_ledge/2+length_mirror_box_bot+length_mirror_box_top+length_top_support+pmt_filter_extent/2)+"\" y=\"0\" z=\""+str(thick_tungsten/2)+"\"/>"
         out+="\n\t\t\t<rotation name=\"rot_logic_pmt_filter"+str(i)+"\" x=\"0\" y=\"-pi/2\" z=\"0\"/>"
         out+="\n\t\t</physvol>"
 
         out+="\n\t\t<physvol name=\"pmt_window_"+str(i)+"\">"
         out+="\n\t\t\t<volumeref ref=\"logic_pmt_window_"+str(i)+"\"/>"
-        out+="\n\t\t\t<position name=\"pos_logic_pmt_window_"+str(i)+"\" x=\""+str(length_quartz/2+length_ledge/2+length_mirror_box_bot+length_mirror_box_top+pmt_filter_extent+pmt_window_extent/2)+"\" y=\""+str(0)+"\" z=\""+str(thick_tungsten/2)+"\"/>"
+        out+="\n\t\t\t<position name=\"pos_logic_pmt_window_"+str(i)+"\" x=\""+str(length_quartz/2+length_ledge/2+length_mirror_box_bot+length_mirror_box_top+length_top_support+pmt_filter_extent+pmt_window_extent/2)+"\" y=\""+str(0)+"\" z=\""+str(thick_tungsten/2)+"\"/>"
         out+="\n\t\t\t<rotation name=\"rot_logic_pmt_window_"+str(i)+"\" x=\"0\" y=\"-pi/2\" z=\"0\"/>"
         out+="\n\t\t</physvol>"
 
@@ -339,13 +367,13 @@ for i in range(0,28):
 
         out+="\n\t\t<physvol name=\"pmt_"+str(i)+"\">"
         out+="\n\t\t\t<volumeref ref=\"logic_pmt_"+str(i)+"\"/>"
-        out+="\n\t\t\t<position name=\"pos_logic_pmt_"+str(i)+"\" x=\""+str(length_quartz/2+length_ledge/2+length_mirror_box_bot+length_mirror_box_top+pmt_filter_extent+pmt_window_extent+pmt_extent/2)+"\" y=\""+str(0)+"\" z=\""+str(thick_tungsten/2)+"\"/>"
+        out+="\n\t\t\t<position name=\"pos_logic_pmt_"+str(i)+"\" x=\""+str(length_quartz/2+length_ledge/2+length_mirror_box_bot+length_mirror_box_top+length_top_support+pmt_filter_extent+pmt_window_extent+pmt_extent/2)+"\" y=\""+str(0)+"\" z=\""+str(thick_tungsten/2)+"\"/>"
         out+="\n\t\t\t<rotation name=\"rot_logic_pmt_"+str(i)+"\" x=\""+str(0)+"\" y=\"-pi/2\" z=\"0\"/>"
         out+="\n\t\t</physvol>"
 
         out+="\n\t\t<physvol name=\"pmt_base_"+str(i)+"\">"
         out+="\n\t\t\t<volumeref ref=\"logic_pmt_base_"+str(i)+"\"/>"
-        out+="\n\t\t\t<position name=\"pos_logic_pmt_base"+str(i)+"\" x=\""+str(length_quartz/2+length_ledge/2+length_mirror_box_bot+length_mirror_box_top+pmt_filter_extent+pmt_window_extent+pmt_extent+pmt_base_extent/2)+"\" y=\""+str(0)+"\" z=\""+str(thick_tungsten/2)+"\"/>"
+        out+="\n\t\t\t<position name=\"pos_logic_pmt_base"+str(i)+"\" x=\""+str(length_quartz/2+length_ledge/2+length_mirror_box_bot+length_mirror_box_top+length_top_support+pmt_filter_extent+pmt_window_extent+pmt_extent+pmt_base_extent/2)+"\" y=\""+str(0)+"\" z=\""+str(thick_tungsten/2)+"\"/>"
         out+="\n\t\t\t<rotation name=\"rot_logic_pmt_base_"+str(i)+"\" x=\""+str(0)+"\" y=\"-pi/2\" z=\"0\"/>"
         out+="\n\t\t</physvol>"
 
