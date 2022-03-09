@@ -59,6 +59,11 @@ length_web_plate = 432.190
 width_web_plate = 15.875
 thick_web_plate = 63.500
 
+# Ledge
+length_ledge = (length_front_back_plate-length_quartz)
+width_ledge = 6.35
+thick_ledge = thick_web_plate
+
 ## Mirror box and PMT combined logical volume
 length_logic_mirror_box = length_mirror_box_bot+length_mirror_box_top+pmt_filter_extent+pmt_window_extent+pmt_extent+pmt_base_extent
 
@@ -189,6 +194,8 @@ out+="\n\t</union>\n"
 
 out+="\t<box name=\"solid_web_plate\" lunit=\"mm\" x=\""+str(length_web_plate)+"\" y=\""+str(width_web_plate)+"\" z=\""+str(thick_web_plate)+"\"/>\n"
 
+out+="\t<box name=\"solid_ledge\" lunit=\"mm\" x=\""+str(length_ledge)+"\" y=\""+str(width_ledge)+"\" z=\""+str(thick_ledge)+"\"/>\n"
+
 out+="\t<cone name=\"solid_showerMaxMother\" rmin1=\""+str(730)+"\"  rmax1=\""+str(1900)+"\" rmin2=\""+str(730)+"\" rmax2=\""+str(1900)+"\"  z=\""+str(thick_mother)+"\" startphi=\"0\" deltaphi=\"360\" aunit=\"deg\" lunit=\"mm\"/>\n" #Make sure this mother volume doesn't interfere with coils
 
 out+="</solids>\n"
@@ -263,6 +270,12 @@ for i in range(0,28):
         out+="\n\t\t<materialref ref=\"G4_Al\"/>"
         out+="\n\t\t<solidref ref=\"solid_web_plate\"/>"
         out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"grey\"/>"
+        out+="\n\t</volume>\n"
+
+        out+="\t<volume name=\"logic_ledge_"+str(i)+"\">"
+        out+="\n\t\t<materialref ref=\"G4_NYLON-6-6\"/>"
+        out+="\n\t\t<solidref ref=\"solid_ledge\"/>"
+        out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"brown\"/>"
         out+="\n\t</volume>\n"
 
         for j in range(0,4):
@@ -352,6 +365,12 @@ for i in range(0,28):
         out+="\n\t\t\t<volumeref ref=\"logic_web_plate_"+str(i)+"\"/>"
         out+="\n\t\t\t<position name=\"pos_web_plate_"+str(i)+"\" x=\""+str((length_web_plate-length_front_back_plate)/2)+"\" y=\""+str((width_front_back_plate-width_web_plate)/2)+"\" z=\""+str(0)+"\"/>"
         out+="\n\t\t\t<rotation name=\"rot_web_plate_"+str(i)+"\" x=\""+str(0)+"\" y=\"0\" z=\"0\"/>"
+        out+="\n\t\t</physvol>"
+
+        out+="\n\t\t<physvol name=\"ledge_right_"+str(i)+"\">"
+        out+="\n\t\t\t<volumeref ref=\"logic_ledge_"+str(i)+"\"/>"
+        out+="\n\t\t\t<position name=\"pos_ledge_"+str(i)+"\" x=\""+str((length_quartz)/2)+"\" y=\""+str((width_quartz+width_ledge)/2+0.2)+"\" z=\""+str(0)+"\"/>"
+        out+="\n\t\t\t<rotation name=\"rot_ledge_"+str(i)+"\" x=\""+str(0)+"\" y=\"0\" z=\"0\"/>"
         out+="\n\t\t</physvol>"
 
         for j in range(0,4):
