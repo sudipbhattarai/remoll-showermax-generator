@@ -19,10 +19,14 @@ length_tungsten = length_quartz
 width_tungsten = width_quartz
 thick_tungsten = 8.0
 
+# Spacer in TQ stack
+thick_spacer = 0.870
+thick_tolerance = 0.508
+
 ## Tungsten-quartz stack
 length_stack_tungstenquartz = length_quartz
 width_stack_tungstenquartz = width_quartz
-thick_stack_tungstenquartz = 4*(thick_quartz+thick_tungsten)
+thick_stack_tungstenquartz = 4*(thick_quartz+thick_tungsten)+ 8*thick_spacer + 2*thick_tolerance
 
 ## Mirror box bottom (lower part of the light guide)
 length_mirror_box_bot = 67.462  
@@ -46,9 +50,14 @@ pmt_filter_extent = pmt_lpfilter_extent + pmt_atten_extent
 thick_wall_mirror = 0.5
 
 ## Front and back plate of quartz-tungsten stack
-length_front_back_plate = 181.61
-width_front_back_plate = 313.944
+length_front_back_plate = 181.698
+width_front_back_plate = 313.800
 thick_front_back_plate = 6.35 
+
+# Webbed side support structure
+length_web_plate = 432.190
+width_web_plate = 15.875
+thick_web_plate = 63.500
 
 ## Mirror box and PMT combined logical volume
 length_logic_mirror_box = length_mirror_box_bot+length_mirror_box_top+pmt_filter_extent+pmt_window_extent+pmt_extent+pmt_base_extent
@@ -59,7 +68,7 @@ zstagger = 41   # distance between center of a SM module and the center of two S
 print(23920-2*(thick_quartz+thick_tungsten)+zstagger)
 print(23920-2*(thick_quartz+thick_tungsten)-zstagger)
 
-length_mother=2*thick_mirror_box_bot+2*zstagger+5
+thick_mother=2*thick_mirror_box_bot+2*zstagger+5
 
 pos=radial_extent+length_quartz/2
 
@@ -178,7 +187,9 @@ out+="\n\t\t<position name=\"pos_logic_mirror_box_union\" x=\""+str(length_quart
 out+="\n\t\t<rotation name=\"rot_logic_mirror_box_union\" x=\"0\" y=\"pi/2\" z=\"0\"/>"
 out+="\n\t</union>\n"
 
-out+="\t<cone name=\"solid_showerMaxMother\" rmin1=\""+str(730)+"\"  rmax1=\""+str(1900)+"\" rmin2=\""+str(730)+"\" rmax2=\""+str(1900)+"\"  z=\""+str(length_mother)+"\" startphi=\"0\" deltaphi=\"360\" aunit=\"deg\" lunit=\"mm\"/>\n" #Make sure this mother volume doesn't interfere with coils
+out+="\t<box name=\"solid_web_plate\" lunit=\"mm\" x=\""+str(length_web_plate)+"\" y=\""+str(width_web_plate)+"\" z=\""+str(thick_web_plate)+"\"/>\n"
+
+out+="\t<cone name=\"solid_showerMaxMother\" rmin1=\""+str(730)+"\"  rmax1=\""+str(1900)+"\" rmin2=\""+str(730)+"\" rmax2=\""+str(1900)+"\"  z=\""+str(thick_mother)+"\" startphi=\"0\" deltaphi=\"360\" aunit=\"deg\" lunit=\"mm\"/>\n" #Make sure this mother volume doesn't interfere with coils
 
 out+="</solids>\n"
 
@@ -246,6 +257,12 @@ for i in range(0,28):
         out+="\n\t\t<materialref ref=\"G4_Al\"/>"
         out+="\n\t\t<solidref ref=\"solid_front_back_plate\"/>"
         out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"orange\"/>"
+        out+="\n\t</volume>\n"
+
+        out+="\t<volume name=\"logic_web_plate_"+str(i)+"\">"
+        out+="\n\t\t<materialref ref=\"G4_Al\"/>"
+        out+="\n\t\t<solidref ref=\"solid_web_plate\"/>"
+        out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"grey\"/>"
         out+="\n\t</volume>\n"
 
         for j in range(0,4):
@@ -321,26 +338,32 @@ for i in range(0,28):
 
         out+="\n\t\t<physvol name=\"front_plate_"+str(i)+"\">"
         out+="\n\t\t\t<volumeref ref=\"logic_front_back_plate_"+str(i)+"\"/>"
-        out+="\n\t\t\t<position name=\"pos_logic_front_plate_"+str(i)+"\" x=\""+str(-(length_front_back_plate-length_quartz)/2)+"\" y=\""+str(0)+"\" z=\""+str(-(thick_stack_tungstenquartz+2*thick_wall_mirror+thick_front_back_plate)/2)+"\"/>"
+        out+="\n\t\t\t<position name=\"pos_logic_front_plate_"+str(i)+"\" x=\""+str(0)+"\" y=\""+str(0)+"\" z=\""+str(-(thick_stack_tungstenquartz+2*thick_wall_mirror+thick_front_back_plate)/2)+"\"/>"
         out+="\n\t\t\t<rotation name=\"rot_logic_front_plate_"+str(i)+"\" x=\""+str(0)+"\" y=\"0\" z=\"0\"/>"
         out+="\n\t\t</physvol>"
 
         out+="\n\t\t<physvol name=\"back_plate_"+str(i)+"\">"
         out+="\n\t\t\t<volumeref ref=\"logic_front_back_plate_"+str(i)+"\"/>"
-        out+="\n\t\t\t<position name=\"pos_logic_back_plate_"+str(i)+"\" x=\""+str(-(length_front_back_plate-length_quartz)/2)+"\" y=\""+str(0)+"\" z=\""+str((thick_stack_tungstenquartz+2*thick_wall_mirror+thick_front_back_plate)/2)+"\"/>"
+        out+="\n\t\t\t<position name=\"pos_logic_back_plate_"+str(i)+"\" x=\""+str(0)+"\" y=\""+str(0)+"\" z=\""+str((thick_stack_tungstenquartz+2*thick_wall_mirror+thick_front_back_plate)/2)+"\"/>"
         out+="\n\t\t\t<rotation name=\"rot_logic_back_plate_"+str(i)+"\" x=\""+str(0)+"\" y=\"0\" z=\"0\"/>"
+        out+="\n\t\t</physvol>"
+
+        out+="\n\t\t<physvol name=\"web_plate_"+str(i)+"\">"
+        out+="\n\t\t\t<volumeref ref=\"logic_web_plate_"+str(i)+"\"/>"
+        out+="\n\t\t\t<position name=\"pos_web_plate_"+str(i)+"\" x=\""+str((length_web_plate-length_front_back_plate)/2)+"\" y=\""+str((width_front_back_plate-width_web_plate)/2)+"\" z=\""+str(0)+"\"/>"
+        out+="\n\t\t\t<rotation name=\"rot_web_plate_"+str(i)+"\" x=\""+str(0)+"\" y=\"0\" z=\"0\"/>"
         out+="\n\t\t</physvol>"
 
         for j in range(0,4):
                 out+="\n\t\t<physvol name=\"quartz_"+str(i)+"_"+str(j)+"\">"
                 out+="\n\t\t\t<volumeref ref=\"logic_quartz_"+str(i)+"_"+str(j)+"\"/>"             
-                out+="\n\t\t\t<position name=\"pos_logic_quartz_"+str(i)+"_"+str(j)+"\" x=\""+str(0)+"\" y=\""+str(0)+"\" z=\""+str(1.5*thick_quartz+2.0*thick_tungsten-j*(thick_quartz+thick_tungsten))+"\"/>"
+                out+="\n\t\t\t<position name=\"pos_logic_quartz_"+str(i)+"_"+str(j)+"\" x=\""+str(0)+"\" y=\""+str(0)+"\" z=\""+str(1.5*thick_quartz+2.0*thick_tungsten+4*thick_spacer+thick_tolerance-j*(thick_quartz+thick_tungsten)-(2*j+1)*thick_spacer)+"\"/>"
                 out+="\n\t\t\t<rotation name=\"rot_logic_quartz_"+str(i)+"_"+str(j)+"\" x=\""+quartz_rotate[j]+"\" y=\"0\" z=\"0\"/>"        
                 out+="\n\t\t</physvol>"
 
                 out+="\n\t\t<physvol name=\"tungsten_"+str(i)+"_"+str(j)+"\">"
                 out+="\n\t\t\t<volumeref ref=\"logic_tungsten_"+str(i)+"_"+str(j)+"\"/>"
-                out+="\n\t\t\t<position name=\"pos_logic_tungsten_"+str(i)+"_"+str(j)+"\" x=\""+str(0)+"\" y=\""+str(0)+"\" z=\""+str(1.5*thick_tungsten+1.0*thick_quartz-j*(thick_quartz+thick_tungsten))+"\"/>"
+                out+="\n\t\t\t<position name=\"pos_logic_tungsten_"+str(i)+"_"+str(j)+"\" x=\""+str(0)+"\" y=\""+str(0)+"\" z=\""+str(1.5*thick_tungsten+1.0*thick_quartz+4*thick_spacer+thick_tolerance-j*(thick_quartz+thick_tungsten)-2*(j+1)*thick_spacer)+"\"/>"
                 out+="\n\t\t\t<rotation name=\"rot_logic_tungsten_"+str(i)+"_"+str(j)+"\" x=\"0\" y=\"0\" z=\"0\"/>"
                 out+="\n\t\t</physvol>"
 
