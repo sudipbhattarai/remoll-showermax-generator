@@ -58,6 +58,13 @@ thick_front_back_plate = 6.35
 length_web_plate = 432.190
 width_web_plate = 15.875
 thick_web_plate = 63.500
+radius_web_plate_hole_small = 31.75/2
+radius_web_plate_hole_big = 25.53
+thick_web_plate_leg = 6.350
+length_web_plate_leg = 190.19
+length_web_plate_egdeToHole = 38.175
+length_web_plate_smallHoles_distance = 50.800
+length_web_plate_holes_small_big = 53.975
 
 # Ledge
 length_ledge = (length_front_back_plate-length_quartz)
@@ -198,7 +205,37 @@ out+="\n\t\t<position name=\"pos_logic_mirror_box_union\" x=\""+str(length_quart
 out+="\n\t\t<rotation name=\"rot_logic_mirror_box_union\" x=\"0\" y=\"pi/2\" z=\"0\"/>"
 out+="\n\t</union>\n"
 
-out+="\t<box name=\"solid_web_plate\" lunit=\"mm\" x=\""+str(length_web_plate)+"\" y=\""+str(width_web_plate)+"\" z=\""+str(thick_web_plate)+"\"/>\n"
+#-----------
+out+="\t<box name=\"solid_web_plate_1\" lunit=\"mm\" x=\""+str(length_web_plate)+"\" y=\""+str(width_web_plate)+"\" z=\""+str(thick_web_plate)+"\"/>\n"
+out+="\t<cone name=\"solid_web_plate_hole_small\" rmin1=\""+str(0)+"\"  rmax1=\""+str(radius_web_plate_hole_small)+"\" rmin2=\""+str(0)+"\" rmax2=\""+str(radius_web_plate_hole_small)+"\"  z=\""+str(width_web_plate+1.0)+"\" startphi=\"0\" deltaphi=\"360\" aunit=\"deg\" lunit=\"mm\"/>\n"
+out+="\t<cone name=\"solid_web_plate_hole_big\" rmin1=\""+str(0)+"\"  rmax1=\""+str(radius_web_plate_hole_big)+"\" rmin2=\""+str(0)+"\" rmax2=\""+str(radius_web_plate_hole_big)+"\"  z=\""+str(width_web_plate+1.0)+"\" startphi=\"0\" deltaphi=\"360\" aunit=\"deg\" lunit=\"mm\"/>\n"
+out+="\t<box name=\"solid_web_plate_leg_gap\" lunit=\"mm\" x=\""+str(length_web_plate_leg+0.2)+"\" y=\""+str(width_web_plate+1.0)+"\" z=\""+str(2*radius_web_plate_hole_big)+"\"/>\n"
+
+for i in range(0,4):
+        out+="\t<subtraction name=\"solid_web_plate_"+str(i+2)+"\">"
+        out+="\n\t\t<first ref=\"solid_web_plate_"+str(i+1)+"\"/>"
+        out+="\n\t\t<second ref=\"solid_web_plate_hole_small\"/>"
+        out+="\n\t\t<position name=\"pos_subtract_web_plate_hole_small\" x=\""+str(length_web_plate/2-length_web_plate_egdeToHole-i*length_web_plate_smallHoles_distance)+"\" y=\"0\" z=\"0\"/>" 
+        out+="\n\t\t<rotation name=\"rot_subtract_web_plate_hole_small\" x=\"pi/2\" y=\"0\" z=\"0\"/>"
+        out+="\n\t</subtraction>\n"
+
+out+="\t<subtraction name=\"solid_web_plate_6\">"
+out+="\n\t\t<first ref=\"solid_web_plate_5\"/>"
+out+="\n\t\t<second ref=\"solid_web_plate_hole_big\"/>"
+out+="\n\t\t<position name=\"pos_subtract_web_plate_hole_big\" x=\""+str(length_web_plate/2-length_web_plate_egdeToHole-3*length_web_plate_smallHoles_distance-length_web_plate_holes_small_big)+"\" y=\"0\" z=\"0\"/>" 
+out+="\n\t\t<rotation name=\"rot_subtract_web_plate_hole_big\" x=\"pi/2\" y=\"0\" z=\"0\"/>"
+out+="\n\t</subtraction>\n"
+
+out+="\t<subtraction name=\"solid_web_plate_7\">"
+out+="\n\t\t<first ref=\"solid_web_plate_6\"/>"
+out+="\n\t\t<second ref=\"solid_web_plate_leg_gap\"/>"
+out+="\n\t\t<position name=\"pos_subtract_web_plate_leg\" x=\""+str(-(length_web_plate-length_web_plate_leg)/2)+"\" y=\"0\" z=\"0\"/>" 
+out+="\n\t\t<rotation name=\"rot_subtract_web_plate_leg\" x=\"0\" y=\"0\" z=\"0\"/>"
+out+="\n\t</subtraction>\n"
+
+
+
+#-----------
 
 out+="\t<box name=\"solid_ledge\" lunit=\"mm\" x=\""+str(length_ledge)+"\" y=\""+str(width_ledge)+"\" z=\""+str(thick_ledge)+"\"/>\n"
 
@@ -284,7 +321,7 @@ for i in range(0,28):
 
         out+="\t<volume name=\"logic_web_plate_"+str(i)+"\">"
         out+="\n\t\t<materialref ref=\"G4_Al\"/>"
-        out+="\n\t\t<solidref ref=\"solid_web_plate\"/>"
+        out+="\n\t\t<solidref ref=\"solid_web_plate_7\"/>"
         out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"grey\"/>"
         out+="\n\t</volume>\n"
 
