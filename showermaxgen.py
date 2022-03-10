@@ -89,6 +89,11 @@ thick_uBracket = 50.80
 width_uBracket_legSpace = 17.53
 thick_uBracket_legSpace = 38.10
 
+# Struts (the rods that attach SM modules to the ring support structure)
+length_strut = 381.0
+width_strut = 63.5
+thick_strut = 36.83
+
 ## Mirror box and PMT combined logical volume
 length_logic_mirror_box = length_ledge+length_mirror_box_bot+length_mirror_box_top + length_pmt_region
 
@@ -302,6 +307,8 @@ out+="\n\t</subtraction>\n"
 
 out+="\t<cone name=\"solid_pmt_housing\" rmin1=\""+str(radius_inner_pmt_housing)+"\"  rmax1=\""+str(radius_outer_pmt_housing)+"\" rmin2=\""+str(radius_inner_pmt_housing)+"\" rmax2=\""+str(radius_outer_pmt_housing)+"\"  z=\""+str(length_pmt_housing)+"\" startphi=\"0\" deltaphi=\"360\" aunit=\"deg\" lunit=\"mm\"/>\n"
 
+out+="\t<box name=\"solid_strut\" lunit=\"mm\" x=\""+str(length_strut)+"\" y=\""+str(width_strut)+"\" z=\""+str(thick_strut)+"\"/>\n"
+
 out+="\t<cone name=\"solid_pmt_housing_lid\" rmin1=\""+str(0)+"\"  rmax1=\""+str(radius_pmt_housing_lid)+"\" rmin2=\""+str(0)+"\" rmax2=\""+str(radius_pmt_housing_lid)+"\"  z=\""+str(length_pmt_housing_lid)+"\" startphi=\"0\" deltaphi=\"360\" aunit=\"deg\" lunit=\"mm\"/>\n"
 
 out+="\t<cone name=\"solid_showerMaxMother\" rmin1=\""+str(730)+"\"  rmax1=\""+str(1900)+"\" rmin2=\""+str(730)+"\" rmax2=\""+str(1900)+"\"  z=\""+str(thick_mother)+"\" startphi=\"0\" deltaphi=\"360\" aunit=\"deg\" lunit=\"mm\"/>\n" #Make sure this mother volume doesn't interfere with coils
@@ -404,6 +411,12 @@ for i in range(0,28):
         out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"grey\"/>"
         out+="\n\t</volume>\n"
 
+        out+="\t<volume name=\"logic_strut_"+str(i)+"\">"
+        out+="\n\t\t<materialref ref=\"G4_Al\"/>"
+        out+="\n\t\t<solidref ref=\"solid_strut\"/>"
+        out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"grey\"/>"
+        out+="\n\t</volume>\n"
+
         for j in range(0,4):
                 out+="\t<volume name=\"logic_quartz_"+str(i)+"_"+str(j)+"\">"
                 out+="\n\t\t<materialref ref=\"G4_Quartz\"/>"
@@ -485,6 +498,18 @@ for i in range(0,28):
         out+="\n\t\t\t<volumeref ref=\"logic_pmt_housing_lid_"+str(i)+"\"/>"
         out+="\n\t\t\t<position name=\"pos_logic_pmt_housing_lid_"+str(i)+"\" x=\""+str(length_quartz/2+length_ledge/2+length_mirror_box_bot+length_mirror_box_top+length_top_support+length_pmt_housing+length_pmt_housing_lid/2)+"\" y=\""+str(0)+"\" z=\""+str(thick_tungsten/2)+"\"/>"
         out+="\n\t\t\t<rotation name=\"rot_logic_pmt_housing_lid_"+str(i)+"\" x=\""+str(0)+"\" y=\"-pi/2\" z=\"0\"/>"
+        out+="\n\t\t</physvol>"
+
+        out+="\n\t\t<physvol name=\"strut_right_"+str(i)+"\">"
+        out+="\n\t\t\t<volumeref ref=\"logic_strut_"+str(i)+"\"/>"
+        out+="\n\t\t\t<position name=\"pos_strut_"+str(i)+"\" x=\""+str(length_quartz/2+length_ledge/2+length_mirror_box_bot+length_mirror_box_top+length_top_support+length_strut/2)+"\" y=\""+str((width_top_support-width_strut)/2)+"\" z=\""+str(thick_tungsten/2)+"\"/>"
+        out+="\n\t\t\t<rotation name=\"rot_strut_"+str(i)+"\" x=\""+str(0)+"\" y=\"0\" z=\"0\"/>"
+        out+="\n\t\t</physvol>"
+
+        out+="\n\t\t<physvol name=\"strut_left_"+str(i)+"\">"
+        out+="\n\t\t\t<volumeref ref=\"logic_strut_"+str(i)+"\"/>"
+        out+="\n\t\t\t<position name=\"pos_strut_"+str(i)+"\" x=\""+str(length_quartz/2+length_ledge/2+length_mirror_box_bot+length_mirror_box_top+length_top_support+length_strut/2)+"\" y=\""+str(-(width_top_support-width_strut)/2)+"\" z=\""+str(thick_tungsten/2)+"\"/>"
+        out+="\n\t\t\t<rotation name=\"rot_strut_"+str(i)+"\" x=\""+str(0)+"\" y=\"0\" z=\"0\"/>"
         out+="\n\t\t</physvol>"
 
         out+="\n\t\t<physvol name=\"front_plate_"+str(i)+"\">"
