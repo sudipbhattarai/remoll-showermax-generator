@@ -37,14 +37,17 @@ length_mirror_box_top = 183.058
 thick_mirror_box_top = 69.866
 
 ## PMT region
-pmt_radius = 38.1 # Radius of 1.5 inches (for 3 inches PMT)
-pmt_base_extent = 50
-pmt_extent = 150
-#pmt_cathode_extent = 3e-6
-pmt_window_extent = 3.0
-pmt_lpfilter_extent = 2.5       #long pass filter
-pmt_atten_extent = 2.5          #attenuator
-pmt_filter_extent = pmt_lpfilter_extent + pmt_atten_extent
+radius_pmt = 38.1 # Radius of 1.5 inches (for 3 inches PMT)
+length_pmt_base = 50
+length_pmt_gut = 150
+length_pmt_window = 3.0
+length_pmt_filter = 5.0 #Combination of long pass filter and ND filter
+length_pmt_region = length_pmt_filter + length_pmt_window + length_pmt_gut + length_pmt_base
+length_pmt_housing = length_pmt_region + 2.0 + 3.0 # tolernace + lid
+radius_inner_pmt_housing = 42.0
+radius_outer_pmt_housing =  radius_inner_pmt_housing + 3.0
+radius_pmt_housing_lid = 48.0
+length_pmt_housing_lid = 3.0
 
 ## mirror parameter
 thick_wall_mirror = 0.5
@@ -75,7 +78,7 @@ thick_ledge = thick_web_plate
 length_top_support = 6.350
 width_top_support = 370.878
 thick_top_support = 114.3
-radius_top_support_hole = 86.360/2
+radius_top_support_hole = radius_inner_pmt_housing
 
 # U-bracket (Referenced with lower bracket)
 length_uBracket = 15.88
@@ -85,7 +88,7 @@ width_uBracket_legSpace = 17.53
 thick_uBracket_legSpace = 38.10
 
 ## Mirror box and PMT combined logical volume
-length_logic_mirror_box = length_ledge+length_mirror_box_bot+length_mirror_box_top+pmt_filter_extent+pmt_window_extent+pmt_extent+pmt_base_extent
+length_logic_mirror_box = length_ledge+length_mirror_box_bot+length_mirror_box_top + length_pmt_region
 
 detector_tilt = 0
 
@@ -130,13 +133,13 @@ out+="</materials>\n"
 ## Define solids
 out+="\n\n<solids>\n"
 
-out+="\t<tube name=\"solid_pmt_filter\" rmin=\"0\" rmax=\""+str(pmt_radius)+"\" z=\""+str(pmt_filter_extent)+"\" deltaphi=\"2*pi\" startphi=\"0\" aunit=\"rad\" lunit=\"mm\"/>\n"
+out+="\t<tube name=\"solid_pmt_filter\" rmin=\"0\" rmax=\""+str(radius_pmt)+"\" z=\""+str(length_pmt_filter)+"\" deltaphi=\"2*pi\" startphi=\"0\" aunit=\"rad\" lunit=\"mm\"/>\n"
 
-out+="\t<tube name=\"solid_pmt_window\" rmin=\"0\" rmax=\""+str(pmt_radius)+"\" z=\""+str(pmt_window_extent)+"\" deltaphi=\"2*pi\" startphi=\"0\" aunit=\"rad\" lunit=\"mm\"/>\n"
+out+="\t<tube name=\"solid_pmt_window\" rmin=\"0\" rmax=\""+str(radius_pmt)+"\" z=\""+str(length_pmt_window)+"\" deltaphi=\"2*pi\" startphi=\"0\" aunit=\"rad\" lunit=\"mm\"/>\n"
 
-out+="\t<tube name=\"solid_pmt\" rmin=\"0\" rmax=\""+str(pmt_radius)+"\" z=\""+str(pmt_extent)+"\" deltaphi=\"2*pi\" startphi=\"0\" aunit=\"rad\" lunit=\"mm\"/>\n"
+out+="\t<tube name=\"solid_pmt\" rmin=\"0\" rmax=\""+str(radius_pmt)+"\" z=\""+str(length_pmt_gut)+"\" deltaphi=\"2*pi\" startphi=\"0\" aunit=\"rad\" lunit=\"mm\"/>\n"
 
-out+="\t<tube name=\"solid_pmt_base\" rmin=\"0\" rmax=\""+str(pmt_radius)+"\" z=\""+str(pmt_base_extent)+"\" deltaphi=\"2*pi\" startphi=\"0\" aunit=\"rad\" lunit=\"mm\"/>\n"
+out+="\t<tube name=\"solid_pmt_base\" rmin=\"0\" rmax=\""+str(radius_pmt)+"\" z=\""+str(length_pmt_base)+"\" deltaphi=\"2*pi\" startphi=\"0\" aunit=\"rad\" lunit=\"mm\"/>\n"
 
 # Mirror box, where the TQ stack rests
 out+="\t<box name=\"solid_mirror_box_tungstenquartz_1\" lunit=\"mm\" x=\""+str(length_stack_tungstenquartz)+"\" y=\""+str(width_stack_tungstenquartz+2*thick_wall_mirror)+"\" z=\""+str(thick_stack_tungstenquartz+2*thick_wall_mirror)+"\"/>\n"
@@ -266,6 +269,10 @@ out+="\n\t\t<rotation name=\"rot_subtract_uBracket\" x=\"0\" y=\"0\" z=\"0\"/>"
 out+="\n\t</subtraction>\n"
 #-------------------
 
+out+="\t<cone name=\"solid_pmt_housing\" rmin1=\""+str(radius_inner_pmt_housing)+"\"  rmax1=\""+str(radius_outer_pmt_housing)+"\" rmin2=\""+str(radius_inner_pmt_housing)+"\" rmax2=\""+str(radius_outer_pmt_housing)+"\"  z=\""+str(length_pmt_housing)+"\" startphi=\"0\" deltaphi=\"360\" aunit=\"deg\" lunit=\"mm\"/>\n"
+
+out+="\t<cone name=\"solid_pmt_housing_lid\" rmin1=\""+str(0)+"\"  rmax1=\""+str(radius_pmt_housing_lid)+"\" rmin2=\""+str(0)+"\" rmax2=\""+str(radius_pmt_housing_lid)+"\"  z=\""+str(length_pmt_housing_lid)+"\" startphi=\"0\" deltaphi=\"360\" aunit=\"deg\" lunit=\"mm\"/>\n"
+
 out+="\t<cone name=\"solid_showerMaxMother\" rmin1=\""+str(730)+"\"  rmax1=\""+str(1900)+"\" rmin2=\""+str(730)+"\" rmax2=\""+str(1900)+"\"  z=\""+str(thick_mother)+"\" startphi=\"0\" deltaphi=\"360\" aunit=\"deg\" lunit=\"mm\"/>\n" #Make sure this mother volume doesn't interfere with coils
 
 out+="</solids>\n"
@@ -354,6 +361,18 @@ for i in range(0,27):
         out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"grey\"/>"
         out+="\n\t</volume>\n"
 
+        out+="\t<volume name=\"logic_pmt_housing_"+str(i)+"\">"
+        out+="\n\t\t<materialref ref=\"G4_Al\"/>"
+        out+="\n\t\t<solidref ref=\"solid_pmt_housing\"/>"
+        out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"grey\"/>"
+        out+="\n\t</volume>\n"
+
+        out+="\t<volume name=\"logic_pmt_housing_lid_"+str(i)+"\">"
+        out+="\n\t\t<materialref ref=\"G4_Al\"/>"
+        out+="\n\t\t<solidref ref=\"solid_pmt_housing_lid\"/>"
+        out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"grey\"/>"
+        out+="\n\t</volume>\n"
+
         for j in range(0,4):
                 out+="\t<volume name=\"logic_quartz_"+str(i)+"_"+str(j)+"\">"
                 out+="\n\t\t<materialref ref=\"G4_Quartz\"/>"
@@ -403,26 +422,38 @@ for i in range(0,27):
 
         out+="\n\t\t<physvol name=\"pmt_filter_"+str(i)+"\">"
         out+="\n\t\t\t<volumeref ref=\"logic_pmt_filter_"+str(i)+"\"/>"
-        out+="\n\t\t\t<position name=\"pos_logic_pmt_filter"+str(i)+"\" x= \""+str(length_quartz/2+length_ledge/2+length_mirror_box_bot+length_mirror_box_top+length_top_support+pmt_filter_extent/2)+"\" y=\"0\" z=\""+str(thick_tungsten/2)+"\"/>"
-        out+="\n\t\t\t<rotation name=\"rot_logic_pmt_filter"+str(i)+"\" x=\"0\" y=\"-pi/2\" z=\"0\"/>"
+        out+="\n\t\t\t<position name=\"pos_logic_pmt_filter_"+str(i)+"\" x= \""+str(length_quartz/2+length_ledge/2+length_mirror_box_bot+length_mirror_box_top+length_top_support+length_pmt_filter/2)+"\" y=\"0\" z=\""+str(thick_tungsten/2)+"\"/>"
+        out+="\n\t\t\t<rotation name=\"rot_logic_pmt_filter_"+str(i)+"\" x=\"0\" y=\"-pi/2\" z=\"0\"/>"
         out+="\n\t\t</physvol>"
 
         out+="\n\t\t<physvol name=\"pmt_window_"+str(i)+"\">"
         out+="\n\t\t\t<volumeref ref=\"logic_pmt_window_"+str(i)+"\"/>"
-        out+="\n\t\t\t<position name=\"pos_logic_pmt_window_"+str(i)+"\" x=\""+str(length_quartz/2+length_ledge/2+length_mirror_box_bot+length_mirror_box_top+length_top_support+pmt_filter_extent+pmt_window_extent/2)+"\" y=\""+str(0)+"\" z=\""+str(thick_tungsten/2)+"\"/>"
+        out+="\n\t\t\t<position name=\"pos_logic_pmt_window_"+str(i)+"\" x=\""+str(length_quartz/2+length_ledge/2+length_mirror_box_bot+length_mirror_box_top+length_top_support+length_pmt_filter+length_pmt_window/2)+"\" y=\""+str(0)+"\" z=\""+str(thick_tungsten/2)+"\"/>"
         out+="\n\t\t\t<rotation name=\"rot_logic_pmt_window_"+str(i)+"\" x=\"0\" y=\"-pi/2\" z=\"0\"/>"
         out+="\n\t\t</physvol>"
 
         out+="\n\t\t<physvol name=\"pmt_"+str(i)+"\">"
         out+="\n\t\t\t<volumeref ref=\"logic_pmt_"+str(i)+"\"/>"
-        out+="\n\t\t\t<position name=\"pos_logic_pmt_"+str(i)+"\" x=\""+str(length_quartz/2+length_ledge/2+length_mirror_box_bot+length_mirror_box_top+length_top_support+pmt_filter_extent+pmt_window_extent+pmt_extent/2)+"\" y=\""+str(0)+"\" z=\""+str(thick_tungsten/2)+"\"/>"
+        out+="\n\t\t\t<position name=\"pos_logic_pmt_"+str(i)+"\" x=\""+str(length_quartz/2+length_ledge/2+length_mirror_box_bot+length_mirror_box_top+length_top_support+length_pmt_filter+length_pmt_window+length_pmt_gut/2)+"\" y=\""+str(0)+"\" z=\""+str(thick_tungsten/2)+"\"/>"
         out+="\n\t\t\t<rotation name=\"rot_logic_pmt_"+str(i)+"\" x=\""+str(0)+"\" y=\"-pi/2\" z=\"0\"/>"
         out+="\n\t\t</physvol>"
 
         out+="\n\t\t<physvol name=\"pmt_base_"+str(i)+"\">"
         out+="\n\t\t\t<volumeref ref=\"logic_pmt_base_"+str(i)+"\"/>"
-        out+="\n\t\t\t<position name=\"pos_logic_pmt_base"+str(i)+"\" x=\""+str(length_quartz/2+length_ledge/2+length_mirror_box_bot+length_mirror_box_top+length_top_support+pmt_filter_extent+pmt_window_extent+pmt_extent+pmt_base_extent/2)+"\" y=\""+str(0)+"\" z=\""+str(thick_tungsten/2)+"\"/>"
+        out+="\n\t\t\t<position name=\"pos_logic_pmt_base_"+str(i)+"\" x=\""+str(length_quartz/2+length_ledge/2+length_mirror_box_bot+length_mirror_box_top+length_top_support+length_pmt_filter+length_pmt_window+length_pmt_gut+length_pmt_base/2)+"\" y=\""+str(0)+"\" z=\""+str(thick_tungsten/2)+"\"/>"
         out+="\n\t\t\t<rotation name=\"rot_logic_pmt_base_"+str(i)+"\" x=\""+str(0)+"\" y=\"-pi/2\" z=\"0\"/>"
+        out+="\n\t\t</physvol>"
+
+        out+="\n\t\t<physvol name=\"pmt_housing_"+str(i)+"\">"
+        out+="\n\t\t\t<volumeref ref=\"logic_pmt_housing_"+str(i)+"\"/>"
+        out+="\n\t\t\t<position name=\"pos_logic_pmt_housing_"+str(i)+"\" x=\""+str(length_quartz/2+length_ledge/2+length_mirror_box_bot+length_mirror_box_top+length_top_support+length_pmt_housing/2)+"\" y=\""+str(0)+"\" z=\""+str(thick_tungsten/2)+"\"/>"
+        out+="\n\t\t\t<rotation name=\"rot_logic_pmt_housing_"+str(i)+"\" x=\""+str(0)+"\" y=\"-pi/2\" z=\"0\"/>"
+        out+="\n\t\t</physvol>"
+
+        out+="\n\t\t<physvol name=\"pmt_housing_lid_"+str(i)+"\">"
+        out+="\n\t\t\t<volumeref ref=\"logic_pmt_housing_lid_"+str(i)+"\"/>"
+        out+="\n\t\t\t<position name=\"pos_logic_pmt_housing_lid_"+str(i)+"\" x=\""+str(length_quartz/2+length_ledge/2+length_mirror_box_bot+length_mirror_box_top+length_top_support+length_pmt_housing+length_pmt_housing_lid/2)+"\" y=\""+str(0)+"\" z=\""+str(thick_tungsten/2)+"\"/>"
+        out+="\n\t\t\t<rotation name=\"rot_logic_pmt_housing_lid_"+str(i)+"\" x=\""+str(0)+"\" y=\"-pi/2\" z=\"0\"/>"
         out+="\n\t\t</physvol>"
 
         out+="\n\t\t<physvol name=\"front_plate_"+str(i)+"\">"
