@@ -79,6 +79,8 @@ length_top_support = 6.350
 width_top_support = 370.878
 thick_top_support = 114.3
 radius_top_support_hole = radius_inner_pmt_housing
+width_top_support_corner_cut = 48.0       # edge cut is the rectangular cut in all 4 corners
+thick_top_support_corner_cut = 20.0
 
 # U-bracket (Referenced with lower bracket)
 length_uBracket = 15.88
@@ -248,12 +250,41 @@ out+="\t<box name=\"solid_ledge\" lunit=\"mm\" x=\""+str(length_ledge)+"\" y=\""
 # Outer radial top support
 out+="\t<box name=\"solid_top_support_1\" lunit=\"mm\" x=\""+str(length_top_support)+"\" y=\""+str(width_top_support)+"\" z=\""+str(thick_top_support)+"\"/>\n"
 out+="\t<cone name=\"solid_top_support_hole\" rmin1=\""+str(0)+"\"  rmax1=\""+str(radius_top_support_hole)+"\" rmin2=\""+str(0)+"\" rmax2=\""+str(radius_top_support_hole)+"\"  z=\""+str(length_top_support+1.0)+"\" startphi=\"0\" deltaphi=\"360\" aunit=\"deg\" lunit=\"mm\"/>\n"
+out+="\t<box name=\"solid_top_support_corner_cut\" lunit=\"mm\" x=\""+str(length_top_support+1.0)+"\" y=\""+str(width_top_support_corner_cut)+"\" z=\""+str(thick_top_support_corner_cut)+"\"/>\n"
 
-out+="\t<subtraction name=\"solid_top_support\">"
+out+="\t<subtraction name=\"solid_top_support_2\">"
 out+="\n\t\t<first ref=\"solid_top_support_1\"/>"
 out+="\n\t\t<second ref=\"solid_top_support_hole\"/>"
 out+="\n\t\t<position name=\"pos_subtract_top_support\" x=\"0\" y=\"0\" z=\"0\"/>" 
 out+="\n\t\t<rotation name=\"rot_subtract_top_support\" x=\"0\" y=\"pi/2\" z=\"0\"/>"
+out+="\n\t</subtraction>\n"
+
+out+="\t<subtraction name=\"solid_top_support_3\">"
+out+="\n\t\t<first ref=\"solid_top_support_2\"/>"
+out+="\n\t\t<second ref=\"solid_top_support_corner_cut\"/>"
+out+="\n\t\t<position name=\"pos_subtract_top_support\" x=\"0\" y=\""+str((width_top_support-width_top_support_corner_cut+0.4)/2)+"\" z=\""+str((thick_top_support-thick_top_support_corner_cut+0.4)/2)+"\"/>" 
+out+="\n\t\t<rotation name=\"rot_subtract_top_support\" x=\"0\" y=\"0\" z=\"0\"/>"
+out+="\n\t</subtraction>\n"
+
+out+="\t<subtraction name=\"solid_top_support_4\">"
+out+="\n\t\t<first ref=\"solid_top_support_3\"/>"
+out+="\n\t\t<second ref=\"solid_top_support_corner_cut\"/>"
+out+="\n\t\t<position name=\"pos_subtract_top_support\" x=\"0\" y=\""+str(-(width_top_support-width_top_support_corner_cut+0.4)/2)+"\" z=\""+str((thick_top_support-thick_top_support_corner_cut+0.4)/2)+"\"/>" 
+out+="\n\t\t<rotation name=\"rot_subtract_top_support\" x=\"0\" y=\"0\" z=\"0\"/>"
+out+="\n\t</subtraction>\n"
+
+out+="\t<subtraction name=\"solid_top_support_5\">"
+out+="\n\t\t<first ref=\"solid_top_support_4\"/>"
+out+="\n\t\t<second ref=\"solid_top_support_corner_cut\"/>"
+out+="\n\t\t<position name=\"pos_subtract_top_support\" x=\"0\" y=\""+str(-(width_top_support-width_top_support_corner_cut+0.4)/2)+"\" z=\""+str(-(thick_top_support-thick_top_support_corner_cut+0.4)/2)+"\"/>" 
+out+="\n\t\t<rotation name=\"rot_subtract_top_support\" x=\"0\" y=\"0\" z=\"0\"/>"
+out+="\n\t</subtraction>\n"
+
+out+="\t<subtraction name=\"solid_top_support_6\">"
+out+="\n\t\t<first ref=\"solid_top_support_5\"/>"
+out+="\n\t\t<second ref=\"solid_top_support_corner_cut\"/>"
+out+="\n\t\t<position name=\"pos_subtract_top_support\" x=\"0\" y=\""+str((width_top_support-width_top_support_corner_cut+0.4)/2)+"\" z=\""+str(-(thick_top_support-thick_top_support_corner_cut+0.4)/2)+"\"/>" 
+out+="\n\t\t<rotation name=\"rot_subtract_top_support\" x=\"0\" y=\"0\" z=\"0\"/>"
 out+="\n\t</subtraction>\n"
 #-------------------
 
@@ -280,7 +311,7 @@ out+="</solids>\n"
 ## Define logical volumes using above solids
 out+="\n\n<structure>\n"
 
-for i in range(0,27):
+for i in range(0,28):
         out+="\t<volume name=\"logic_mirror_box_tungstenquartz_"+str(i)+"\">"
         out+="\n\t\t<materialref ref=\"G4_Al\"/>"
         out+="\n\t\t<solidref ref=\"solid_mirror_box_tungstenquartz\"/>"
@@ -351,7 +382,7 @@ for i in range(0,27):
 
         out+="\t<volume name=\"logic_top_support_"+str(i)+"\">"
         out+="\n\t\t<materialref ref=\"G4_Al\"/>"
-        out+="\n\t\t<solidref ref=\"solid_top_support\"/>"
+        out+="\n\t\t<solidref ref=\"solid_top_support_6\"/>"
         out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"grey\"/>"
         out+="\n\t</volume>\n"
 
@@ -537,7 +568,7 @@ out+="\n\t\t<materialref ref=\"G4_AIR\"/>"
 out+="\n\t\t<solidref ref=\"solid_showerMaxMother\"/>"
 
 # Place all 28 modules in the showerMaxMother volume
-for i in range(0,27):
+for i in range(0,28):
         if (i%2==0):    
                 zpos=-zstagger
                 rpos=pos
