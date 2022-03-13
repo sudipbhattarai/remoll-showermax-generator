@@ -48,8 +48,8 @@ radius_inner_pmt_housing = 42.0
 radius_outer_pmt_housing =  radius_inner_pmt_housing + 3.0
 radius_pmt_housing_lid = 48.0
 length_pmt_housing_lid = 3.0
-radius_si_chip = 30
-length_si_chip = 3
+width_si_chip = 45
+length_si_chip = 3.0
 
 ## mirror parameter
 thick_wall_mirror = 0.5
@@ -147,7 +147,8 @@ out+="\t<tube name=\"solid_pmt\" rmin=\"0\" rmax=\""+str(radius_pmt)+"\" z=\""+s
 
 out+="\t<tube name=\"solid_pmt_base\" rmin=\"0\" rmax=\""+str(radius_pmt)+"\" z=\""+str(length_pmt_base)+"\" deltaphi=\"2*pi\" startphi=\"0\" aunit=\"rad\" lunit=\"mm\"/>\n"
 
-out+="\t<tube name=\"solid_si_chip\" rmin=\"0\" rmax=\""+str(radius_si_chip)+"\" z=\""+str(length_si_chip)+"\" deltaphi=\"2*pi\" startphi=\"0\" aunit=\"rad\" lunit=\"mm\"/>\n"
+#out+="\t<tube name=\"solid_si_chip\" rmin=\"0\" rmax=\""+str(radius_si_chip)+"\" z=\""+str(length_si_chip)+"\" deltaphi=\"2*pi\" startphi=\"0\" aunit=\"rad\" lunit=\"mm\"/>\n"
+out+="\t<box name=\"solid_si_chip\" lunit=\"mm\" x=\""+str(length_si_chip)+"\" y=\""+str(width_si_chip)+"\" z=\""+str(width_si_chip)+"\"/>\n"
 
 # Mirror box, where the TQ stack rests
 out+="\t<box name=\"solid_mirror_box_tungstenquartz_1\" lunit=\"mm\" x=\""+str(length_stack_tungstenquartz)+"\" y=\""+str(width_stack_tungstenquartz+2*thick_wall_mirror)+"\" z=\""+str(thick_stack_tungstenquartz+2*thick_wall_mirror)+"\"/>\n"
@@ -415,13 +416,13 @@ for i in range(0,28):
         out+="\n\t\t<solidref ref=\"solid_pmt_base\"/>"
         out+="\n\t\t<physvol name=\"pmt_si_chip_1_"+str(i)+"\">"        # Add Silicon chips inside the base
         out+="\n\t\t\t<volumeref ref=\"logic_si_chip_1_"+str(i)+"\"/>"     
-        out+="\n\t\t\t<position name=\"pos_logic_si_chip_1_"+str(i)+"\" x=\""+str(0)+"\" y=\""+str(0)+"\" z=\""+str(length_pmt_base/3)+"\"/>"
-        out+="\n\t\t\t<rotation name=\"rot_logic_si_chip_1_"+str(i)+"\" x=\""+str(0)+"\" y=\"0\" z=\"0\"/>"
+        out+="\n\t\t\t<position name=\"pos_logic_si_chip_1_"+str(i)+"\" x=\""+str(0)+"\" y=\""+str(0)+"\" z=\""+str(length_pmt_base/6)+"\"/>"
+        out+="\n\t\t\t<rotation name=\"rot_logic_si_chip_1_"+str(i)+"\" x=\""+str(0)+"\" y=\"pi/2\" z=\"0\"/>"
         out+="\n\t\t</physvol>"
         out+="\n\t\t<physvol name=\"pmt_si_chip_2_"+str(i)+"\">"
         out+="\n\t\t\t<volumeref ref=\"logic_si_chip_2_"+str(i)+"\"/>"     
-        out+="\n\t\t\t<position name=\"pos_logic_si_chip_2_"+str(i)+"\" x=\""+str(0)+"\" y=\""+str(0)+"\" z=\""+str(-length_pmt_base/3)+"\"/>"
-        out+="\n\t\t\t<rotation name=\"rot_logic_si_chip_2_"+str(i)+"\" x=\""+str(0)+"\" y=\"0\" z=\"0\"/>"
+        out+="\n\t\t\t<position name=\"pos_logic_si_chip_2_"+str(i)+"\" x=\""+str(0)+"\" y=\""+str(0)+"\" z=\""+str(-length_pmt_base/6)+"\"/>"
+        out+="\n\t\t\t<rotation name=\"rot_logic_si_chip_2_"+str(i)+"\" x=\""+str(0)+"\" y=\"pi/2\" z=\"0\"/>"
         out+="\n\t\t</physvol>"
         out+="\n\t\t<auxiliary auxtype=\"SensDet\" auxvalue=\"showerMaxPMTbase\" />"
         out+="\n\t\t<auxiliary auxtype=\"DetNo\" auxvalue=\""+"7"+str(i).zfill(2)+"13"+"\"/>"
