@@ -48,6 +48,8 @@ radius_inner_pmt_housing = 42.0
 radius_outer_pmt_housing =  radius_inner_pmt_housing + 3.0
 radius_pmt_housing_lid = 48.0
 length_pmt_housing_lid = 3.0
+radius_si_chip = 30
+length_si_chip = 3
 
 ## mirror parameter
 thick_wall_mirror = 0.5
@@ -94,14 +96,11 @@ length_strut = 381.0
 width_strut = 63.5
 thick_strut = 36.83
 
-## Mirror box and PMT combined logical volume
-length_logic_mirror_box = length_ledge+length_mirror_box_bot+length_mirror_box_top + length_pmt_region
-
 detector_tilt = 0
 
 zstagger = 41   # distance between center of a SM module and the center of two SM rings(Value adjusted to fit support Larry's support structure)
-print(23920-2*(thick_quartz+thick_tungsten)+zstagger)
-print(23920-2*(thick_quartz+thick_tungsten)-zstagger)
+#print(23920-2*(thick_quartz+thick_tungsten)+zstagger)
+#print(23920-2*(thick_quartz+thick_tungsten)-zstagger)
 
 thick_mother=2*thick_mirror_box_bot+2*zstagger+5
 
@@ -147,6 +146,8 @@ out+="\t<tube name=\"solid_pmt_window\" rmin=\"0\" rmax=\""+str(radius_pmt)+"\" 
 out+="\t<tube name=\"solid_pmt\" rmin=\"0\" rmax=\""+str(radius_pmt)+"\" z=\""+str(length_pmt_gut)+"\" deltaphi=\"2*pi\" startphi=\"0\" aunit=\"rad\" lunit=\"mm\"/>\n"
 
 out+="\t<tube name=\"solid_pmt_base\" rmin=\"0\" rmax=\""+str(radius_pmt)+"\" z=\""+str(length_pmt_base)+"\" deltaphi=\"2*pi\" startphi=\"0\" aunit=\"rad\" lunit=\"mm\"/>\n"
+
+out+="\t<tube name=\"solid_si_chip\" rmin=\"0\" rmax=\""+str(radius_si_chip)+"\" z=\""+str(length_si_chip)+"\" deltaphi=\"2*pi\" startphi=\"0\" aunit=\"rad\" lunit=\"mm\"/>\n"
 
 # Mirror box, where the TQ stack rests
 out+="\t<box name=\"solid_mirror_box_tungstenquartz_1\" lunit=\"mm\" x=\""+str(length_stack_tungstenquartz)+"\" y=\""+str(width_stack_tungstenquartz+2*thick_wall_mirror)+"\" z=\""+str(thick_stack_tungstenquartz+2*thick_wall_mirror)+"\"/>\n"
@@ -393,12 +394,39 @@ for i in range(0,28):
         out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"yellow\"/>"
         out+="\n\t</volume>\n"
 
+        out+="\t<volume name=\"logic_si_chip_1_"+str(i)+"\">"
+        out+="\n\t\t<materialref ref=\"G4_Si\"/>"
+        out+="\n\t\t<solidref ref=\"solid_si_chip\"/>"
+        out+="\n\t\t<auxiliary auxtype=\"SensDet\" auxvalue=\"pmtBaseSiChip\" />"
+        out+="\n\t\t<auxiliary auxtype=\"DetNo\" auxvalue=\""+"7"+str(i).zfill(2)+"14"+"\"/>"
+        out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"black\"/>"
+        out+="\n\t</volume>\n"
+
+        out+="\t<volume name=\"logic_si_chip_2_"+str(i)+"\">"
+        out+="\n\t\t<materialref ref=\"G4_Si\"/>"
+        out+="\n\t\t<solidref ref=\"solid_si_chip\"/>"
+        out+="\n\t\t<auxiliary auxtype=\"SensDet\" auxvalue=\"pmtBaseSiChip\" />"
+        out+="\n\t\t<auxiliary auxtype=\"DetNo\" auxvalue=\""+"7"+str(i).zfill(2)+"15"+"\"/>"
+        out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"black\"/>"
+        out+="\n\t</volume>\n"
+
         out+="\t<volume name=\"logic_pmt_base_"+str(i)+"\">"
         out+="\n\t\t<materialref ref=\"G4_Galactic\"/>"
         out+="\n\t\t<solidref ref=\"solid_pmt_base\"/>"
+        out+="\n\t\t<physvol name=\"pmt_si_chip_1_"+str(i)+"\">"        # Add Silicon chips inside the base
+        out+="\n\t\t\t<volumeref ref=\"logic_si_chip_1_"+str(i)+"\"/>"     
+        out+="\n\t\t\t<position name=\"pos_logic_si_chip_1_"+str(i)+"\" x=\""+str(0)+"\" y=\""+str(0)+"\" z=\""+str(length_pmt_base/3)+"\"/>"
+        out+="\n\t\t\t<rotation name=\"rot_logic_si_chip_1_"+str(i)+"\" x=\""+str(0)+"\" y=\"0\" z=\"0\"/>"
+        out+="\n\t\t</physvol>"
+        out+="\n\t\t<physvol name=\"pmt_si_chip_2_"+str(i)+"\">"
+        out+="\n\t\t\t<volumeref ref=\"logic_si_chip_2_"+str(i)+"\"/>"     
+        out+="\n\t\t\t<position name=\"pos_logic_si_chip_2_"+str(i)+"\" x=\""+str(0)+"\" y=\""+str(0)+"\" z=\""+str(-length_pmt_base/3)+"\"/>"
+        out+="\n\t\t\t<rotation name=\"rot_logic_si_chip_2_"+str(i)+"\" x=\""+str(0)+"\" y=\"0\" z=\"0\"/>"
+        out+="\n\t\t</physvol>"
         out+="\n\t\t<auxiliary auxtype=\"SensDet\" auxvalue=\"showerMaxPMTbase\" />"
         out+="\n\t\t<auxiliary auxtype=\"DetNo\" auxvalue=\""+"7"+str(i).zfill(2)+"13"+"\"/>"
         out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"red\"/>"
+        out+="\n\t\t<auxiliary auxtype=\"Alpha\" auxvalue=\"0.5\"/>"
         out+="\n\t</volume>\n"
 
         out+="\t<volume name=\"logic_front_back_plate_"+str(i)+"\">"
@@ -435,6 +463,7 @@ for i in range(0,28):
         out+="\n\t\t<materialref ref=\"G4_Al\"/>"
         out+="\n\t\t<solidref ref=\"solid_pmt_housing\"/>"
         out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"grey\"/>"
+        out+="\n\t\t<auxiliary auxtype=\"Alpha\" auxvalue=\"0.5\"/>"
         out+="\n\t</volume>\n"
 
         out+="\t<volume name=\"logic_pmt_housing_lid_"+str(i)+"\">"
@@ -653,3 +682,5 @@ out+="\n</setup>\n"
 out+="</gdml>\n"
 
 f.write(out)
+
+print("Succesfully written to GDML file.")
