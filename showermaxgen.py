@@ -48,8 +48,8 @@ radius_inner_pmt_housing = 42.0
 radius_outer_pmt_housing =  radius_inner_pmt_housing + 3.0
 radius_pmt_housing_lid = 48.0
 length_pmt_housing_lid = 3.0
-width_si_chip = 45
-length_si_chip = 3.0
+width_si_chip = 50
+length_si_chip = 0.5
 
 ## mirror parameter
 thick_wall_mirror = 0.5
@@ -95,6 +95,11 @@ thick_uBracket_legSpace = 38.10
 length_strut = 381.0
 width_strut = 63.5
 thick_strut = 36.83
+
+# SM support ring
+radius_inner_support_ring = 1800
+radius_outer_support_ring = 2090
+thick_support_ring= 40
 
 detector_tilt = 0
 
@@ -345,12 +350,20 @@ out+="\n\t\t\t<rotation name=\"rot_strut_region\" x=\""+str(0)+"\" y=\"0\" z=\"0
 out+="\n\t</union>\n"
 #----------------
 
+out+="\t<cone name=\"solid_support_ring\" rmin1=\""+str(radius_inner_support_ring)+"\"  rmax1=\""+str(radius_outer_support_ring)+"\" rmin2=\""+str(radius_inner_support_ring)+"\" rmax2=\""+str(radius_outer_support_ring)+"\"  z=\""+str(thick_support_ring)+"\" startphi=\"0\" deltaphi=\"360\" aunit=\"deg\" lunit=\"mm\"/>\n" #Make sure this mother volume doesn't interfere with coils
+
 out+="\t<cone name=\"solid_showerMaxMother\" rmin1=\""+str(730)+"\"  rmax1=\""+str(2100)+"\" rmin2=\""+str(730)+"\" rmax2=\""+str(2100)+"\"  z=\""+str(thick_mother)+"\" startphi=\"0\" deltaphi=\"360\" aunit=\"deg\" lunit=\"mm\"/>\n" #Make sure this mother volume doesn't interfere with coils
 
 out+="</solids>\n"
 
 ## Define logical volumes using above solids
 out+="\n\n<structure>\n"
+
+out+="\t<volume name=\"logic_support_ring\">"
+out+="\n\t\t<materialref ref=\"G4_Al\"/>"
+out+="\n\t\t<solidref ref=\"solid_support_ring\"/>"
+out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"grey\"/>"
+out+="\n\t</volume>\n"
 
 for i in range(0,28):
         out+="\t<volume name=\"logic_mirror_box_tungstenquartz_"+str(i)+"\">"
@@ -670,6 +683,12 @@ for i in range(0,28):
         out+="\n\t\t\t<position name=\"pos_singledet_"+str(i)+"\" x=\""+str(xpos)+"\" y=\""+str(ypos)+"\" z=\""+str(zpos)+"\"/>"
         out+="\n\t\t\t<rotation name=\"rot_singledet_"+str(i)+"\" x=\""+str(0)+"\" y=\""+str(0)+"\" z=\""+str(-theta)+"\"/>"
         out+="\n\t\t</physvol>"
+
+out+="\n\t\t<physvol name=\"support_ring\">"
+out+="\n\t\t\t<volumeref ref=\"logic_support_ring\"/>"
+out+="\n\t\t\t<position name=\"pos_support_ring)\" x=\""+str(0)+"\" y=\""+str(0)+"\" z=\""+str(5)+"\"/>"
+out+="\n\t\t\t<rotation name=\"rot_support_ring\" x=\""+str(0)+"\" y=\"0\" z=\""+str(0)+"\"/>"
+out+="\n\t\t</physvol>"
 
 out+="\n\t\t<auxiliary auxtype=\"Alpha\" auxvalue=\"0.0\"/>"
 out+="\n\t</volume>"
