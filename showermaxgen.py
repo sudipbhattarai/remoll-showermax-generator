@@ -4,6 +4,9 @@ output_file = "showerMaxGen"
 
 ### Define geometry parameters(dimensions based on ISU elog 576):
 radial_extent = 1020.0          #distance from beam center to tungsten-quartz bottom on US ring
+nQuartz = 4
+nSMmodules = 28
+in2mm = 25.4
 
 ## Quartz
 length_quartz = 160.0
@@ -16,7 +19,7 @@ length_tungsten = length_quartz
 width_tungsten = width_quartz
 thick_tungsten = 8.0
 
-# Spacer in TQ stack
+## Spacer in TQ stack
 thick_spacer = 0.870
 thick_tolerance = 0.508
 
@@ -41,7 +44,7 @@ length_front_back_plate = 181.698
 width_front_back_plate = 313.800
 thick_front_back_plate = 6.35 
 
-# Webbed side support structure
+## Webbed side support structure
 length_web_plate = 432.190
 width_web_plate = 15.875
 thick_web_plate = 63.500
@@ -53,19 +56,19 @@ length_web_plate_egdeToHole = 38.175
 length_web_plate_smallHoles_distance = 50.800
 length_web_plate_holes_small_big = 53.975
 
-# U-bracket (Referenced with lower bracket)
+## U-bracket (Referenced with lower bracket)
 length_uBracket = 15.88
 width_uBracket = 23.88
 thick_uBracket = 50.80
 width_uBracket_legSpace = 17.53
 thick_uBracket_legSpace = 38.10
 
-# Ledge
+## Ledge
 length_ledge = (length_front_back_plate-length_quartz)
 width_ledge = 6.35
 thick_ledge = thick_web_plate
 
-# Outer radial top support
+## Outer radial top support
 length_top_support = 6.350
 width_top_support = 370.878
 thick_top_support = 114.3
@@ -74,7 +77,7 @@ width_top_support_corner_cut = 48.0       # edge cut is the rectangular cut in a
 thick_top_support_corner_cut = 20.0
 
 ## PMT region
-radius_pmt = 38.1 # Radius of 1.5 inches (for 3 inches PMT)
+radius_pmt = 1.5*in2mm # Radius of 1.5 inches (for 3 inches PMT)
 length_pmt_base = 50
 length_pmt_gut = 150
 length_pmt_window = 3.0
@@ -88,15 +91,15 @@ length_pmt_housing_lid = 3.0
 width_si_chip = 50
 length_si_chip = 0.5
 
-# Struts (the rods that attach SM modules to the ring support structure)
+## Struts (the rods that attach SM modules to the ring support structure)
 length_strut = 381.0
 width_strut = 63.5
 thick_strut = 36.83
 
-# SM support ring
-radius_inner_support_ring = 1800
-radius_outer_support_ring = 2090
-thick_support_ring= 40
+## SM support ring
+radius_inner_support_ring = 68*in2mm
+radius_outer_support_ring = 78*in2mm
+thick_support_ring= 1.75*in2mm  # It is 2 inches in the CAD 
 
 detector_tilt = 0
 
@@ -333,12 +336,12 @@ out+="\n\t\t\t<position name=\"pos_webplate_region\" x=\""+str((length_web_plate
 out+="\n\t\t\t<rotation name=\"rot_webplate_region\" x=\""+str(0)+"\" y=\"0\" z=\"0\"/>"
 out+="\n\t</union>\n"
 
-out+="\t<box name=\"solid_strut_region\" lunit=\"mm\" x=\""+str(length_strut)+"\" y=\""+str(width_top_support)+"\" z=\""+str(thick_strut+1.0)+"\"/>\n"
+out+="\t<box name=\"solid_strut_region\" lunit=\"mm\" x=\""+str(length_strut)+"\" y=\""+str(width_top_support)+"\" z=\""+str(thick_strut)+"\"/>\n"
 
 out+="\t<union name=\"solid_singledet_6\">"
 out+="\n\t\t<first ref=\"solid_singledet_5\"/>"
 out+="\n\t\t<second ref=\"solid_strut_region\"/>"
-out+="\n\t\t\t<position name=\"pos_strut_region\" x=\""+str(length_quartz/2+length_ledge/2+length_mirror_box_bot+length_mirror_box_top+length_top_support+length_strut/2)+"\" y=\""+str(0)+"\" z=\""+str(thick_tungsten/2+0.5)+"\"/>"
+out+="\n\t\t\t<position name=\"pos_strut_region\" x=\""+str(length_quartz/2+length_ledge/2+length_mirror_box_bot+length_mirror_box_top+length_top_support+length_strut/2)+"\" y=\""+str(0)+"\" z=\""+str(thick_tungsten/2)+"\"/>"
 out+="\n\t\t\t<rotation name=\"rot_strut_region\" x=\""+str(0)+"\" y=\"0\" z=\"0\"/>"
 out+="\n\t</union>\n"
 #----------------
@@ -358,8 +361,8 @@ out+="\n\t\t<solidref ref=\"solid_support_ring\"/>"
 out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"grey\"/>"
 out+="\n\t</volume>\n"
 
-for i in range(0,28):
-        for j in range(0,4):
+for i in range(0,nSMmodules):
+        for j in range(0,nQuartz):
                 out+="\t<volume name=\"logic_quartz_"+str(i)+"_"+str(j)+"\">"
                 out+="\n\t\t<materialref ref=\"G4_Quartz\"/>"
                 out+="\n\t\t<solidref ref=\"solid_quartz\"/>"
@@ -464,12 +467,12 @@ for i in range(0,28):
         out+="\n\t\t<solidref ref=\"solid_pmt_base\"/>"
         out+="\n\t\t<physvol name=\"pmt_si_chip_1_"+str(i)+"\">"        # Add Silicon chips inside the base
         out+="\n\t\t\t<volumeref ref=\"logic_si_chip_1_"+str(i)+"\"/>"     
-        out+="\n\t\t\t<position name=\"pos_logic_si_chip_1_"+str(i)+"\" x=\""+str(0)+"\" y=\""+str(0)+"\" z=\""+str(length_pmt_base/6)+"\"/>"
+        out+="\n\t\t\t<position name=\"pos_logic_si_chip_1_"+str(i)+"\" x=\""+str(0)+"\" y=\""+str(0)+"\" z=\""+str(-length_pmt_base/6)+"\"/>"
         out+="\n\t\t\t<rotation name=\"rot_logic_si_chip_1_"+str(i)+"\" x=\""+str(0)+"\" y=\"pi/2\" z=\"0\"/>"
         out+="\n\t\t</physvol>"
         out+="\n\t\t<physvol name=\"pmt_si_chip_2_"+str(i)+"\">"
         out+="\n\t\t\t<volumeref ref=\"logic_si_chip_2_"+str(i)+"\"/>"     
-        out+="\n\t\t\t<position name=\"pos_logic_si_chip_2_"+str(i)+"\" x=\""+str(0)+"\" y=\""+str(0)+"\" z=\""+str(-length_pmt_base/6)+"\"/>"
+        out+="\n\t\t\t<position name=\"pos_logic_si_chip_2_"+str(i)+"\" x=\""+str(0)+"\" y=\""+str(0)+"\" z=\""+str(length_pmt_base/6)+"\"/>"
         out+="\n\t\t\t<rotation name=\"rot_logic_si_chip_2_"+str(i)+"\" x=\""+str(0)+"\" y=\"pi/2\" z=\"0\"/>"
         out+="\n\t\t</physvol>"
         out+="\n\t\t<auxiliary auxtype=\"SensDet\" auxvalue=\"showerMaxPMTbase\" />"
@@ -640,7 +643,7 @@ for i in range(0,28):
         out+="\n\t\t\t<rotation name=\"rot_uBracket_top_right_"+str(i)+"\" x=\""+str(0)+"\" y=\"0\" z=\"pi/2\"/>"
         out+="\n\t\t</physvol>"
 
-        for j in range(0,4):
+        for j in range(0,nQuartz):
                 out+="\n\t\t<physvol name=\"quartz_"+str(i)+"_"+str(j)+"\">"
                 out+="\n\t\t\t<volumeref ref=\"logic_quartz_"+str(i)+"_"+str(j)+"\"/>"             
                 out+="\n\t\t\t<position name=\"pos_logic_quartz_"+str(i)+"_"+str(j)+"\" x=\""+str(0)+"\" y=\""+str(0)+"\" z=\""+str(1.5*thick_quartz+2.0*thick_tungsten+4*thick_spacer+thick_tolerance-j*(thick_quartz+thick_tungsten)-(2*j+1)*thick_spacer)+"\"/>"
@@ -661,7 +664,7 @@ out+="\n\t\t<materialref ref=\"G4_AIR\"/>"
 out+="\n\t\t<solidref ref=\"solid_showerMaxMother\"/>"
 
 # Place all 28 modules in the showerMaxMother volume
-for i in range(0,28):
+for i in range(0,nSMmodules):
         if (i%2==0):    
                 zpos=-zstagger
                 rpos=pos
@@ -679,7 +682,7 @@ for i in range(0,28):
 
 out+="\n\t\t<physvol name=\"support_ring\">"
 out+="\n\t\t\t<volumeref ref=\"logic_support_ring\"/>"
-out+="\n\t\t\t<position name=\"pos_support_ring)\" x=\""+str(0)+"\" y=\""+str(0)+"\" z=\""+str(5)+"\"/>"
+out+="\n\t\t\t<position name=\"pos_support_ring)\" x=\""+str(0)+"\" y=\""+str(0)+"\" z=\""+str(thick_tungsten/2)+"\"/>"
 out+="\n\t\t\t<rotation name=\"rot_support_ring\" x=\""+str(0)+"\" y=\"0\" z=\""+str(0)+"\"/>"
 out+="\n\t\t</physvol>"
 
