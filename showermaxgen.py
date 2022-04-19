@@ -1,3 +1,4 @@
+from cmath import pi
 import math
 
 output_file = "showerMaxGen"
@@ -21,6 +22,8 @@ thick_tungsten = 8.0
 
 ## Spacer in TQ stack
 thick_spacer = 0.870
+length_spacer = length_quartz
+width_spacer = width_quartz
 thick_tolerance = 0.508
 
 ## Tungsten-quartz stack
@@ -126,7 +129,7 @@ out+="\n</define>"
 out+="\n\n<materials>\n"
 out+="\t<material name=\"G4_Quartz\" state=\"solid\">\n"
 out+="\t\t<MEE unit=\"eV\" value=\"139.2\"/>\n"
-out+="\t\t<D value=\"2.2\" unit=\"g/cm3\"/>\n"
+out+="\t\t<D value=\"2.201\" unit=\"g/cm3\"/>\n"
 out+="\t\t<fraction n=\"0.467465468463971\" ref=\"G4_Si\"/>\n"
 out+="\t\t<fraction n=\"0.532534531536029\" ref=\"G4_O\"/>\n"
 out+="\t</material>\n"
@@ -154,6 +157,8 @@ out+="\t</xtru>\n"
 
 out+="\t<box name=\"solid_tungsten\" lunit=\"mm\" x=\""+str(length_tungsten)+"\" y=\""+str(width_tungsten)+"\" z=\""+str(thick_tungsten)+"\"/>\n"
 
+out+="\t<box name=\"solid_spacer\" lunit=\"mm\" x=\""+str(length_spacer)+"\" y=\""+str(width_spacer)+"\" z=\""+str(thick_spacer-0.02)+"\"/>\n"  # Made 0.02 less thick than actual gap
+
 # Suitcase box, where the TQ stack rests
 out+="\t<box name=\"solid_suitcase_tungstenquartz_1\" lunit=\"mm\" x=\""+str(length_stack_tungstenquartz+thick_wall_mirror)+"\" y=\""+str(width_stack_tungstenquartz+2*thick_wall_mirror)+"\" z=\""+str(thick_stack_tungstenquartz+2*thick_wall_mirror)+"\"/>\n"
 out+="\t<box name=\"solid_suitcase_tungstenquartz_2\" lunit=\"mm\" x=\""+str(length_stack_tungstenquartz+1.0)+"\" y=\""+str(width_stack_tungstenquartz)+"\" z=\""+str(thick_stack_tungstenquartz)+"\"/>\n"
@@ -180,7 +185,17 @@ out+="\n\t\t<rotation name=\"rot_subtract_uBracket\" x=\"0\" y=\"0\" z=\"0\"/>"
 out+="\n\t</subtraction>\n"
 #------------------
 
-out+="\t<box name=\"solid_ledge\" lunit=\"mm\" x=\""+str(length_ledge)+"\" y=\""+str(width_ledge)+"\" z=\""+str(thick_ledge)+"\"/>\n"
+# Ledge
+out+="\t<box name=\"solid_ledge_1\" lunit=\"mm\" x=\""+str(length_ledge)+"\" y=\""+str(width_ledge)+"\" z=\""+str(thick_ledge)+"\"/>\n"
+out+="\t<box name=\"solid_ledge_2\" lunit=\"mm\" x=\""+str(10)+"\" y=\""+str(15)+"\" z=\""+str(thick_ledge-2*thick_web_plate_leg)+"\"/>\n"
+
+out+="\t<union name=\"solid_ledge\">"
+out+="\n\t\t<first ref=\"solid_ledge_1\"/>"
+out+="\n\t\t<second ref=\"solid_ledge_2\"/>"
+out+="\n\t\t\t<position name=\"pos_union_ledge\" x=\""+str(length_ledge/2-5)+"\" y=\""+str(-width_ledge/2-7.5)+"\" z=\""+str(0)+"\"/>"
+out+="\n\t\t\t<rotation name=\"rot_union_ledge\" x=\""+str(0)+"\" y=\"0\" z=\"0\"/>"
+out+="\n\t</union>\n"
+#------------------
 
 # Mirror box bottom(lower part of the light guide)
 out+="\t<trd name=\"solid_mirror_box_bot_1\" lunit=\"mm\" x1=\""+str(thick_stack_tungstenquartz-thick_tungsten+2*thick_wall_mirror)+"\"  x2=\""+str(thick_mirror_box_bot+2*thick_wall_mirror)+"\" y1=\""+str(width_stack_tungstenquartz+2*thick_wall_mirror)+"\"  y2=\""+str(width_stack_tungstenquartz+2*thick_wall_mirror)+"\" z=\""+str(length_mirror_box_bot)+"\"/>\n"
@@ -379,6 +394,15 @@ for i in range(0,nSMmodules):
                         out+="\n\t\t<auxiliary auxtype=\"DetNo\" auxvalue=\""+"7"+str(i).zfill(2)+str(2*(4-j)-1)+"\"/>"
                 out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"red\"/>"
                 out+="\n\t</volume>\n"
+                
+        for j in range(2*nQuartz):        
+                out+="\t<volume name=\"logic_spacer_"+str(i)+"_"+str(j)+"\">"
+                out+="\n\t\t<materialref ref=\"G4_NYLON-6-6\"/>"
+                out+="\n\t\t<solidref ref=\"solid_spacer\"/>"
+                out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"black\"/>"
+                out+="\n\t\t<auxiliary auxtype=\"SensDet\" auxvalue=\"showerMaxSpacer\" />"
+                out+="\n\t\t<auxiliary auxtype=\"DetNo\" auxvalue=\""+"7"+str(i).zfill(2)+str(20+j)+"\"/>"
+                out+="\n\t</volume>\n"
 
         out+="\t<volume name=\"logic_suitcase_tungstenquartz_"+str(i)+"\">"
         out+="\n\t\t<materialref ref=\"G4_Al\"/>"
@@ -404,9 +428,19 @@ for i in range(0,nSMmodules):
         out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"grey\"/>"
         out+="\n\t</volume>\n"
 
-        out+="\t<volume name=\"logic_ledge_"+str(i)+"\">"
+        out+="\t<volume name=\"logic_ledge_left_"+str(i)+"\">"
         out+="\n\t\t<materialref ref=\"G4_NYLON-6-6\"/>"
         out+="\n\t\t<solidref ref=\"solid_ledge\"/>"
+        out+="\n\t\t<auxiliary auxtype=\"SensDet\" auxvalue=\"ledgeLeft\" />"
+        out+="\n\t\t<auxiliary auxtype=\"DetNo\" auxvalue=\""+"7"+str(i).zfill(2)+"28"+"\"/>"
+        out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"brown\"/>"
+        out+="\n\t</volume>\n"
+
+        out+="\t<volume name=\"logic_ledge_right_"+str(i)+"\">"
+        out+="\n\t\t<materialref ref=\"G4_NYLON-6-6\"/>"
+        out+="\n\t\t<solidref ref=\"solid_ledge\"/>"
+        out+="\n\t\t<auxiliary auxtype=\"SensDet\" auxvalue=\"ledgeRight\" />"
+        out+="\n\t\t<auxiliary auxtype=\"DetNo\" auxvalue=\""+"7"+str(i).zfill(2)+"29"+"\"/>"
         out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"brown\"/>"
         out+="\n\t</volume>\n"
 
@@ -608,15 +642,15 @@ for i in range(0,nSMmodules):
         out+="\n\t\t</physvol>"
 
         out+="\n\t\t<physvol name=\"ledge_right_"+str(i)+"\">"
-        out+="\n\t\t\t<volumeref ref=\"logic_ledge_"+str(i)+"\"/>"
-        out+="\n\t\t\t<position name=\"pos_ledge_"+str(i)+"\" x=\""+str((length_quartz)/2)+"\" y=\""+str((width_quartz+width_ledge)/2+thick_wall_mirror+0.2)+"\" z=\""+str(0)+"\"/>"
-        out+="\n\t\t\t<rotation name=\"rot_ledge_"+str(i)+"\" x=\""+str(0)+"\" y=\"0\" z=\"0\"/>"
+        out+="\n\t\t\t<volumeref ref=\"logic_ledge_right_"+str(i)+"\"/>"
+        out+="\n\t\t\t<position name=\"pos_ledge_right_"+str(i)+"\" x=\""+str((length_quartz)/2)+"\" y=\""+str((width_quartz+width_ledge)/2+thick_wall_mirror+0.2)+"\" z=\""+str(0)+"\"/>"
+        out+="\n\t\t\t<rotation name=\"rot_ledge_right_"+str(i)+"\" x=\""+str(pi)+"\" y=\"0\" z=\"0\"/>"
         out+="\n\t\t</physvol>"
 
         out+="\n\t\t<physvol name=\"ledge_left_"+str(i)+"\">"
-        out+="\n\t\t\t<volumeref ref=\"logic_ledge_"+str(i)+"\"/>"
-        out+="\n\t\t\t<position name=\"pos_ledge_"+str(i)+"\" x=\""+str((length_quartz)/2)+"\" y=\""+str(-(width_quartz+width_ledge)/2-thick_wall_mirror-0.2)+"\" z=\""+str(0)+"\"/>"
-        out+="\n\t\t\t<rotation name=\"rot_ledge_"+str(i)+"\" x=\""+str(0)+"\" y=\"0\" z=\"0\"/>"
+        out+="\n\t\t\t<volumeref ref=\"logic_ledge_left_"+str(i)+"\"/>"
+        out+="\n\t\t\t<position name=\"pos_ledge_left_"+str(i)+"\" x=\""+str((length_quartz)/2)+"\" y=\""+str(-(width_quartz+width_ledge)/2-thick_wall_mirror-0.2)+"\" z=\""+str(0)+"\"/>"
+        out+="\n\t\t\t<rotation name=\"rot_ledge_left_"+str(i)+"\" x=\""+str(0)+"\" y=\"0\" z=\"0\"/>"
         out+="\n\t\t</physvol>"
 
         out+="\n\t\t<physvol name=\"uBracket_bottom_left_"+str(i)+"\">"
@@ -654,6 +688,13 @@ for i in range(0,nSMmodules):
                 out+="\n\t\t\t<volumeref ref=\"logic_tungsten_"+str(i)+"_"+str(j)+"\"/>"
                 out+="\n\t\t\t<position name=\"pos_logic_tungsten_"+str(i)+"_"+str(j)+"\" x=\""+str(0)+"\" y=\""+str(0)+"\" z=\""+str(1.5*thick_tungsten+1.0*thick_quartz+4*thick_spacer+thick_tolerance-j*(thick_quartz+thick_tungsten)-2*(j+1)*thick_spacer)+"\"/>"
                 out+="\n\t\t\t<rotation name=\"rot_logic_tungsten_"+str(i)+"_"+str(j)+"\" x=\"0\" y=\"0\" z=\"0\"/>"
+                out+="\n\t\t</physvol>"
+
+        for j in range(0,2*nQuartz):
+                out+="\n\t\t<physvol name=\"spacer_"+str(i)+"_"+str(j)+"\">"
+                out+="\n\t\t\t<volumeref ref=\"logic_spacer_"+str(i)+"_"+str(j)+"\"/>"             
+                out+="\n\t\t\t<position name=\"pos_logic_spacer_"+str(i)+"_"+str(j)+"\" x=\""+str(0)+"\" y=\""+str(0)+"\" z=\""+str(2.0*thick_quartz+2.0*thick_tungsten+4*thick_spacer+0.074-((j+1)//2)*thick_quartz-(j//2)*thick_tungsten-j*thick_spacer)+"\"/>"
+                out+="\n\t\t\t<rotation name=\"rot_logic_spacer_"+str(i)+"_"+str(j)+"\" x=\"0\" y=\"0\" z=\"0\"/>"        
                 out+="\n\t\t</physvol>"
 
         out+="\n\t\t<auxiliary auxtype=\"Alpha\" auxvalue=\"0.0\"/>"
