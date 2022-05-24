@@ -46,6 +46,8 @@ thick_wall_mirror = 0.5
 length_front_back_plate = 181.698
 width_front_back_plate = 313.800
 thick_front_back_plate = 6.35 
+length_front_plate_hole = 3.20*in2mm
+width_front_plate_hole = 8.40*in2mm
 
 ## Webbed side support structure
 length_web_plate = 432.190
@@ -171,7 +173,17 @@ out+="\n\t\t<rotation name=\"rot_subtract_suitcase_tungstenquartz_12\" x=\"0\" y
 out+="\n\t</subtraction>\n"
 #-------------------
 
+# Front-back aluminum plate
 out+="\t<box name=\"solid_front_back_plate\" lunit=\"mm\" x=\""+str(length_front_back_plate)+"\" y=\""+str(width_front_back_plate)+"\" z=\""+str(thick_front_back_plate)+"\"/>\n"
+out+="\t<box name=\"solid_front_plate_hole\" lunit=\"mm\" x=\""+str(length_front_plate_hole)+"\" y=\""+str(width_front_plate_hole)+"\" z=\""+str(thick_front_back_plate+1.0)+"\"/>\n"
+
+out+="\t<subtraction name=\"solid_front_plate\">"
+out+="\n\t\t<first ref=\"solid_front_back_plate\"/>"
+out+="\n\t\t<second ref=\"solid_front_plate_hole\"/>"
+out+="\n\t\t<position name=\"pos_subtract_front_plate\" x=\"0\" y=\""+str(0)+"\" z=\"0\"/>" 
+out+="\n\t\t<rotation name=\"rot_subtract_front_plate\" x=\"0\" y=\"0\" z=\"0\"/>"
+out+="\n\t</subtraction>\n"
+#-------------------
 
 # U-bracket(Reference volume is bottom left)
 out+="\t<box name=\"solid_uBracket_1\" lunit=\"mm\" x=\""+str(length_uBracket)+"\" y=\""+str(width_uBracket)+"\" z=\""+str(thick_uBracket)+"\"/>\n"
@@ -186,15 +198,15 @@ out+="\n\t</subtraction>\n"
 #------------------
 
 # Ledge
-out+="\t<box name=\"solid_ledge_1\" lunit=\"mm\" x=\""+str(length_ledge)+"\" y=\""+str(width_ledge)+"\" z=\""+str(thick_ledge)+"\"/>\n"
-out+="\t<box name=\"solid_ledge_2\" lunit=\"mm\" x=\""+str(10)+"\" y=\""+str(15)+"\" z=\""+str(thick_ledge-2*thick_web_plate_leg)+"\"/>\n"
+out+="\t<box name=\"solid_ledge\" lunit=\"mm\" x=\""+str(length_ledge)+"\" y=\""+str(width_ledge)+"\" z=\""+str(thick_ledge)+"\"/>\n"
+#out+="\t<box name=\"solid_ledge_2\" lunit=\"mm\" x=\""+str(10)+"\" y=\""+str(15)+"\" z=\""+str(thick_ledge-2*thick_web_plate_leg)+"\"/>\n"
 
-out+="\t<union name=\"solid_ledge\">"
-out+="\n\t\t<first ref=\"solid_ledge_1\"/>"
-out+="\n\t\t<second ref=\"solid_ledge_2\"/>"
-out+="\n\t\t\t<position name=\"pos_union_ledge\" x=\""+str(length_ledge/2-5)+"\" y=\""+str(-width_ledge/2-7.5)+"\" z=\""+str(0)+"\"/>"
-out+="\n\t\t\t<rotation name=\"rot_union_ledge\" x=\""+str(0)+"\" y=\"0\" z=\"0\"/>"
-out+="\n\t</union>\n"
+#out+="\t<union name=\"solid_ledge\">"
+#out+="\n\t\t<first ref=\"solid_ledge_1\"/>"
+#out+="\n\t\t<second ref=\"solid_ledge_2\"/>"
+#out+="\n\t\t\t<position name=\"pos_union_ledge\" x=\""+str(length_ledge/2-5)+"\" y=\""+str(-width_ledge/2-7.5)+"\" z=\""+str(0)+"\"/>"
+#out+="\n\t\t\t<rotation name=\"rot_union_ledge\" x=\""+str(0)+"\" y=\"0\" z=\"0\"/>"
+#out+="\n\t</union>\n"
 #------------------
 
 # Mirror box bottom(lower part of the light guide)
@@ -416,6 +428,12 @@ for i in range(0,nSMmodules):
         out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"orange\"/>"
         out+="\n\t</volume>\n"
 
+        out+="\t<volume name=\"logic_front_plate_"+str(i)+"\">"
+        out+="\n\t\t<materialref ref=\"G4_Al\"/>"
+        out+="\n\t\t<solidref ref=\"solid_front_plate\"/>"
+        out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"orange\"/>"
+        out+="\n\t</volume>\n"
+
         out+="\t<volume name=\"logic_web_plate_"+str(i)+"\">"
         out+="\n\t\t<materialref ref=\"G4_Al\"/>"
         out+="\n\t\t<solidref ref=\"solid_web_plate_7\"/>"
@@ -618,7 +636,7 @@ for i in range(0,nSMmodules):
         out+="\n\t\t</physvol>"
 
         out+="\n\t\t<physvol name=\"front_plate_"+str(i)+"\">"
-        out+="\n\t\t\t<volumeref ref=\"logic_front_back_plate_"+str(i)+"\"/>"
+        out+="\n\t\t\t<volumeref ref=\"logic_front_plate_"+str(i)+"\"/>"
         out+="\n\t\t\t<position name=\"pos_logic_front_plate_"+str(i)+"\" x=\""+str(0)+"\" y=\""+str(0)+"\" z=\""+str(-(thick_stack_tungstenquartz+2*thick_wall_mirror+thick_front_back_plate)/2)+"\"/>"
         out+="\n\t\t\t<rotation name=\"rot_logic_front_plate_"+str(i)+"\" x=\""+str(0)+"\" y=\"0\" z=\"0\"/>"
         out+="\n\t\t</physvol>"
