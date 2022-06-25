@@ -1,11 +1,11 @@
 import math
 
-output_file = "showerMaxGen"
+output_file = "showermaxQsim"
 
 ### Define geometry parameters(dimensions based on ISU elog 576):
 radial_extent = 1020.0          #distance from beam center to tungsten-quartz bottom on US ring
 nQuartz = 4
-nSMmodules = 28
+nSMmodules = 1
 in2mm = 25.4
 
 ## Quartz
@@ -665,26 +665,26 @@ out+="\n\t\t<solidref ref=\"solid_showerMaxMother\"/>"
 
 # Place all 28 modules in the showerMaxMother volume
 for i in range(0,nSMmodules):
-        if (i%2==0):    
-                zpos=-zstagger
-                rpos=pos
-        if (i%2==1):
-                zpos=zstagger
-                rpos=pos + 4
-        theta=math.pi+2*i*math.pi/28
-        xpos=rpos*(math.cos(theta))
-        ypos=rpos*(math.sin(theta)) 
+        #if (i%2==0):    
+        #        zpos=-zstagger
+        #        rpos=pos
+        #if (i%2==1):
+        #        zpos=zstagger
+        #        rpos=pos + 4
+        #theta=math.pi+2*i*math.pi/28
+        #xpos=rpos*(math.cos(theta))
+        #ypos=rpos*(math.sin(theta)) 
         out+="\n\t\t<physvol name=\"singledet_"+str(i).zfill(2)+"\">"
         out+="\n\t\t\t<volumeref ref=\"logic_singledet_"+str(i).zfill(2)+"\"/>"
-        out+="\n\t\t\t<position name=\"pos_singledet_"+str(i)+"\" x=\""+str(xpos)+"\" y=\""+str(ypos)+"\" z=\""+str(zpos)+"\"/>"
-        out+="\n\t\t\t<rotation name=\"rot_singledet_"+str(i)+"\" x=\""+str(0)+"\" y=\""+str(0)+"\" z=\""+str(-theta)+"\"/>"
+        out+="\n\t\t\t<position name=\"pos_singledet_"+str(i)+"\" x=\""+str(0)+"\" y=\""+str(0)+"\" z=\""+str(0)+"\"/>"
+        out+="\n\t\t\t<rotation name=\"rot_singledet_"+str(i)+"\" x=\""+str(0)+"\" y=\""+str(0)+"\" z=\""+str(0)+"\"/>"
         out+="\n\t\t</physvol>"
 
-out+="\n\t\t<physvol name=\"support_ring\">"
-out+="\n\t\t\t<volumeref ref=\"logic_support_ring\"/>"
-out+="\n\t\t\t<position name=\"pos_support_ring)\" x=\""+str(0)+"\" y=\""+str(0)+"\" z=\""+str(thick_tungsten/2)+"\"/>"
-out+="\n\t\t\t<rotation name=\"rot_support_ring\" x=\""+str(0)+"\" y=\"0\" z=\""+str(0)+"\"/>"
-out+="\n\t\t</physvol>"
+#out+="\n\t\t<physvol name=\"support_ring\">"
+#out+="\n\t\t\t<volumeref ref=\"logic_support_ring\"/>"
+#out+="\n\t\t\t<position name=\"pos_support_ring)\" x=\""+str(0)+"\" y=\""+str(0)+"\" z=\""+str(thick_tungsten/2)+"\"/>"
+#out+="\n\t\t\t<rotation name=\"rot_support_ring\" x=\""+str(0)+"\" y=\"0\" z=\""+str(0)+"\"/>"
+#out+="\n\t\t</physvol>"
 
 out+="\n\t\t<auxiliary auxtype=\"Alpha\" auxvalue=\"0.0\"/>"
 out+="\n\t</volume>"
