@@ -80,6 +80,7 @@ thick_top_support_corner_cut = 20.0
 radius_pmt = 1.5*in2mm # Radius of 1.5 inches (for 3 inches PMT)
 length_pmt_base = 50
 length_pmt_gut = 150
+length_pmt_cathode = 3e-6
 length_pmt_window = 3.0
 length_pmt_filter = 5.0 #Combination of long pass filter and ND filter
 length_pmt_region = length_pmt_filter + length_pmt_window + length_pmt_gut + length_pmt_base
@@ -114,12 +115,18 @@ pos=radial_extent+length_quartz/2
 f=open(output_file+".gdml", "w+")
 
 ## GDML schema
-out="<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+out="<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\n"
+
+out+="<!DOCTYPE gdml [\n"
+out+="\t<!ENTITY matrices SYSTEM \"matrices.xml\">\n"
+out+="]>\n\n"
+
 out+="<gdml"
 out+="\n\txmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\""
 out+="\n\txsi:noNamespaceSchemaLocation=\"http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd\">\n"
 
 out+="\n\n<define>"
+out+="\n\t&matrices;"
 out+="\n</define>"
 
 ## Define materials
@@ -280,6 +287,8 @@ out+="\t<tube name=\"solid_pmt_filter\" rmin=\"0\" rmax=\""+str(radius_pmt)+"\" 
 
 out+="\t<tube name=\"solid_pmt_window\" rmin=\"0\" rmax=\""+str(radius_pmt)+"\" z=\""+str(length_pmt_window)+"\" deltaphi=\"2*pi\" startphi=\"0\" aunit=\"rad\" lunit=\"mm\"/>\n"
 
+out+="\t<tube name=\"solid_pmt_cathode\" rmin=\"0\" rmax=\""+str(radius_pmt)+"\" z=\""+str(length_pmt_cathode)+"\" deltaphi=\"2*pi\" startphi=\"0\" aunit=\"rad\" lunit=\"mm\"/>\n"
+
 #out+="\t<tube name=\"solid_pmt\" rmin=\"0\" rmax=\""+str(radius_pmt)+"\" z=\""+str(length_pmt_gut)+"\" deltaphi=\"2*pi\" startphi=\"0\" aunit=\"rad\" lunit=\"mm\"/>\n"
 
 #out+="\t<tube name=\"solid_pmt_base\" rmin=\"0\" rmax=\""+str(radius_pmt)+"\" z=\""+str(length_pmt_base)+"\" deltaphi=\"2*pi\" startphi=\"0\" aunit=\"rad\" lunit=\"mm\"/>\n"
@@ -350,7 +359,7 @@ out+="\t<box name=\"solid_singledet\" lunit=\"mm\" x=\""+str(800)+"\" y=\""+str(
 #out+="\t<cone name=\"solid_support_ring\" rmin1=\""+str(radius_inner_support_ring)+"\"  rmax1=\""+str(radius_outer_support_ring)+"\" rmin2=\""+str(radius_inner_support_ring)+"\" rmax2=\""+str(radius_outer_support_ring)+"\"  z=\""+str(thick_support_ring)+"\" startphi=\"0\" deltaphi=\"360\" aunit=\"deg\" lunit=\"mm\"/>\n" #Make sure this mother volume doesn't interfere with coils
 
 #out+="\t<cone name=\"solid_showerMaxMother\" rmin1=\""+str(730)+"\"  rmax1=\""+str(2100)+"\" rmin2=\""+str(730)+"\" rmax2=\""+str(2100)+"\"  z=\""+str(thick_mother)+"\" startphi=\"0\" deltaphi=\"360\" aunit=\"deg\" lunit=\"mm\"/>\n" #Make sure this mother volume doesn't interfere with coils
-out+="\t<box name=\"solid_showerMaxMother\" runit=\"mm\" x=\""+str(900)+"\" y=\""+str(350)+"\" z=\""+str(250)+"\"/>\n"
+out+="\t<box name=\"solid_showerMaxMother\" lunit=\"mm\" x=\""+str(900)+"\" y=\""+str(350)+"\" z=\""+str(250)+"\"/>\n"
 
 out+="</solids>\n"
 
@@ -437,6 +446,14 @@ for i in range(0,nSMmodules):
         out+="\n\t\t<solidref ref=\"solid_pmt_window\"/>"
         out+="\n\t\t<auxiliary auxtype=\"SensDet\" auxvalue=\"showerMaxPMTwindow\" />"
         out+="\n\t\t<auxiliary auxtype=\"DetNo\" auxvalue=\""+"7"+str(i).zfill(2)+"11"+"\"/>"
+        out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"blue\"/>"
+        out+="\n\t</volume>\n"
+
+        out+="\t<volume name=\"logic_pmt_cathode_"+str(i)+"\">"
+        out+="\n\t\t<materialref ref=\"G4_Cathode\"/>"
+        out+="\n\t\t<solidref ref=\"solid_pmt_cathode\"/>"
+        out+="\n\t\t<auxiliary auxtype=\"SensDet\" auxvalue=\"showerMaxPMTcathode\" />"
+        out+="\n\t\t<auxiliary auxtype=\"DetNo\" auxvalue=\""+"7"+str(i).zfill(2)+"16"+"\"/>"
         out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"blue\"/>"
         out+="\n\t</volume>\n"
 
@@ -547,6 +564,12 @@ for i in range(0,nSMmodules):
         out+="\n\t\t\t<volumeref ref=\"logic_pmt_window_"+str(i)+"\"/>"
         out+="\n\t\t\t<position name=\"pos_logic_pmt_window_"+str(i)+"\" x=\""+str(length_quartz/2+length_ledge/2+length_mirror_box_bot+length_mirror_box_top+length_top_support+length_pmt_filter+length_pmt_window/2)+"\" y=\""+str(0)+"\" z=\""+str(thick_tungsten/2)+"\"/>"
         out+="\n\t\t\t<rotation name=\"rot_logic_pmt_window_"+str(i)+"\" x=\"0\" y=\"-pi/2\" z=\"0\"/>"
+        out+="\n\t\t</physvol>"
+
+        out+="\n\t\t<physvol name=\"pmt_cathode_"+str(i)+"\">"
+        out+="\n\t\t\t<volumeref ref=\"logic_pmt_cathode_"+str(i)+"\"/>"
+        out+="\n\t\t\t<position name=\"pos_logic_pmt_cathode_"+str(i)+"\" x=\""+str(length_quartz/2+length_ledge/2+length_mirror_box_bot+length_mirror_box_top+length_top_support+length_pmt_filter+length_pmt_window+length_pmt_cathode/2)+"\" y=\""+str(0)+"\" z=\""+str(thick_tungsten/2)+"\"/>"
+        out+="\n\t\t\t<rotation name=\"rot_logic_pmt_cathode_"+str(i)+"\" x=\"0\" y=\"-pi/2\" z=\"0\"/>"
         out+="\n\t\t</physvol>"
 
         #out+="\n\t\t<physvol name=\"pmt_"+str(i)+"\">"
