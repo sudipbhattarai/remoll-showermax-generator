@@ -39,74 +39,15 @@ thick_mirror_box_top = 69.866
 ## mirror parameter
 thick_wall_mirror = 0.5
 
-## Front and back plate of quartz-tungsten stack
-length_front_back_plate = 181.698
-width_front_back_plate = 313.800
-thick_front_back_plate = 6.35 
-
-## Webbed side support structure
-length_web_plate = 432.190
-width_web_plate = 15.875
-thick_web_plate = 63.500
-radius_web_plate_hole_small = 31.75/2
-radius_web_plate_hole_big = 25.53
-thick_web_plate_leg = 6.350
-length_web_plate_leg = 190.19
-length_web_plate_egdeToHole = 38.175
-length_web_plate_smallHoles_distance = 50.800
-length_web_plate_holes_small_big = 53.975
-
-## U-bracket (Referenced with lower bracket)
-length_uBracket = 15.88
-width_uBracket = 23.88
-thick_uBracket = 50.80
-width_uBracket_legSpace = 17.53
-thick_uBracket_legSpace = 38.10
-
-## Ledge
-length_ledge = (length_front_back_plate-length_quartz)
-width_ledge = 6.35
-thick_ledge = thick_web_plate
-
-## Outer radial top support
-length_top_support = 6.350
-width_top_support = 370.878
-thick_top_support = 114.3
-radius_top_support_hole = 42
-width_top_support_corner_cut = 48.0       # edge cut is the rectangular cut in all 4 corners
-thick_top_support_corner_cut = 20.0
-
 ## PMT region
 radius_pmt = 1.5*in2mm # Radius of 1.5 inches (for 3 inches PMT)
-length_pmt_base = 50
-length_pmt_gut = 150
 length_pmt_cathode = 3e-6
 length_pmt_window = 3.0
 length_pmt_filter = 5.0 #Combination of long pass filter and ND filter
-length_pmt_region = length_pmt_filter + length_pmt_window + length_pmt_gut + length_pmt_base
-length_pmt_housing = length_pmt_region + 2.0 + 3.0 # tolernace + lid
-radius_inner_pmt_housing = radius_top_support_hole
-radius_outer_pmt_housing =  radius_inner_pmt_housing + 3.0
-radius_pmt_housing_lid = 48.0
-length_pmt_housing_lid = 3.0
-width_si_chip = 50
-length_si_chip = 0.5
-
-## Struts (the rods that attach SM modules to the ring support structure)
-length_strut = 381.0
-width_strut = 63.5
-thick_strut = 36.83
-
-## SM support ring
-radius_inner_support_ring = 68*in2mm
-radius_outer_support_ring = 78*in2mm
-thick_support_ring= 1.75*in2mm  # It is 2 inches in the CAD 
 
 detector_tilt = 0
 
 zstagger = 41   # distance between center of a SM module and the center of two SM rings(Value adjusted to fit support Larry's support structure)
-#print(23920-2*(thick_quartz+thick_tungsten)+zstagger)
-#print(23920-2*(thick_quartz+thick_tungsten)-zstagger)
 
 thick_mother=2*thick_mirror_box_bot+2*zstagger+5
 
