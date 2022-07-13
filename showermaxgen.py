@@ -39,11 +39,68 @@ thick_mirror_box_top = 69.866
 ## mirror parameter
 thick_wall_mirror = 0.5
 
+## Front and back plate of quartz-tungsten stack
+length_front_back_plate = 181.698
+width_front_back_plate = 313.800
+thick_front_back_plate = 6.35 
+
+## Webbed side support structure
+length_web_plate = 432.190
+width_web_plate = 15.875
+thick_web_plate = 63.500
+radius_web_plate_hole_small = 31.75/2
+radius_web_plate_hole_big = 25.53
+thick_web_plate_leg = 6.350
+length_web_plate_leg = 190.19
+length_web_plate_egdeToHole = 38.175
+length_web_plate_smallHoles_distance = 50.800
+length_web_plate_holes_small_big = 53.975
+
+## U-bracket (Referenced with lower bracket)
+length_uBracket = 15.88
+width_uBracket = 23.88
+thick_uBracket = 50.80
+width_uBracket_legSpace = 17.53
+thick_uBracket_legSpace = 38.10
+
+## Ledge
+length_ledge = (length_front_back_plate-length_quartz)
+width_ledge = 6.35
+thick_ledge = thick_web_plate
+
+## Outer radial top support
+length_top_support = 6.350
+width_top_support = 370.878
+thick_top_support = 114.3
+radius_top_support_hole = 42
+width_top_support_corner_cut = 48.0       # edge cut is the rectangular cut in all 4 corners
+thick_top_support_corner_cut = 20.0
+
 ## PMT region
 radius_pmt = 1.5*in2mm # Radius of 1.5 inches (for 3 inches PMT)
+length_pmt_base = 50
+length_pmt_gut = 150
 length_pmt_cathode = 3e-6
 length_pmt_window = 3.0
 length_pmt_filter = 5.0 #Combination of long pass filter and ND filter
+length_pmt_region = length_pmt_filter + length_pmt_window + length_pmt_gut + length_pmt_base
+length_pmt_housing = length_pmt_region + 2.0 + 3.0 # tolernace + lid
+radius_inner_pmt_housing = radius_top_support_hole
+radius_outer_pmt_housing =  radius_inner_pmt_housing + 3.0
+radius_pmt_housing_lid = 48.0
+length_pmt_housing_lid = 3.0
+width_si_chip = 50
+length_si_chip = 0.5
+
+## Struts (the rods that attach SM modules to the ring support structure)
+length_strut = 381.0
+width_strut = 63.5
+thick_strut = 36.83
+
+## SM support ring
+radius_inner_support_ring = 68*in2mm
+radius_outer_support_ring = 78*in2mm
+thick_support_ring= 1.75*in2mm  # It is 2 inches in the CAD 
 
 detector_tilt = 0
 
@@ -110,6 +167,7 @@ out+="</material>\n"
 out+="<material formula=\"SiO2\" name=\"Quartz\" >\n"
 out+="\t<property name=\"RINDEX\" ref=\"Quartz_RINDEX\"/>\n"
 out+="\t<property name=\"ABSLENGTH\" ref=\"Quartz_ABSLENGTH\"/>\n"
+out+="\t<property name=\"TRANSMISSION\" ref=\"Quartz_TRANSMISSION\"/>\n"
 out+="\t<D value=\"2.203\" />\n"
 out+="\t<composite n=\"1\" ref=\"Silicon\" />\n"
 out+="\t<composite n=\"2\" ref=\"Oxygen\" />\n"
@@ -120,14 +178,12 @@ out+="\t<composite n=\"2\" ref=\"Potassium\" />\n"
 out+="\t<composite n=\"1\" ref=\"Caesium\" />\n"
 out+="\t<composite n=\"1\" ref=\"Antimony\" />\n"
 out+="\t</material>\n"
-out+="<material formula=\"Al\" name=\"Aluminum\" >\n"
+out+="<material formula=\"Al\" name=\"Aluminum_material\" >\n"
 out+="\t<D value=\"2.6982\" />\n"
-#need to add properties of Al"
 out+="\t<composite n=\"1\" ref=\"Aluminum\" />\n"
 out+="</material>\n"
-out+="<material formula=\"W\" name=\"Tungsten\" >\n"
+out+="<material formula=\"W\" name=\"Tungsten_material\" >\n"
 out+="\t<D value=\"19.3\" />\n"
-#need to add properties of Al"
 out+="\t<composite n=\"1\" ref=\"Tungsten\" />\n"
 out+="</material>\n"
 
@@ -194,6 +250,15 @@ out+="\t<box name=\"solid_singledet\" lunit=\"mm\" x=\""+str(800)+"\" y=\""+str(
 
 out+="\t<box name=\"solid_showerMaxMother\" lunit=\"mm\" x=\""+str(900)+"\" y=\""+str(350)+"\" z=\""+str(250)+"\"/>\n"
 
+## Optical Surfaces
+out+="\n\t<opticalsurface name=\"Al_mirror_surface\" model=\"glisur\" finish=\"ground\" type=\"dielectric_metal\" value=\"0.98\" >\n"
+out+="\t\t<property name=\"REFLECTIVITY\" ref=\"Aluminium_Surf_Reflectivity\" />\n"
+out+="\t</opticalsurface>\n"
+out+="\t<opticalsurface name=\"Cathode_surface\" model=\"glisur\" finish=\"polished\" type=\"dielectric_metal\" value=\"1.0\">\n"
+out+="\t\t<property name=\"REFLECTIVITY\" ref=\"Cathode_Surf_Reflectivity\" />\n"
+out+="\t\t<property name=\"EFFICIENCY\" ref=\"Cathode_Surf_Efficiency\" />\n"
+out+="\t</opticalsurface>\n"
+
 out+="</solids>\n"
 
 ## Define logical volumes using above solids
@@ -204,60 +269,50 @@ for i in range(0,nSMmodules):
                 out+="\t<volume name=\"logic_quartz_"+str(i)+"_"+str(j)+"\">"
                 out+="\n\t\t<materialref ref=\"Quartz\"/>"
                 out+="\n\t\t<solidref ref=\"solid_quartz\"/>"
-                out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"blue\"/>"
-                out+="\n\t\t<auxiliary auxtype=\"SensDet\" auxvalue=\"showerMaxQuartz\" />"
-                out+="\n\t\t<auxiliary auxtype=\"DetNo\" auxvalue=\""+"7"+str(i).zfill(2)+str(2*(4-j))+"\"/>"
+                #out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"blue\"/>"
                 out+="\n\t</volume>\n"
       
                 out+="\t<volume name=\"logic_tungsten_"+str(i)+"_"+str(j)+"\">"
-                out+="\n\t\t<materialref ref=\"Tungsten\"/>"
+                out+="\n\t\t<materialref ref=\"Tungsten_material\"/>"
                 out+="\n\t\t<solidref ref=\"solid_tungsten\"/>"
-                if (j == 3):
-                        out+="\n\t\t<auxiliary auxtype=\"SensDet\" auxvalue=\"showerMaxTungsten\" />"
-                        out+="\n\t\t<auxiliary auxtype=\"DetNo\" auxvalue=\""+"7"+str(i).zfill(2)+str(2*(4-j)-1)+"\"/>"
-                out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"red\"/>"
+                #out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"red\"/>"
                 out+="\n\t</volume>\n"
 
         out+="\t<volume name=\"logic_suitcase_tungstenquartz_"+str(i)+"\">"
-        out+="\n\t\t<materialref ref=\"Aluminum\"/>"
+        out+="\n\t\t<materialref ref=\"Aluminum_material\"/>"
         out+="\n\t\t<solidref ref=\"solid_suitcase_tungstenquartz\"/>"
-        out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"green\"/>"
+        #out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"green\"/>"
         out+="\n\t</volume>\n"
 
         out+="\t<volume name=\"logic_mirror_box_bot_"+str(i)+"\">"
-        out+="\n\t\t<materialref ref=\"Aluminum\"/>"
+        out+="\n\t\t<materialref ref=\"Aluminum_material\"/>"
         out+="\n\t\t<solidref ref=\"solid_mirror_box_bot\"/>"
-        out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"green\"/>"
+        #out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"green\"/>"
         out+="\n\t</volume>\n"
 
         out+="\t<volume name=\"logic_mirror_box_top_"+str(i)+"\">"
-        out+="\n\t\t<materialref ref=\"Aluminum\"/>"
+        out+="\n\t\t<materialref ref=\"Aluminum_material\"/>"
         out+="\n\t\t<solidref ref=\"solid_mirror_box_top\"/>"
-        out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"green\"/>"
+        #out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"green\"/>"
         out+="\n\t</volume>\n"
 
         out+="\t<volume name=\"logic_pmt_filter_"+str(i)+"\">"
         out+="\n\t\t<materialref ref=\"Quartz\"/>"
         out+="\n\t\t<solidref ref=\"solid_pmt_filter\"/>"
-        out+="\n\t\t<auxiliary auxtype=\"SensDet\" auxvalue=\"showerMaxPMTFilter\" />"
-        out+="\n\t\t<auxiliary auxtype=\"DetNo\" auxvalue=\""+"7"+str(i).zfill(2)+"10"+"\"/>"
-        out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"magenta\"/>"
+        #out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"magenta\"/>"
         out+="\n\t</volume>\n"
 
         out+="\t<volume name=\"logic_pmt_window_"+str(i)+"\">"
         out+="\n\t\t<materialref ref=\"Quartz\"/>"
         out+="\n\t\t<solidref ref=\"solid_pmt_window\"/>"
-        out+="\n\t\t<auxiliary auxtype=\"SensDet\" auxvalue=\"showerMaxPMTwindow\" />"
-        out+="\n\t\t<auxiliary auxtype=\"DetNo\" auxvalue=\""+"7"+str(i).zfill(2)+"11"+"\"/>"
-        out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"blue\"/>"
+        #out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"blue\"/>"
         out+="\n\t</volume>\n"
 
         out+="\t<volume name=\"logic_pmt_cathode_"+str(i)+"\">"
         out+="\n\t\t<materialref ref=\"Cathode\"/>"
         out+="\n\t\t<solidref ref=\"solid_pmt_cathode\"/>"
-        out+="\n\t\t<auxiliary auxtype=\"SensDet\" auxvalue=\"showerMaxPMTcathode\" />"
-        out+="\n\t\t<auxiliary auxtype=\"DetNo\" auxvalue=\""+"7"+str(i).zfill(2)+"16"+"\"/>"
-        out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"blue\"/>"
+        out+="\n\t\t<auxiliary auxtype=\"SensDet\" auxvalue=\"PhotoCathode\" />"
+        #out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"blue\"/>"
         out+="\n\t</volume>\n"
 
         out+="\t<volume name=\"logic_singledet_"+str(i).zfill(2)+"\">"
@@ -331,7 +386,22 @@ for i in range(0,nSMmodules):
         out+="\n\t\t</physvol>"
 
 out+="\n\t\t<auxiliary auxtype=\"Alpha\" auxvalue=\"0.0\"/>"
-out+="\n\t</volume>"
+out+="\n\t</volume>\n\n"
+
+# Specify surfaces
+out+="\t<skinsurface name=\"suitcase_skin_surface\" surfaceproperty=\"Al_mirror_surface\" >\n"
+out+="\t\t<volumeref ref=\"logic_suitcase_tungstenquartz_"+str(i)+"\"/>\n"
+out+="\t</skinsurface>\n"
+out+="\t<skinsurface name=\"mirror_box_top_skin_surface\" surfaceproperty=\"Al_mirror_surface\" >\n"
+out+="\t\t<volumeref ref=\"logic_mirror_box_top_"+str(i)+"\"/>\n"
+out+="\t</skinsurface>\n"
+out+="\t<skinsurface name=\"mirror_box_bottom_skin_surface\" surfaceproperty=\"Al_mirror_surface\" >\n"
+out+="\t\t<volumeref ref=\"logic_mirror_box_bot_"+str(i)+"\"/>\n"
+out+="\t</skinsurface>\n"
+out+="\t<bordersurface name=\"cathode_window_border_surface\" surfaceproperty=\"Cathode_surface\" >\n"
+out+="\t<physvolref ref=\"pmt_window_"+str(i)+"\"/>\n"
+out+="\t<physvolref ref=\"pmt_cathode_"+str(i)+"\"/>\n"
+out+="\t</bordersurface>\n"
 
 out+="\n</structure>\n"
 
