@@ -1,6 +1,6 @@
 import math
 
-output_file = "showermaxQsim"
+output_file = "smRetroQsim"
 
 ### Define geometry parameters(dimensions based on ISU elog 576):
 radial_extent = 1020.0          #distance from beam center to tungsten-quartz bottom on US ring
@@ -9,8 +9,8 @@ nSMmodules = 1
 in2mm = 25.4
 
 ## Quartz
-length_quartz = 160.0
-width_quartz = 265.0
+length_quartz = 105.0
+width_quartz = 246.0
 thick_quartz = 6.0
 quartz_rotate = ["pi/2", "-pi/2", "pi/2", "-pi/2"]
 
@@ -18,15 +18,21 @@ quartz_rotate = ["pi/2", "-pi/2", "pi/2", "-pi/2"]
 length_tungsten = length_quartz
 width_tungsten = width_quartz
 thick_tungsten = 8.0
+length_diff_newRetro = 160.0-length_quartz
 
 ## Spacer in TQ stack
 thick_spacer = 0.870
 thick_tolerance = 0.508
 
-## Tungsten-quartz stack
-length_stack_tungstenquartz = length_quartz
-width_stack_tungstenquartz = width_quartz
+## Tungsten-quartz stack fullscale
+length_stack_tungstenquartz = 160.0
+width_stack_tungstenquartz = 265
 thick_stack_tungstenquartz = 4*(thick_quartz+thick_tungsten)+ 8*thick_spacer + 2*thick_tolerance
+
+## Tungsten-quartz stack retro
+length_stack_tungstenquartz_retro = length_quartz
+width_stack_tungstenquartz_retro = width_quartz
+thick_stack_tungstenquartz_retro = 4*(thick_quartz+thick_tungsten)+ 8*thick_spacer + 2*thick_tolerance
 
 ## Mirror box bottom (lower part of the light guide)
 length_mirror_box_bot = 67.462  
@@ -133,6 +139,12 @@ out+="\n\n<materials>\n"
 out+="<define>\n"
 out+="\t<quantity type=\"density\" name=\"universe_mean_density\" value=\"1.e-25\" unit=\"g/cm3\" />\n"
 out+="</define>\n"
+out+="<element Z=\"1\" formula=\"H\" name=\"Hydrogen\" >\n"
+out+="\t<atom value=\"1.008\" />\n"
+out+="</element>\n"
+out+="<element Z=\"6\" formula=\"C\" name=\"Carbon\" >\n"
+out+="\t<atom value=\"12.011\" />\n"
+out+="</element>\n"
 out+="<element Z=\"8\" formula=\"O\" name=\"Oxygen\" >\n"
 out+="\t<atom value=\"16\" />\n"
 out+="</element>\n"
@@ -166,7 +178,7 @@ out+="\t<fraction n=\"0.7\" ref=\"Nitrogen\" />\n"
 out+="</material>\n"
 out+="<material formula=\"SiO2\" name=\"Quartz\" >\n"
 out+="\t<property name=\"RINDEX\" ref=\"Quartz_RINDEX\"/>\n"
-out+="\t<property name=\"ABSLENGTH\" ref=\"Quartz_ABSLENGTH\"/>\n"
+out+="\t<property name=\"ABSLENGTH\" ref=\"Quartz_ABSLENGTH_DATA\"/>\n"
 out+="\t<property name=\"REFLECTIVITY\" ref=\"Quartz_REFLECTIVITY\"/>\n"
 out+="\t<D value=\"2.203\" />\n"
 out+="\t<composite n=\"1\" ref=\"Silicon\" />\n"
@@ -185,6 +197,13 @@ out+="</material>\n"
 out+="<material formula=\"W\" name=\"Tungsten_material\" >\n"
 out+="\t<D value=\"19.3\" />\n"
 out+="\t<composite n=\"1\" ref=\"Tungsten\" />\n"
+out+="</material>\n"
+out+="<material formula=\"C12H22N2O2\" name=\"Nylon\" >\n"
+out+="\t<D value=\"1.14\" />\n"
+out+="\t<composite n=\"12\" ref=\"Carbon\" />\n"
+out+="\t<composite n=\"22\" ref=\"Hydrogen\" />\n"
+out+="\t<composite n=\"2\" ref=\"Nitrogen\" />\n"
+out+="\t<composite n=\"2\" ref=\"Oxygen\" />\n"
 out+="</material>\n"
 
 out+="</materials>\n"
@@ -212,6 +231,18 @@ out+="\n\t\t<first ref=\"solid_suitcase_tungstenquartz_1\"/>"
 out+="\n\t\t<second ref=\"solid_suitcase_tungstenquartz_2\"/>"
 out+="\n\t\t<position name=\"pos_subtract_suitcase_tungstenquartz_12\" x=\""+str(0.5)+"\" y=\"0\" z=\"0\"/>"
 out+="\n\t\t<rotation name=\"rot_subtract_suitcase_tungstenquartz_12\" x=\"0\" y=\"0\" z=\"0\"/>"
+out+="\n\t</subtraction>\n"
+#-------------------
+
+# Nylon retro spacer(not to confuse with the thin spacer that sits between tungsten and quartz), this is made to hold 2018 model TQ to fit 2022 chassis
+out+="\t<box name=\"solid_spacer_suitcase_1\" lunit=\"mm\" x=\""+str(length_stack_tungstenquartz)+"\" y=\""+str(width_stack_tungstenquartz)+"\" z=\""+str(thick_stack_tungstenquartz)+"\"/>\n"
+out+="\t<box name=\"solid_spacer_suitcase_2\" lunit=\"mm\" x=\""+str(length_stack_tungstenquartz_retro+1.0)+"\" y=\""+str(width_stack_tungstenquartz_retro+1.0)+"\" z=\""+str(thick_stack_tungstenquartz_retro+1.0)+"\"/>\n"
+
+out+="\t<subtraction name=\"solid_spacer_suitcase\">"
+out+="\n\t\t<first ref=\"solid_spacer_suitcase_1\"/>"
+out+="\n\t\t<second ref=\"solid_spacer_suitcase_2\"/>"
+out+="\n\t\t<position name=\"pos_subtract_spacer_suitcase_12\" x=\""+str((length_stack_tungstenquartz-length_stack_tungstenquartz_retro)/2)+"\" y=\"0\" z=\"0\"/>"
+out+="\n\t\t<rotation name=\"rot_subtract_spacer_suitcase_12\" x=\"0\" y=\"0\" z=\"0\"/>"
 out+="\n\t</subtraction>\n"
 #-------------------
 
@@ -254,11 +285,11 @@ out+="\t<box name=\"solid_showerMaxMother\" lunit=\"mm\" x=\""+str(900)+"\" y=\"
 out+="\n\t<opticalsurface name=\"quartz_surface\" model=\"glisur\" finish=\"ground\" type=\"dielectric_dielectric\" value=\"0.98\" >\n"
 out+="\t</opticalsurface>\n"
 out+="\t<opticalsurface name=\"Al_mirror_surface\" model=\"glisur\" finish=\"ground\" type=\"dielectric_metal\" value=\"0.98\" >\n"
-out+="\t\t<property name=\"REFLECTIVITY\" ref=\"Aluminium_Surf_Reflectivity\" />\n"
+out+="\t\t<property name=\"REFLECTIVITY\" ref=\"MiroSilver_REFLECTIVITY_30DEG\" />\n"
 out+="\t</opticalsurface>\n"
 out+="\t<opticalsurface name=\"Cathode_surface\" model=\"glisur\" finish=\"polished\" type=\"dielectric_metal\" value=\"1.0\">\n"
-out+="\t\t<property name=\"REFLECTIVITY\" ref=\"Cathode_Surf_Reflectivity\" />\n"
-out+="\t\t<property name=\"EFFICIENCY\" ref=\"Cathode_Surf_Efficiency\" />\n"
+out+="\t\t<property name=\"REFLECTIVITY\" ref=\"CathodeSurf_REFLECTIVITY\" />\n"
+out+="\t\t<property name=\"EFFICIENCY\" ref=\"Cathode_EFFICIENCY\" />\n"
 out+="\t</opticalsurface>\n"
 
 out+="</solids>\n"
@@ -279,6 +310,12 @@ for i in range(0,nSMmodules):
                 out+="\n\t\t<solidref ref=\"solid_tungsten\"/>"
                 #out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"red\"/>"
                 out+="\n\t</volume>\n"
+
+        out+="\t<volume name=\"logic_spacer_suitcase_"+str(i)+"\">"
+        out+="\n\t\t<materialref ref=\"Nylon\"/>"
+        out+="\n\t\t<solidref ref=\"solid_spacer_suitcase\"/>"
+        #out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"green\"/>"
+        out+="\n\t</volume>\n"
 
         out+="\t<volume name=\"logic_suitcase_tungstenquartz_"+str(i)+"\">"
         out+="\n\t\t<materialref ref=\"Aluminum_material\"/>"
@@ -329,6 +366,12 @@ for i in range(0,nSMmodules):
         out+="\n\t\t\t<rotation name=\"rot_logic_suitcase_tungstenquartz_"+str(i)+"\" x=\""+str(0)+"\" y=\"0\" z=\"0\"/>"
         out+="\n\t\t</physvol>"
 
+        out+="\n\t\t<physvol name=\"spacer_suitcase_"+str(i)+"\">"
+        out+="\n\t\t\t<volumeref ref=\"logic_spacer_suitcase_"+str(i)+"\"/>"     
+        out+="\n\t\t\t<position name=\"pos_logic_spacer_suitcase_"+str(i)+"\" x=\""+str(0)+"\" y=\""+str(0)+"\" z=\""+str(0)+"\"/>"
+        out+="\n\t\t\t<rotation name=\"rot_logic_spacer_suitcase_"+str(i)+"\" x=\""+str(0)+"\" y=\"0\" z=\"0\"/>"
+        out+="\n\t\t</physvol>"
+
         out+="\n\t\t<physvol name=\"mirror_box_bot_"+str(i)+"\">"
         out+="\n\t\t\t<volumeref ref=\"logic_mirror_box_bot_"+str(i)+"\"/>"
         out+="\n\t\t\t<position name=\"pos_logic_mirror_box_bot_"+str(i)+"\" x=\""+str(length_front_back_plate/2+length_mirror_box_bot/2)+"\" y=\""+str(0)+"\" z=\""+str(thick_tungsten/2)+"\"/>"
@@ -362,13 +405,13 @@ for i in range(0,nSMmodules):
         for j in range(0,nQuartz):
                 out+="\n\t\t<physvol name=\"quartz_"+str(i)+"_"+str(j)+"\">"
                 out+="\n\t\t\t<volumeref ref=\"logic_quartz_"+str(i)+"_"+str(j)+"\"/>"             
-                out+="\n\t\t\t<position name=\"pos_logic_quartz_"+str(i)+"_"+str(j)+"\" x=\""+str(0)+"\" y=\""+str(0)+"\" z=\""+str(1.5*thick_quartz+2.0*thick_tungsten+4*thick_spacer+thick_tolerance-j*(thick_quartz+thick_tungsten)-(2*j+1)*thick_spacer)+"\"/>"
+                out+="\n\t\t\t<position name=\"pos_logic_quartz_"+str(i)+"_"+str(j)+"\" x=\""+str(length_diff_newRetro/2)+"\" y=\""+str(0)+"\" z=\""+str(1.5*thick_quartz+2.0*thick_tungsten+4*thick_spacer+thick_tolerance-j*(thick_quartz+thick_tungsten)-(2*j+1)*thick_spacer)+"\"/>"
                 out+="\n\t\t\t<rotation name=\"rot_logic_quartz_"+str(i)+"_"+str(j)+"\" x=\""+quartz_rotate[j]+"\" y=\"0\" z=\"0\"/>"        
                 out+="\n\t\t</physvol>"
 
                 out+="\n\t\t<physvol name=\"tungsten_"+str(i)+"_"+str(j)+"\">"
                 out+="\n\t\t\t<volumeref ref=\"logic_tungsten_"+str(i)+"_"+str(j)+"\"/>"
-                out+="\n\t\t\t<position name=\"pos_logic_tungsten_"+str(i)+"_"+str(j)+"\" x=\""+str(0)+"\" y=\""+str(0)+"\" z=\""+str(1.5*thick_tungsten+1.0*thick_quartz+4*thick_spacer+thick_tolerance-j*(thick_quartz+thick_tungsten)-2*(j+1)*thick_spacer)+"\"/>"
+                out+="\n\t\t\t<position name=\"pos_logic_tungsten_"+str(i)+"_"+str(j)+"\" x=\""+str(length_diff_newRetro/2)+"\" y=\""+str(0)+"\" z=\""+str(1.5*thick_tungsten+1.0*thick_quartz+4*thick_spacer+thick_tolerance-j*(thick_quartz+thick_tungsten)-2*(j+1)*thick_spacer)+"\"/>"
                 out+="\n\t\t\t<rotation name=\"rot_logic_tungsten_"+str(i)+"_"+str(j)+"\" x=\"0\" y=\"0\" z=\"0\"/>"
                 out+="\n\t\t</physvol>"
 
