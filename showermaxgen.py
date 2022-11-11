@@ -1,6 +1,6 @@
 import math
 
-output_file = "showermaxQsim"
+output_file = "smQsim20mmTungstenFiller"
 
 ### Define geometry parameters(dimensions based on ISU elog 576):
 radial_extent = 1020.0          #distance from beam center to tungsten-quartz bottom on US ring
@@ -8,25 +8,35 @@ nQuartz = 4
 nSMmodules = 1
 in2mm = 25.4
 
-## Quartz
-length_quartz = 160.0
-width_quartz = 265.0
-thick_quartz = 6.0
-quartz_rotate = ["pi/2", "-pi/2", "pi/2", "-pi/2"]
+## TQ stack
+length_TQ_region = 160.0
+width_TQ_region = 265.0
+
+##Tungsten bulk filler in two azimuthal ends
+length_tungsten_filler = length_TQ_region
+width_tungsten_filler = 20.0
 
 ## Tungsten 
-length_tungsten = length_quartz
-width_tungsten = width_quartz
+length_tungsten = length_TQ_region
+width_tungsten = width_TQ_region - 2*width_tungsten_filler
 thick_tungsten = 8.0
+
+## Quartz
+length_quartz = length_tungsten
+width_quartz = width_TQ_region - 2*width_tungsten_filler
+thick_quartz = 6.0
+quartz_rotate = ["pi/2", "-pi/2", "pi/2", "-pi/2"]
 
 ## Spacer in TQ stack
 thick_spacer = 0.870
 thick_tolerance = 0.508
 
 ## Tungsten-quartz stack
-length_stack_tungstenquartz = length_quartz
-width_stack_tungstenquartz = width_quartz
+length_stack_tungstenquartz = length_TQ_region
+width_stack_tungstenquartz = width_TQ_region
 thick_stack_tungstenquartz = 4*(thick_quartz+thick_tungsten)+ 8*thick_spacer + 2*thick_tolerance
+thick_tungsten_filler = thick_stack_tungstenquartz
+print("Tungsten filler:" + str(length_tungsten_filler) + "x" + str(width_tungsten_filler) + "x" + str(thick_tungsten_filler))
 
 ## Mirror box bottom (lower part of the light guide)
 length_mirror_box_bot = 67.462  
@@ -166,7 +176,7 @@ out+="\t<fraction n=\"0.7\" ref=\"Nitrogen\" />\n"
 out+="</material>\n"
 out+="<material formula=\"SiO2\" name=\"Quartz\" >\n"
 out+="\t<property name=\"RINDEX\" ref=\"Quartz_RINDEX\"/>\n"
-out+="\t<property name=\"ABSLENGTH\" ref=\"Quartz_ABSLENGTH\"/>\n"
+out+="\t<property name=\"ABSLENGTH\" ref=\"Quartz_ABSLENGTH_DATA\"/>\n"
 out+="\t<property name=\"REFLECTIVITY\" ref=\"Quartz_REFLECTIVITY\"/>\n"
 out+="\t<D value=\"2.203\" />\n"
 out+="\t<composite n=\"1\" ref=\"Silicon\" />\n"
@@ -202,6 +212,7 @@ out+="\t\t<section zOrder=\"2\" zPosition=\""+str(width_quartz/2)+"\" xOffset=\"
 out+="\t</xtru>\n"
 
 out+="\t<box name=\"solid_tungsten\" lunit=\"mm\" x=\""+str(length_tungsten)+"\" y=\""+str(width_tungsten)+"\" z=\""+str(thick_tungsten)+"\"/>\n"
+out+="\t<box name=\"solid_tungsten_filler\" lunit=\"mm\" x=\""+str(length_tungsten_filler)+"\" y=\""+str(width_tungsten_filler)+"\" z=\""+str(thick_tungsten_filler)+"\"/>\n"
 
 # Suitcase box, where the TQ stack rests
 out+="\t<box name=\"solid_suitcase_tungstenquartz_1\" lunit=\"mm\" x=\""+str(length_stack_tungstenquartz+thick_wall_mirror)+"\" y=\""+str(width_stack_tungstenquartz+2*thick_wall_mirror)+"\" z=\""+str(thick_stack_tungstenquartz+2*thick_wall_mirror)+"\"/>\n"
@@ -254,11 +265,11 @@ out+="\t<box name=\"solid_showerMaxMother\" lunit=\"mm\" x=\""+str(900)+"\" y=\"
 out+="\n\t<opticalsurface name=\"quartz_surface\" model=\"glisur\" finish=\"ground\" type=\"dielectric_dielectric\" value=\"0.98\" >\n"
 out+="\t</opticalsurface>\n"
 out+="\t<opticalsurface name=\"Al_mirror_surface\" model=\"glisur\" finish=\"ground\" type=\"dielectric_metal\" value=\"0.98\" >\n"
-out+="\t\t<property name=\"REFLECTIVITY\" ref=\"Aluminium_Surf_Reflectivity\" />\n"
+out+="\t\t<property name=\"REFLECTIVITY\" ref=\"MiroSilver_REFLECTIVITY_30DEG\" />\n"
 out+="\t</opticalsurface>\n"
 out+="\t<opticalsurface name=\"Cathode_surface\" model=\"glisur\" finish=\"polished\" type=\"dielectric_metal\" value=\"1.0\">\n"
-out+="\t\t<property name=\"REFLECTIVITY\" ref=\"Cathode_Surf_Reflectivity\" />\n"
-out+="\t\t<property name=\"EFFICIENCY\" ref=\"Cathode_Surf_Efficiency\" />\n"
+out+="\t\t<property name=\"REFLECTIVITY\" ref=\"CathodeSurf_REFLECTIVITY\" />\n"
+out+="\t\t<property name=\"EFFICIENCY\" ref=\"Cathode_EFFICIENCY\" />\n"
 out+="\t</opticalsurface>\n"
 
 out+="</solids>\n"
@@ -279,6 +290,12 @@ for i in range(0,nSMmodules):
                 out+="\n\t\t<solidref ref=\"solid_tungsten\"/>"
                 #out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"red\"/>"
                 out+="\n\t</volume>\n"
+
+        out+="\t<volume name=\"logic_tungsten_filler_"+str(i)+"\">"
+        out+="\n\t\t<materialref ref=\"Tungsten_material\"/>"
+        out+="\n\t\t<solidref ref=\"solid_tungsten_filler\"/>"
+        #out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"red\"/>"
+        out+="\n\t</volume>\n"
 
         out+="\t<volume name=\"logic_suitcase_tungstenquartz_"+str(i)+"\">"
         out+="\n\t\t<materialref ref=\"Aluminum_material\"/>"
@@ -359,6 +376,18 @@ for i in range(0,nSMmodules):
         out+="\n\t\t\t<rotation name=\"rot_logic_pmt_cathode_"+str(i)+"\" x=\"0\" y=\"-pi/2\" z=\"0\"/>"
         out+="\n\t\t</physvol>"
 
+        out+="\n\t\t<physvol name=\"tungsten_filler_1_"+str(i)+"\">"
+        out+="\n\t\t\t<volumeref ref=\"logic_tungsten_filler_"+str(i)+"\"/>"
+        out+="\n\t\t\t<position name=\"pos_logic_tungsten_filler_1_"+str(i)+"\" x=\""+str(0)+"\" z=\""+str(0)+"\" y=\""+str((width_tungsten+width_tungsten_filler)/2)+"\"/>"
+        out+="\n\t\t\t<rotation name=\"rot_logic_tungsten_filler_1_"+str(i)+"\" x=\"0\" y=\"0\" z=\"0\"/>"
+        out+="\n\t\t</physvol>"
+
+        out+="\n\t\t<physvol name=\"tungsten_filler_2_"+str(i)+"\">"
+        out+="\n\t\t\t<volumeref ref=\"logic_tungsten_filler_"+str(i)+"\"/>"
+        out+="\n\t\t\t<position name=\"pos_logic_tungsten_filler_2_"+str(i)+"\" x=\""+str(0)+"\" z=\""+str(0)+"\" y=\""+str(-(width_tungsten+width_tungsten_filler)/2)+"\"/>"
+        out+="\n\t\t\t<rotation name=\"rot_logic_tungsten_filler_2_"+str(i)+"\" x=\"0\" y=\"0\" z=\"0\"/>"
+        out+="\n\t\t</physvol>"
+
         for j in range(0,nQuartz):
                 out+="\n\t\t<physvol name=\"quartz_"+str(i)+"_"+str(j)+"\">"
                 out+="\n\t\t\t<volumeref ref=\"logic_quartz_"+str(i)+"_"+str(j)+"\"/>"             
@@ -368,7 +397,7 @@ for i in range(0,nSMmodules):
 
                 out+="\n\t\t<physvol name=\"tungsten_"+str(i)+"_"+str(j)+"\">"
                 out+="\n\t\t\t<volumeref ref=\"logic_tungsten_"+str(i)+"_"+str(j)+"\"/>"
-                out+="\n\t\t\t<position name=\"pos_logic_tungsten_"+str(i)+"_"+str(j)+"\" x=\""+str(0)+"\" y=\""+str(0)+"\" z=\""+str(1.5*thick_tungsten+1.0*thick_quartz+4*thick_spacer+thick_tolerance-j*(thick_quartz+thick_tungsten)-2*(j+1)*thick_spacer)+"\"/>"
+                out+="\n\t\t\t<position name=\"pos_logic_tungsten_filler_"+str(i)+"\" x=\""+str(0)+"\" y=\""+str(0)+"\" z=\""+str(1.5*thick_tungsten+1.0*thick_quartz+4*thick_spacer+thick_tolerance-j*(thick_quartz+thick_tungsten)-2*(j+1)*thick_spacer)+"\"/>"
                 out+="\n\t\t\t<rotation name=\"rot_logic_tungsten_"+str(i)+"_"+str(j)+"\" x=\"0\" y=\"0\" z=\"0\"/>"
                 out+="\n\t\t</physvol>"
 
