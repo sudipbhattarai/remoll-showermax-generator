@@ -1,12 +1,12 @@
 from cmath import pi
 import math
 
-output_file = "showerMaxGen"
+output_file = "showerMaxDetectorSystem"
 
 ### Define geometry parameters(dimensions based on ISU elog 576):
 radial_extent = 1020.0          #distance from beam center to tungsten-quartz bottom on US ring
 nQuartz = 4
-nSMmodules = 28
+nSMmodules = 1 if output_file == "showerMaxDetector" else 28
 in2mm = 25.4
 
 ## Quartz
@@ -89,6 +89,7 @@ length_pmt_window = 3.0
 length_pmt_filter = 5.0 #Combination of long pass filter and ND filter
 length_pmt_region = length_pmt_filter + length_pmt_window + length_pmt_gut + length_pmt_base
 length_pmt_housing = length_pmt_region + 2.0 + 3.0 # tolernace + lid
+length_pmt_cathode = 3e-6
 radius_inner_pmt_housing = radius_top_support_hole
 radius_outer_pmt_housing =  radius_inner_pmt_housing + 3.0
 radius_pmt_housing_lid = 48.0
@@ -119,34 +120,26 @@ pos=radial_extent+length_quartz/2
 f=open(output_file+".gdml", "w+")
 
 ## GDML schema
-out="<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-out+="<gdml"
-out+="\n\txmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\""
-out+="\n\txsi:noNamespaceSchemaLocation=\"http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd\">\n"
+out="<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\n"
 
-out+="\n\n<define>"
-out+="\n</define>"
+out+="<!DOCTYPE gdml [\n"
+out+="\t<!ENTITY matrices SYSTEM \"showerMaxMatrices.xml\">\n"
+out+="\t<!ENTITY materials SYSTEM \"showerMaxMaterials.xml\">\n"
+out+="]>\n\n"
+
+out+="<gdml\n"
+out+="\txmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n"
+out+="\txsi:noNamespaceSchemaLocation=\"http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd\">\n\n"
+
+out+="<define>\n"
+out+="\t&matrices;\n"
+out+="</define>\n\n"
 
 ## Define materials
-out+="\n\n<materials>\n"
-out+="\t<material name=\"G4_Quartz\" state=\"solid\">\n"
-out+="\t\t<MEE unit=\"eV\" value=\"139.2\"/>\n"
-out+="\t\t<D value=\"2.201\" unit=\"g/cm3\"/>\n"
-out+="\t\t<fraction n=\"0.467465468463971\" ref=\"G4_Si\"/>\n"
-out+="\t\t<fraction n=\"0.532534531536029\" ref=\"G4_O\"/>\n"
-out+="\t</material>\n"
-
-out+="\t<material name=\"G4_Cathode\" state=\"solid\">\n"
-out+="\t\t<D value=\"0.8223\" unit=\"g/cm3\"/>\n"
-out+="\t\t<fraction n=\"0.2349\" ref=\"G4_K\"/>\n"
-out+="\t\t<fraction n=\"0.3993\" ref=\"G4_Cs\"/>\n"
-out+="\t\t<fraction n=\"0.3658\" ref=\"G4_Sb\"/>\n"
-out+="\t</material>\n"
-
-out+="</materials>\n"
+out+="&materials;\n\n"
 
 ## Define solids
-out+="\n\n<solids>\n"
+out+="<solids>\n"
 
 out+="\t<xtru name=\"solid_quartz\" lunit=\"mm\">\n"
 out+="\t\t<twoDimVertex x=\""+str(-length_quartz/2)+"\" y=\""+str(thick_quartz/2)+"\"/>\n"
@@ -307,6 +300,8 @@ out+="\t<tube name=\"solid_pmt_filter\" rmin=\"0\" rmax=\""+str(radius_pmt)+"\" 
 
 out+="\t<tube name=\"solid_pmt_window\" rmin=\"0\" rmax=\""+str(radius_pmt)+"\" z=\""+str(length_pmt_window)+"\" deltaphi=\"2*pi\" startphi=\"0\" aunit=\"rad\" lunit=\"mm\"/>\n"
 
+out+="\t<tube name=\"solid_pmt_cathode\" rmin=\"0\" rmax=\""+str(radius_pmt)+"\" z=\""+str(length_pmt_cathode)+"\" deltaphi=\"2*pi\" startphi=\"0\" aunit=\"rad\" lunit=\"mm\"/>\n"
+
 out+="\t<tube name=\"solid_pmt\" rmin=\"0\" rmax=\""+str(radius_pmt)+"\" z=\""+str(length_pmt_gut)+"\" deltaphi=\"2*pi\" startphi=\"0\" aunit=\"rad\" lunit=\"mm\"/>\n"
 
 out+="\t<tube name=\"solid_pmt_base\" rmin=\"0\" rmax=\""+str(radius_pmt)+"\" z=\""+str(length_pmt_base)+"\" deltaphi=\"2*pi\" startphi=\"0\" aunit=\"rad\" lunit=\"mm\"/>\n"
@@ -375,7 +370,22 @@ out+="\n\t</union>\n"
 
 out+="\t<cone name=\"solid_support_ring\" rmin1=\""+str(radius_inner_support_ring)+"\"  rmax1=\""+str(radius_outer_support_ring)+"\" rmin2=\""+str(radius_inner_support_ring)+"\" rmax2=\""+str(radius_outer_support_ring)+"\"  z=\""+str(thick_support_ring)+"\" startphi=\"0\" deltaphi=\"360\" aunit=\"deg\" lunit=\"mm\"/>\n" #Make sure this mother volume doesn't interfere with coils
 
-out+="\t<cone name=\"solid_showerMaxMother\" rmin1=\""+str(730)+"\"  rmax1=\""+str(2100)+"\" rmin2=\""+str(730)+"\" rmax2=\""+str(2100)+"\"  z=\""+str(thick_mother)+"\" startphi=\"0\" deltaphi=\"360\" aunit=\"deg\" lunit=\"mm\"/>\n" #Make sure this mother volume doesn't interfere with coils
+if nSMmodules==28:
+        out+="\t<cone name=\"solid_showerMaxMother\" rmin1=\""+str(730)+"\"  rmax1=\""+str(2100)+"\" rmin2=\""+str(730)+"\" rmax2=\""+str(2100)+"\"  z=\""+str(thick_mother)+"\" startphi=\"0\" deltaphi=\"360\" aunit=\"deg\" lunit=\"mm\"/>\n\n" #Make sure this mother volume doesn't interfere with coils
+else:
+        out+="\t<cone name=\"solid_showerMaxMother\" rmin1=\""+str(0)+"\"  rmax1=\""+str(1000)+"\" rmin2=\""+str(0)+"\" rmax2=\""+str(1000)+"\"  z=\""+str(thick_mother)+"\" startphi=\"0\" deltaphi=\"360\" aunit=\"deg\" lunit=\"mm\"/>\n\n"
+
+## Optical Surfaces
+out+="\t<opticalsurface name=\"quartz_surface\" model=\"glisur\" finish=\"ground\" type=\"dielectric_dielectric\" value=\"0.98\" >\n"
+out+="\t\t<property name=\"REFLECTIVITY\" ref=\"Quartz_REFLECTIVITY\" />\n"
+out+="\t</opticalsurface>\n"
+out+="\t<opticalsurface name=\"Al_mirror_surface\" model=\"glisur\" finish=\"ground\" type=\"dielectric_metal\" value=\"0.98\" >\n"
+out+="\t\t<property name=\"REFLECTIVITY\" ref=\"MiroSilver_REFLECTIVITY_30DEG\" />\n"
+out+="\t</opticalsurface>\n"
+out+="\t<opticalsurface name=\"Cathode_surface\" model=\"glisur\" finish=\"polished\" type=\"dielectric_metal\" value=\"1.0\">\n"
+out+="\t\t<property name=\"REFLECTIVITY\" ref=\"CathodeSurf_REFLECTIVITY\" />\n"
+out+="\t\t<property name=\"EFFICIENCY\" ref=\"Cathode_EFFICIENCY\" />\n"
+out+="\t</opticalsurface>\n"
 
 out+="</solids>\n"
 
@@ -383,7 +393,7 @@ out+="</solids>\n"
 out+="\n\n<structure>\n"
 
 out+="\t<volume name=\"logic_support_ring\">"
-out+="\n\t\t<materialref ref=\"G4_Al\"/>"
+out+="\n\t\t<materialref ref=\"Aluminum_material\"/>"
 out+="\n\t\t<solidref ref=\"solid_support_ring\"/>"
 out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"grey\"/>"
 out+="\n\t</volume>\n"
@@ -391,7 +401,7 @@ out+="\n\t</volume>\n"
 for i in range(0,nSMmodules):
         for j in range(0,nQuartz):
                 out+="\t<volume name=\"logic_quartz_"+str(i)+"_"+str(j)+"\">"
-                out+="\n\t\t<materialref ref=\"G4_Quartz\"/>"
+                out+="\n\t\t<materialref ref=\"Quartz\"/>"
                 out+="\n\t\t<solidref ref=\"solid_quartz\"/>"
                 out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"blue\"/>"
                 out+="\n\t\t<auxiliary auxtype=\"SensDet\" auxvalue=\"showerMaxQuartz\" />"
@@ -399,7 +409,7 @@ for i in range(0,nSMmodules):
                 out+="\n\t</volume>\n"
       
                 out+="\t<volume name=\"logic_tungsten_"+str(i)+"_"+str(j)+"\">"
-                out+="\n\t\t<materialref ref=\"G4_W\"/>"
+                out+="\n\t\t<materialref ref=\"Tungsten_material\"/>"
                 out+="\n\t\t<solidref ref=\"solid_tungsten\"/>"
                 if (j == 3):
                         out+="\n\t\t<auxiliary auxtype=\"SensDet\" auxvalue=\"showerMaxTungsten\" />"
@@ -409,7 +419,7 @@ for i in range(0,nSMmodules):
                 
         for j in range(2*nQuartz):        
                 out+="\t<volume name=\"logic_spacer_"+str(i)+"_"+str(j)+"\">"
-                out+="\n\t\t<materialref ref=\"G4_NYLON-6-6\"/>"
+                out+="\n\t\t<materialref ref=\"Nylon\"/>"
                 out+="\n\t\t<solidref ref=\"solid_spacer\"/>"
                 out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"black\"/>"
                 out+="\n\t\t<auxiliary auxtype=\"SensDet\" auxvalue=\"showerMaxSpacer\" />"
@@ -417,37 +427,37 @@ for i in range(0,nSMmodules):
                 out+="\n\t</volume>\n"
 
         out+="\t<volume name=\"logic_suitcase_tungstenquartz_"+str(i)+"\">"
-        out+="\n\t\t<materialref ref=\"G4_Al\"/>"
+        out+="\n\t\t<materialref ref=\"Aluminum_material\"/>"
         out+="\n\t\t<solidref ref=\"solid_suitcase_tungstenquartz\"/>"
         out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"green\"/>"
         out+="\n\t</volume>\n"
 
         out+="\t<volume name=\"logic_front_back_plate_"+str(i)+"\">"
-        out+="\n\t\t<materialref ref=\"G4_Al\"/>"
+        out+="\n\t\t<materialref ref=\"Aluminum_material\"/>"
         out+="\n\t\t<solidref ref=\"solid_front_back_plate\"/>"
         out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"orange\"/>"
         out+="\n\t</volume>\n"
 
         out+="\t<volume name=\"logic_front_plate_"+str(i)+"\">"
-        out+="\n\t\t<materialref ref=\"G4_Al\"/>"
+        out+="\n\t\t<materialref ref=\"Aluminum_material\"/>"
         out+="\n\t\t<solidref ref=\"solid_front_plate\"/>"
         out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"orange\"/>"
         out+="\n\t</volume>\n"
 
         out+="\t<volume name=\"logic_web_plate_"+str(i)+"\">"
-        out+="\n\t\t<materialref ref=\"G4_Al\"/>"
+        out+="\n\t\t<materialref ref=\"Aluminum_material\"/>"
         out+="\n\t\t<solidref ref=\"solid_web_plate_7\"/>"
         out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"grey\"/>"
         out+="\n\t</volume>\n"
 
         out+="\t<volume name=\"logic_uBracket_"+str(i)+"\">"
-        out+="\n\t\t<materialref ref=\"G4_Al\"/>"
+        out+="\n\t\t<materialref ref=\"Aluminum_material\"/>"
         out+="\n\t\t<solidref ref=\"solid_uBracket_2\"/>"
         out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"grey\"/>"
         out+="\n\t</volume>\n"
 
         out+="\t<volume name=\"logic_ledge_left_"+str(i)+"\">"
-        out+="\n\t\t<materialref ref=\"G4_NYLON-6-6\"/>"
+        out+="\n\t\t<materialref ref=\"Nylon\"/>"
         out+="\n\t\t<solidref ref=\"solid_ledge\"/>"
         out+="\n\t\t<auxiliary auxtype=\"SensDet\" auxvalue=\"ledgeLeft\" />"
         out+="\n\t\t<auxiliary auxtype=\"DetNo\" auxvalue=\""+"7"+str(i).zfill(2)+"28"+"\"/>"
@@ -455,7 +465,7 @@ for i in range(0,nSMmodules):
         out+="\n\t</volume>\n"
 
         out+="\t<volume name=\"logic_ledge_right_"+str(i)+"\">"
-        out+="\n\t\t<materialref ref=\"G4_NYLON-6-6\"/>"
+        out+="\n\t\t<materialref ref=\"Nylon\"/>"
         out+="\n\t\t<solidref ref=\"solid_ledge\"/>"
         out+="\n\t\t<auxiliary auxtype=\"SensDet\" auxvalue=\"ledgeRight\" />"
         out+="\n\t\t<auxiliary auxtype=\"DetNo\" auxvalue=\""+"7"+str(i).zfill(2)+"29"+"\"/>"
@@ -463,19 +473,19 @@ for i in range(0,nSMmodules):
         out+="\n\t</volume>\n"
 
         out+="\t<volume name=\"logic_mirror_box_bot_"+str(i)+"\">"
-        out+="\n\t\t<materialref ref=\"G4_Al\"/>"
+        out+="\n\t\t<materialref ref=\"Aluminum_material\"/>"
         out+="\n\t\t<solidref ref=\"solid_mirror_box_bot\"/>"
         out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"green\"/>"
         out+="\n\t</volume>\n"
 
         out+="\t<volume name=\"logic_mirror_box_top_"+str(i)+"\">"
-        out+="\n\t\t<materialref ref=\"G4_Al\"/>"
+        out+="\n\t\t<materialref ref=\"Aluminum_material\"/>"
         out+="\n\t\t<solidref ref=\"solid_mirror_box_top\"/>"
         out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"green\"/>"
         out+="\n\t</volume>\n"
 
         out+="\t<volume name=\"logic_pmt_filter_"+str(i)+"\">"
-        out+="\n\t\t<materialref ref=\"G4_Quartz\"/>"
+        out+="\n\t\t<materialref ref=\"Quartz\"/>"
         out+="\n\t\t<solidref ref=\"solid_pmt_filter\"/>"
         out+="\n\t\t<auxiliary auxtype=\"SensDet\" auxvalue=\"showerMaxPMTFilter\" />"
         out+="\n\t\t<auxiliary auxtype=\"DetNo\" auxvalue=\""+"7"+str(i).zfill(2)+"10"+"\"/>"
@@ -483,11 +493,19 @@ for i in range(0,nSMmodules):
         out+="\n\t</volume>\n"
 
         out+="\t<volume name=\"logic_pmt_window_"+str(i)+"\">"
-        out+="\n\t\t<materialref ref=\"G4_Quartz\"/>"
+        out+="\n\t\t<materialref ref=\"Quartz\"/>"
         out+="\n\t\t<solidref ref=\"solid_pmt_window\"/>"
         out+="\n\t\t<auxiliary auxtype=\"SensDet\" auxvalue=\"showerMaxPMTwindow\" />"
         out+="\n\t\t<auxiliary auxtype=\"DetNo\" auxvalue=\""+"7"+str(i).zfill(2)+"11"+"\"/>"
         out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"blue\"/>"
+        out+="\n\t</volume>\n"
+
+        out+="\t<volume name=\"logic_pmt_cathode_"+str(i)+"\">"
+        out+="\n\t\t<materialref ref=\"Cathode\"/>"
+        out+="\n\t\t<solidref ref=\"solid_pmt_cathode\"/>"
+        out+="\n\t\t<auxiliary auxtype=\"SensDet\" auxvalue=\"showerMaxPMTcathode\" />"
+        out+="\n\t\t<auxiliary auxtype=\"DetNo\" auxvalue=\""+"7"+str(i).zfill(2)+"16"+"\"/>"
+        out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"green\"/>"
         out+="\n\t</volume>\n"
 
         out+="\t<volume name=\"logic_pmt_"+str(i)+"\">"
@@ -534,32 +552,32 @@ for i in range(0,nSMmodules):
         out+="\n\t</volume>\n"
 
         out+="\t<volume name=\"logic_top_support_"+str(i)+"\">"
-        out+="\n\t\t<materialref ref=\"G4_Al\"/>"
+        out+="\n\t\t<materialref ref=\"Aluminum_material\"/>"
         out+="\n\t\t<solidref ref=\"solid_top_support_6\"/>"
         out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"grey\"/>"
         out+="\n\t</volume>\n"
 
         out+="\t<volume name=\"logic_pmt_housing_"+str(i)+"\">"
-        out+="\n\t\t<materialref ref=\"G4_Al\"/>"
+        out+="\n\t\t<materialref ref=\"Aluminum_material\"/>"
         out+="\n\t\t<solidref ref=\"solid_pmt_housing\"/>"
         out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"grey\"/>"
         out+="\n\t\t<auxiliary auxtype=\"Alpha\" auxvalue=\"0.5\"/>"
         out+="\n\t</volume>\n"
 
         out+="\t<volume name=\"logic_pmt_housing_lid_"+str(i)+"\">"
-        out+="\n\t\t<materialref ref=\"G4_Al\"/>"
+        out+="\n\t\t<materialref ref=\"Aluminum_material\"/>"
         out+="\n\t\t<solidref ref=\"solid_pmt_housing_lid\"/>"
         out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"grey\"/>"
         out+="\n\t</volume>\n"
 
         out+="\t<volume name=\"logic_strut_"+str(i)+"\">"
-        out+="\n\t\t<materialref ref=\"G4_Al\"/>"
+        out+="\n\t\t<materialref ref=\"Aluminum_material\"/>"
         out+="\n\t\t<solidref ref=\"solid_strut\"/>"
         out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"grey\"/>"
         out+="\n\t</volume>\n"
 
         out+="\t<volume name=\"logic_singledet_"+str(i).zfill(2)+"\">"
-        out+="\n\t\t<materialref ref=\"G4_AIR\"/>"
+        out+="\n\t\t<materialref ref=\"Air\"/>"
         out+="\n\t\t<solidref ref=\"solid_singledet_6\"/>"
 
         # After defining logical volumes for each SM modules, now define physical volumes
@@ -599,15 +617,21 @@ for i in range(0,nSMmodules):
         out+="\n\t\t\t<rotation name=\"rot_logic_pmt_window_"+str(i)+"\" x=\"0\" y=\"-pi/2\" z=\"0\"/>"
         out+="\n\t\t</physvol>"
 
+        out+="\n\t\t<physvol name=\"pmt_cathode_"+str(i)+"\">"
+        out+="\n\t\t\t<volumeref ref=\"logic_pmt_cathode_"+str(i)+"\"/>"
+        out+="\n\t\t\t<position name=\"pos_logic_pmt_cathode_"+str(i)+"\" x=\""+str(length_quartz/2+length_ledge/2+length_mirror_box_bot+length_mirror_box_top+length_top_support+length_pmt_filter+length_pmt_window+length_pmt_cathode/2)+"\" y=\""+str(0)+"\" z=\""+str(thick_tungsten/2)+"\"/>"
+        out+="\n\t\t\t<rotation name=\"rot_logic_pmt_window_"+str(i)+"\" x=\"0\" y=\"-pi/2\" z=\"0\"/>"
+        out+="\n\t\t</physvol>"
+
         out+="\n\t\t<physvol name=\"pmt_"+str(i)+"\">"
         out+="\n\t\t\t<volumeref ref=\"logic_pmt_"+str(i)+"\"/>"
-        out+="\n\t\t\t<position name=\"pos_logic_pmt_"+str(i)+"\" x=\""+str(length_quartz/2+length_ledge/2+length_mirror_box_bot+length_mirror_box_top+length_top_support+length_pmt_filter+length_pmt_window+length_pmt_gut/2)+"\" y=\""+str(0)+"\" z=\""+str(thick_tungsten/2)+"\"/>"
+        out+="\n\t\t\t<position name=\"pos_logic_pmt_"+str(i)+"\" x=\""+str(length_quartz/2+length_ledge/2+length_mirror_box_bot+length_mirror_box_top+length_top_support+length_pmt_filter+length_pmt_window+length_pmt_cathode+length_pmt_gut/2)+"\" y=\""+str(0)+"\" z=\""+str(thick_tungsten/2)+"\"/>"
         out+="\n\t\t\t<rotation name=\"rot_logic_pmt_"+str(i)+"\" x=\""+str(0)+"\" y=\"-pi/2\" z=\"0\"/>"
         out+="\n\t\t</physvol>"
 
         out+="\n\t\t<physvol name=\"pmt_base_"+str(i)+"\">"
         out+="\n\t\t\t<volumeref ref=\"logic_pmt_base_"+str(i)+"\"/>"
-        out+="\n\t\t\t<position name=\"pos_logic_pmt_base_"+str(i)+"\" x=\""+str(length_quartz/2+length_ledge/2+length_mirror_box_bot+length_mirror_box_top+length_top_support+length_pmt_filter+length_pmt_window+length_pmt_gut+length_pmt_base/2)+"\" y=\""+str(0)+"\" z=\""+str(thick_tungsten/2)+"\"/>"
+        out+="\n\t\t\t<position name=\"pos_logic_pmt_base_"+str(i)+"\" x=\""+str(length_quartz/2+length_ledge/2+length_mirror_box_bot+length_mirror_box_top+length_top_support+length_pmt_filter+length_pmt_window+length_pmt_cathode+length_pmt_gut+length_pmt_base/2)+"\" y=\""+str(0)+"\" z=\""+str(thick_tungsten/2)+"\"/>"
         out+="\n\t\t\t<rotation name=\"rot_logic_pmt_base_"+str(i)+"\" x=\""+str(0)+"\" y=\"-pi/2\" z=\"0\"/>"
         out+="\n\t\t</physvol>"
 
@@ -719,34 +743,69 @@ for i in range(0,nSMmodules):
         out+="\n\t</volume>\n"
             
 out+="\t<volume name=\"showerMaxMother\">"
-out+="\n\t\t<materialref ref=\"G4_AIR\"/>"
+out+="\n\t\t<materialref ref=\"Air\"/>"
 out+="\n\t\t<solidref ref=\"solid_showerMaxMother\"/>"
 
 # Place all 28 modules in the showerMaxMother volume
 for i in range(0,nSMmodules):
-        if (i%2==0):    
-                zpos=-zstagger
-                rpos=pos
-        if (i%2==1):
-                zpos=zstagger
-                rpos=pos + 4
-        theta=math.pi+2*i*math.pi/28
-        xpos=rpos*(math.cos(theta))
-        ypos=rpos*(math.sin(theta)) 
+        if (nSMmodules==28):
+                if (i%2==0):    
+                        zpos=-zstagger
+                        rpos=pos
+                if (i%2==1):
+                        zpos=zstagger
+                        rpos=pos + 4
+                theta=math.pi+2*i*math.pi/28
+                xpos=rpos*(math.cos(theta))
+                ypos=rpos*(math.sin(theta)) 
+        else:
+                theta=0
+                xpos=0
+                ypos=0
+                zpos=0
+
         out+="\n\t\t<physvol name=\"singledet_"+str(i).zfill(2)+"\">"
         out+="\n\t\t\t<volumeref ref=\"logic_singledet_"+str(i).zfill(2)+"\"/>"
         out+="\n\t\t\t<position name=\"pos_singledet_"+str(i)+"\" x=\""+str(xpos)+"\" y=\""+str(ypos)+"\" z=\""+str(zpos)+"\"/>"
         out+="\n\t\t\t<rotation name=\"rot_singledet_"+str(i)+"\" x=\""+str(0)+"\" y=\""+str(0)+"\" z=\""+str(-theta)+"\"/>"
         out+="\n\t\t</physvol>"
 
-out+="\n\t\t<physvol name=\"support_ring\">"
-out+="\n\t\t\t<volumeref ref=\"logic_support_ring\"/>"
-out+="\n\t\t\t<position name=\"pos_support_ring)\" x=\""+str(0)+"\" y=\""+str(0)+"\" z=\""+str(thick_tungsten/2)+"\"/>"
-out+="\n\t\t\t<rotation name=\"rot_support_ring\" x=\""+str(0)+"\" y=\"0\" z=\""+str(0)+"\"/>"
-out+="\n\t\t</physvol>"
+if nSMmodules == 28:
+        out+="\n\t\t<physvol name=\"support_ring\">"
+        out+="\n\t\t\t<volumeref ref=\"logic_support_ring\"/>"
+        out+="\n\t\t\t<position name=\"pos_support_ring)\" x=\""+str(0)+"\" y=\""+str(0)+"\" z=\""+str(thick_tungsten/2)+"\"/>"
+        out+="\n\t\t\t<rotation name=\"rot_support_ring\" x=\""+str(0)+"\" y=\"0\" z=\""+str(0)+"\"/>"
+        out+="\n\t\t</physvol>"
 
 out+="\n\t\t<auxiliary auxtype=\"Alpha\" auxvalue=\"0.0\"/>"
-out+="\n\t</volume>"
+out+="\n\t</volume>\n\n"
+
+# Specify surfaces for optical properties
+out+="\t<skinsurface name=\"quartz_skin_surface\" surfaceproperty=\"quartz_surface\" >\n"
+for i in range(0,nSMmodules):
+    for j in range(4):
+            out+="\t\t<volumeref ref=\"logic_quartz_"+str(i)+"_"+str(j)+"\"/>\n"
+out+="\t</skinsurface>\n"
+
+out+="\t<skinsurface name=\"suitcase_skin_surface\" surfaceproperty=\"Al_mirror_surface\" >\n"
+for i in range(0,nSMmodules):
+    out+="\t\t<volumeref ref=\"logic_suitcase_tungstenquartz_"+str(i)+"\"/>\n"
+out+="\t</skinsurface>\n"
+
+out+="\t<skinsurface name=\"mirror_box_top_skin_surface\" surfaceproperty=\"Al_mirror_surface\" >\n"
+for i in range(0,nSMmodules):
+    out+="\t\t<volumeref ref=\"logic_mirror_box_top_"+str(i)+"\"/>\n"
+out+="\t</skinsurface>\n"
+
+out+="\t<skinsurface name=\"mirror_box_bottom_skin_surface\" surfaceproperty=\"Al_mirror_surface\" >\n"
+for i in range(0,nSMmodules):
+    out+="\t\t<volumeref ref=\"logic_mirror_box_bot_"+str(i)+"\"/>\n"
+out+="\t</skinsurface>\n"
+
+out+="\t<skinsurface name=\"cathode_surface\" surfaceproperty=\"Cathode_surface\" >\n"
+for i in range(0,nSMmodules):
+    out+="\t\t<volumeref ref=\"logic_pmt_cathode_"+str(i)+"\"/>\n"
+out+="\t</skinsurface>\n"
 
 out+="\n</structure>\n"
 
