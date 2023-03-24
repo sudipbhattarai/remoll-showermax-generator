@@ -1,6 +1,6 @@
 import math
 
-output_file = "smRetroQsim"
+output_file = "smRetroQsim1"
 
 ### Define geometry parameters(dimensions based on ISU elog 576):
 radial_extent = 1020.0          #distance from beam center to tungsten-quartz bottom on US ring
@@ -35,15 +35,19 @@ width_stack_tungstenquartz_retro = width_quartz
 thick_stack_tungstenquartz_retro = 4*(thick_quartz+thick_tungsten)+ 8*thick_spacer + 2*thick_tolerance
 
 ## Mirror box bottom (lower part of the light guide)
-length_mirror_box_bot = 67.462  
-x1_mirror_box_bot = 2.066*in2mm
-x2_mirror_box_bot = 3.54*in2mm
+length_mirror_box_bot = 2.656*in2mm  
+x1_mirror_box_bot = 1.95*in2mm
+x2_mirror_box_bot = 3.42*in2mm
+y1_mirror_box_bot = width_stack_tungstenquartz
+y2_mirror_box_bot = width_stack_tungstenquartz
 thick_mirror_box_bot = 85.868
 
 ## Mirror box top (upper part of the light guide)
-length_mirror_box_top = 183.058
+length_mirror_box_top = 7.207*in2mm
 x1_mirror_box_top = x2_mirror_box_bot
-x2_mirror_box_top = 2.87*in2mm
+x2_mirror_box_top = 2.79*in2mm
+y1_mirror_box_top = width_stack_tungstenquartz
+y2_mirror_box_top = 2.71*in2mm
 thick_mirror_box_top = 69.866
 
 ## mirror parameter
@@ -126,7 +130,7 @@ f=open(output_file+".gdml", "w+")
 out="<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\n"
 
 out+="<!DOCTYPE gdml [\n"
-out+="\t<!ENTITY matrices SYSTEM \"matrices.xml\">\n"
+out+="\t<!ENTITY matrices SYSTEM \"showerMaxMatrices.xml\">\n"
 out+="]>\n\n"
 
 out+="<gdml"
@@ -251,8 +255,8 @@ out+="\n\t</subtraction>\n"
 #-------------------
 
 # Mirror box bottom(lower part of the light guide)
-out+="\t<trd name=\"solid_mirror_box_bot_1\" lunit=\"mm\" x1=\""+str(x1_mirror_box_bot+2*thick_wall_mirror)+"\"  x2=\""+str(x2_mirror_box_bot+2*thick_wall_mirror)+"\" y1=\""+str(width_stack_tungstenquartz+2*thick_wall_mirror)+"\"  y2=\""+str(width_stack_tungstenquartz+2*thick_wall_mirror)+"\" z=\""+str(length_mirror_box_bot)+"\"/>\n"
-out+="\t<trd name=\"solid_mirror_box_bot_2\" lunit=\"mm\" x1=\""+str(x1_mirror_box_bot)+"\"  x2=\""+str(x2_mirror_box_bot)+"\" y1=\""+str(width_stack_tungstenquartz)+"\"  y2=\""+str(width_stack_tungstenquartz)+"\" z=\""+str(length_mirror_box_bot+1)+"\"/>\n"
+out+="\t<trd name=\"solid_mirror_box_bot_1\" lunit=\"mm\" x1=\""+str(x1_mirror_box_bot+2*thick_wall_mirror)+"\"  x2=\""+str(x2_mirror_box_bot+2*thick_wall_mirror)+"\" y1=\""+str(y1_mirror_box_bot+2*thick_wall_mirror)+"\"  y2=\""+str(y2_mirror_box_bot+2*thick_wall_mirror)+"\" z=\""+str(length_mirror_box_bot)+"\"/>\n"
+out+="\t<trd name=\"solid_mirror_box_bot_2\" lunit=\"mm\" x1=\""+str(x1_mirror_box_bot)+"\"  x2=\""+str(x2_mirror_box_bot)+"\" y1=\""+str(y1_mirror_box_bot)+"\"  y2=\""+str(y2_mirror_box_bot)+"\" z=\""+str(length_mirror_box_bot+1)+"\"/>\n"
 
 out+="\t<subtraction name=\"solid_mirror_box_bot\">"
 out+="\n\t\t<first ref=\"solid_mirror_box_bot_1\"/>"
@@ -263,8 +267,8 @@ out+="\n\t</subtraction>\n"
 #-------------------
 
 # Mirror box top(upper part of the light guide)
-out+="\t<trd name=\"solid_mirror_box_top_1\" lunit=\"mm\" x1=\""+str(x1_mirror_box_top + 2*thick_wall_mirror)+"\"  x2=\""+str(x2_mirror_box_top+2*thick_wall_mirror)+"\" y1=\""+str(width_stack_tungstenquartz+2*thick_wall_mirror)+"\"  y2=\""+str(thick_mirror_box_top+2*thick_wall_mirror)+"\" z=\""+str(length_mirror_box_top)+"\"/>\n"
-out+="\t<trd name=\"solid_mirror_box_top_2\" lunit=\"mm\" x1=\""+str(x1_mirror_box_top)+"\"  x2=\""+str(x2_mirror_box_top)+"\" y1=\""+str(width_stack_tungstenquartz)+"\"  y2=\""+str(thick_mirror_box_top)+"\" z=\""+str(length_mirror_box_top+1)+"\"/>\n"
+out+="\t<trd name=\"solid_mirror_box_top_1\" lunit=\"mm\" x1=\""+str(x1_mirror_box_top + 2*thick_wall_mirror)+"\"  x2=\""+str(x2_mirror_box_top+2*thick_wall_mirror)+"\" y1=\""+str(y1_mirror_box_top+2*thick_wall_mirror)+"\"  y2=\""+str(y2_mirror_box_top+2*thick_wall_mirror)+"\" z=\""+str(length_mirror_box_top)+"\"/>\n"
+out+="\t<trd name=\"solid_mirror_box_top_2\" lunit=\"mm\" x1=\""+str(x1_mirror_box_top)+"\"  x2=\""+str(x2_mirror_box_top)+"\" y1=\""+str(y1_mirror_box_top)+"\"  y2=\""+str(y2_mirror_box_top)+"\" z=\""+str(length_mirror_box_top+1)+"\"/>\n"
 
 out+="\t<subtraction name=\"solid_mirror_box_top\">"
 out+="\n\t\t<first ref=\"solid_mirror_box_top_1\"/>"
@@ -283,13 +287,14 @@ out+="\t<tube name=\"solid_pmt_cathode\" rmin=\"0\" rmax=\""+str(radius_pmt)+"\"
 ## Mother volume single detector
 out+="\t<box name=\"solid_singledet\" lunit=\"mm\" x=\""+str(800)+"\" y=\""+str(300)+"\" z=\""+str(200)+"\"/>\n"
 
-out+="\t<box name=\"solid_showerMaxMother\" lunit=\"mm\" x=\""+str(900)+"\" y=\""+str(350)+"\" z=\""+str(250)+"\"/>\n"
+out+="\t<box name=\"solid_showerMaxMother\" lunit=\"mm\" x=\""+str(1000)+"\" y=\""+str(500)+"\" z=\""+str(300)+"\"/>\n"
 
 ## Optical Surfaces
 out+="\n\t<opticalsurface name=\"quartz_surface\" model=\"glisur\" finish=\"ground\" type=\"dielectric_dielectric\" value=\"0.98\" >\n"
 out+="\t</opticalsurface>\n"
 out+="\t<opticalsurface name=\"Al_mirror_surface\" model=\"glisur\" finish=\"ground\" type=\"dielectric_metal\" value=\"0.98\" >\n"
 out+="\t\t<property name=\"REFLECTIVITY\" ref=\"MiroSilver_REFLECTIVITY_30DEG\" />\n"
+out+="\t\t<property name=\"EFFICIENCY\" ref=\"AluminumSurf_EFFICIENCY\" />\n"
 out+="\t</opticalsurface>\n"
 out+="\t<opticalsurface name=\"Cathode_surface\" model=\"glisur\" finish=\"polished\" type=\"dielectric_metal\" value=\"1.0\">\n"
 out+="\t\t<property name=\"REFLECTIVITY\" ref=\"CathodeSurf_REFLECTIVITY\" />\n"
@@ -330,13 +335,19 @@ for i in range(0,nSMmodules):
         out+="\t<volume name=\"logic_mirror_box_bot_"+str(i)+"\">"
         out+="\n\t\t<materialref ref=\"Aluminum_material\"/>"
         out+="\n\t\t<solidref ref=\"solid_mirror_box_bot\"/>"
-        #out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"green\"/>"
+        out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"green\"/>"
+        out+="\n\t\t<auxiliary auxtype=\"SensDet\" auxvalue=\"mirror_box_bot_0\"/>"
+        out+="\n\t\t<auxiliary auxtype=\"DetNo\" auxvalue=\"70031\"/>"
+        out+="\n\t\t<auxiliary auxtype=\"DetType\" auxvalue=\"opticalphoton\"/>"
         out+="\n\t</volume>\n"
 
         out+="\t<volume name=\"logic_mirror_box_top_"+str(i)+"\">"
         out+="\n\t\t<materialref ref=\"Aluminum_material\"/>"
         out+="\n\t\t<solidref ref=\"solid_mirror_box_top\"/>"
-        #out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"green\"/>"
+        out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"green\"/>"
+        out+="\n\t\t<auxiliary auxtype=\"SensDet\" auxvalue=\"mirror_box_top_0\"/>"
+        out+="\n\t\t<auxiliary auxtype=\"DetNo\" auxvalue=\"70032\"/>"
+        out+="\n\t\t<auxiliary auxtype=\"DetType\" auxvalue=\"opticalphoton\"/>"
         out+="\n\t</volume>\n"
 
         out+="\t<volume name=\"logic_pmt_filter_"+str(i)+"\">"
@@ -355,7 +366,9 @@ for i in range(0,nSMmodules):
         out+="\n\t\t<materialref ref=\"Cathode\"/>"
         out+="\n\t\t<solidref ref=\"solid_pmt_cathode\"/>"
         out+="\n\t\t<auxiliary auxtype=\"SensDet\" auxvalue=\"PhotoCathode\" />"
-        #out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"blue\"/>"
+        out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"blue\"/>"
+        out+="\n\t\t<auxiliary auxtype=\"DetNum\" auxvalue=\"70016\"/>"
+        out+="\n\t\t<auxiliary auxtype=\"DetType\" auxvalue=\"opticalphoton\"/>"
         out+="\n\t</volume>\n"
 
         out+="\t<volume name=\"logic_singledet_"+str(i).zfill(2)+"\">"
