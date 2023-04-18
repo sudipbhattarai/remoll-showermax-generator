@@ -1,6 +1,12 @@
-import math
+"""
+Description: Creates a showermax detector geometry for the retro SM detector 
+        with straight upper light guide.
+Author: Sudip Bhattarai
+Date: 04/04/2023
+"""
 
-output_file = "smRetroQsim1"
+output_file = "smRetroQsim-v2.6"
+n=5
 
 ### Define geometry parameters(dimensions based on ISU elog 576):
 radial_extent = 1020.0          #distance from beam center to tungsten-quartz bottom on US ring
@@ -34,6 +40,9 @@ length_stack_tungstenquartz_retro = length_quartz
 width_stack_tungstenquartz_retro = width_quartz
 thick_stack_tungstenquartz_retro = 4*(thick_quartz+thick_tungsten)+ 8*thick_spacer + 2*thick_tolerance
 
+## mirror parameter
+thick_wall_mirror = 0.5
+
 ## Mirror box bottom (lower part of the light guide)
 length_mirror_box_bot = 2.656*in2mm  
 x1_mirror_box_bot = 1.95*in2mm
@@ -47,11 +56,13 @@ length_mirror_box_top = 7.207*in2mm
 x1_mirror_box_top = x2_mirror_box_bot
 x2_mirror_box_top = 2.79*in2mm
 y1_mirror_box_top = width_stack_tungstenquartz
-y2_mirror_box_top = 2.71*in2mm
+y2_mirror_box_top = width_stack_tungstenquartz- n*(y1_mirror_box_top-2.71*in2mm)/5
 thick_mirror_box_top = 69.866
 
-## mirror parameter
-thick_wall_mirror = 0.5
+## Mirror box top cover
+length_mirror_box_top_cover = thick_wall_mirror
+width_mirror_box_top_cover = y2_mirror_box_top
+thick_mirror_box_top_cover = x2_mirror_box_top
 
 ## Front and back plate of quartz-tungsten stack
 length_front_back_plate = 181.698
@@ -278,6 +289,19 @@ out+="\n\t\t<rotation name=\"rot_subtract_mirror_box_top_12\" x=\"0\" y=\"0\" z=
 out+="\n\t</subtraction>\n"
 #-------------------
 
+# Mirror box top cover
+out+="\t<box name=\"solid_mirror_box_top_cover_1\" lunit=\"mm\" x=\""+str(length_mirror_box_top_cover)+"\" y=\""+str(width_mirror_box_top_cover)+"\" z=\""+str(thick_mirror_box_top_cover)+"\"/>\n"
+out+="\t<tube name=\"solid_mirror_box_top_cover_hole\" rmin=\"0\" rmax=\""+str(radius_pmt)+"\" z=\""+str(thick_wall_mirror+1)+"\" deltaphi=\"2*pi\" startphi=\"0\" aunit=\"rad\" lunit=\"mm\"/>\n"
+
+out+="\t<subtraction name=\"solid_mirror_box_top_cover\">"
+out+="\n\t\t<first ref=\"solid_mirror_box_top_cover_1\"/>"
+out+="\n\t\t<second ref=\"solid_mirror_box_top_cover_hole\"/>"
+out+="\n\t\t<position name=\"pos_subtract_mirror_box_top_cover\" x=\"0\" y=\"0\" z=\"0\"/>" 
+out+="\n\t\t<rotation name=\"rot_subtract_mirror_box_top_cover\" x=\"0\" y=\"pi/2\" z=\"0\"/>"
+out+="\n\t</subtraction>\n"
+#-------------------
+
+
 out+="\t<tube name=\"solid_pmt_filter\" rmin=\"0\" rmax=\""+str(radius_pmt)+"\" z=\""+str(length_pmt_filter)+"\" deltaphi=\"2*pi\" startphi=\"0\" aunit=\"rad\" lunit=\"mm\"/>\n"
 
 out+="\t<tube name=\"solid_pmt_window\" rmin=\"0\" rmax=\""+str(radius_pmt)+"\" z=\""+str(length_pmt_window)+"\" deltaphi=\"2*pi\" startphi=\"0\" aunit=\"rad\" lunit=\"mm\"/>\n"
@@ -350,6 +374,15 @@ for i in range(0,nSMmodules):
         out+="\n\t\t<auxiliary auxtype=\"DetType\" auxvalue=\"opticalphoton\"/>"
         out+="\n\t</volume>\n"
 
+        out+="\t<volume name=\"logic_mirror_box_top_cover_"+str(i)+"\">"
+        out+="\n\t\t<materialref ref=\"Aluminum_material\"/>"
+        out+="\n\t\t<solidref ref=\"solid_mirror_box_top_cover\"/>"
+        out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"green\"/>"
+        out+="\n\t\t<auxiliary auxtype=\"SensDet\" auxvalue=\"mirror_box_top_cover_0\"/>"
+        out+="\n\t\t<auxiliary auxtype=\"DetNo\" auxvalue=\"70033\"/>"
+        out+="\n\t\t<auxiliary auxtype=\"DetType\" auxvalue=\"opticalphoton\"/>"
+        out+="\n\t</volume>\n"
+
         out+="\t<volume name=\"logic_pmt_filter_"+str(i)+"\">"
         out+="\n\t\t<materialref ref=\"Quartz\"/>"
         out+="\n\t\t<solidref ref=\"solid_pmt_filter\"/>"
@@ -399,6 +432,12 @@ for i in range(0,nSMmodules):
         out+="\n\t\t\t<volumeref ref=\"logic_mirror_box_top_"+str(i)+"\"/>"
         out+="\n\t\t\t<position name=\"pos_logic_mirror_box_top_"+str(i)+"\" x=\""+str(length_quartz/2+length_ledge/2+length_mirror_box_bot+length_mirror_box_top/2)+"\" y=\""+str(0)+"\" z=\""+str(thick_tungsten/2)+"\"/>"
         out+="\n\t\t\t<rotation name=\"rot_logic_mirror_box_top_"+str(i)+"\" x=\""+str(0)+"\" y=\"-pi/2\" z=\"0\"/>"
+        out+="\n\t\t</physvol>"
+
+        out+="\n\t\t<physvol name=\"mirror_box_top_cover_"+str(i)+"\">"
+        out+="\n\t\t\t<volumeref ref=\"logic_mirror_box_top_cover_"+str(i)+"\"/>"
+        out+="\n\t\t\t<position name=\"pos_logic_mirror_box_top_cover_"+str(i)+"\" x=\""+str(length_quartz/2+length_ledge/2+length_mirror_box_bot+length_mirror_box_top+ length_mirror_box_top_cover/2)+"\" y=\""+str(0)+"\" z=\""+str(thick_tungsten/2)+"\"/>"
+        out+="\n\t\t\t<rotation name=\"rot_logic_mirror_box_top_cover_"+str(i)+"\" x=\""+str(0)+"\" y=\"0\" z=\"0\"/>"
         out+="\n\t\t</physvol>"
 
         #out+="\n\t\t<physvol name=\"pmt_filter_"+str(i)+"\">"
@@ -464,6 +503,9 @@ out+="\t</skinsurface>\n"
 out+="\t<skinsurface name=\"mirror_box_bottom_skin_surface\" surfaceproperty=\"Al_mirror_surface\" >\n"
 out+="\t\t<volumeref ref=\"logic_mirror_box_bot_"+str(i)+"\"/>\n"
 out+="\t</skinsurface>\n"
+out+="\t<skinsurface name=\"mirror_box_top_cover_skin_surface\" surfaceproperty=\"Al_mirror_surface\" >\n"
+out+="\t\t<volumeref ref=\"logic_mirror_box_top_cover_"+str(i)+"\"/>\n"
+out+="\t</skinsurface>\n"
 out+="\t<skinsurface name=\"pmt_cathode_skin_surface\" surfaceproperty=\"Cathode_surface\" >\n"
 out+="\t\t<volumeref ref=\"logic_pmt_cathode_"+str(i)+"\"/>\n"
 out+="\t</skinsurface>\n"
@@ -478,4 +520,4 @@ out+="</gdml>\n"
 
 f.write(out)
 
-print("Succesfully written to GDML file.")
+print(f"Succesfully written {output_file}.gdml file.")
