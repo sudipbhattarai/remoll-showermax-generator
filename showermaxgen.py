@@ -1,7 +1,15 @@
+"""
+Description: Creates a showermax detector geometry for the retro SM detector 
+        with straight upper light guide.
+Author: Sudip Bhattarai
+Date: 04/18/2023
+"""
+
+
 from cmath import pi
 import math
 
-output_file = "showerMaxDetectorSystem" # "showerMaxDetector for single det and showerMaxDetectorSystem for whole system"
+output_file = "showerMaxDetector" # "showerMaxDetector for single det and showerMaxDetectorSystem for whole system"
 
 ### Define geometry parameters(dimensions based on ISU elog 576):
 radial_extent = 1020.0          #distance from beam center to tungsten-quartz bottom on US ring
@@ -20,11 +28,11 @@ length_tungsten = length_quartz
 width_tungsten = width_quartz
 thick_tungsten = 8.0
 
-## Spacer in TQ stack
-thick_spacer = 0.870
+## Spacer in TQ stack (mylar wrap)
+thick_spacer = 0.076
 length_spacer = length_quartz
 width_spacer = width_quartz
-thick_tolerance = 0.508
+thick_tolerance = 0.00
 
 ## Tungsten-quartz stack
 length_stack_tungstenquartz = length_quartz
@@ -33,13 +41,21 @@ thick_stack_tungstenquartz = 4*(thick_quartz+thick_tungsten)+ 8*thick_spacer + 2
 
 ## Mirror box bottom (lower part of the light guide)
 length_mirror_box_bot = 67.462  
+x1_mirror_box_bot = 1.95*in2mm
+x2_mirror_box_bot = 3.42*in2mm
+y1_mirror_box_bot = width_stack_tungstenquartz
+y2_mirror_box_bot = width_stack_tungstenquartz
 thick_mirror_box_bot = 85.868
 
 ## Mirror box top (upper part of the light guide)
 length_mirror_box_top = 183.058
+x1_mirror_box_top = x2_mirror_box_bot
+x2_mirror_box_top = 2.79*in2mm
+y1_mirror_box_top = width_stack_tungstenquartz
+y2_mirror_box_top = width_stack_tungstenquartz
 thick_mirror_box_top = 69.866
 
-## mirror parameter
+## mirror parameter 
 thick_wall_mirror = 0.5
 
 ## Front and back plate of quartz-tungsten stack
@@ -203,20 +219,20 @@ out+="\t<box name=\"solid_ledge\" lunit=\"mm\" x=\""+str(length_ledge)+"\" y=\""
 #------------------
 
 # Mirror box bottom(lower part of the light guide)
-out+="\t<trd name=\"solid_mirror_box_bot_1\" lunit=\"mm\" x1=\""+str(thick_stack_tungstenquartz-thick_tungsten+2*thick_wall_mirror)+"\"  x2=\""+str(thick_mirror_box_bot+2*thick_wall_mirror)+"\" y1=\""+str(width_stack_tungstenquartz+2*thick_wall_mirror)+"\"  y2=\""+str(width_stack_tungstenquartz+2*thick_wall_mirror)+"\" z=\""+str(length_mirror_box_bot)+"\"/>\n"
-out+="\t<trd name=\"solid_mirror_box_bot_2\" lunit=\"mm\" x1=\""+str(thick_stack_tungstenquartz-thick_tungsten)+"\"  x2=\""+str(thick_mirror_box_bot)+"\" y1=\""+str(width_stack_tungstenquartz)+"\"  y2=\""+str(width_stack_tungstenquartz)+"\" z=\""+str(length_mirror_box_bot+1)+"\"/>\n"
+out+="\t<trd name=\"solid_mirror_box_bot_1\" lunit=\"mm\" x1=\""+str(x1_mirror_box_bot+2*thick_wall_mirror)+"\"  x2=\""+str(x2_mirror_box_bot+2*thick_wall_mirror)+"\" y1=\""+str(y1_mirror_box_bot+2*thick_wall_mirror)+"\"  y2=\""+str(y2_mirror_box_bot+2*thick_wall_mirror)+"\" z=\""+str(length_mirror_box_bot)+"\"/>\n"
+out+="\t<trd name=\"solid_mirror_box_bot_2\" lunit=\"mm\" x1=\""+str(x1_mirror_box_top)+"\"  x2=\""+str(x2_mirror_box_top)+"\" y1=\""+str(y1_mirror_box_bot)+"\"  y2=\""+str(width_stack_tungstenquartz)+"\" z=\""+str(length_mirror_box_bot+1)+"\"/>\n"
 
 out+="\t<subtraction name=\"solid_mirror_box_bot\">"
 out+="\n\t\t<first ref=\"solid_mirror_box_bot_1\"/>"
 out+="\n\t\t<second ref=\"solid_mirror_box_bot_2\"/>"
 out+="\n\t\t<position name=\"pos_subtract_mirror_box_bot_12\" x=\"0\" y=\"0\" z=\"0\"/>" 
-out+="\n\t\t<rotation name=\"rot_subtract_mirror_box_bot_12\" x=\"0\" y=\"0\" z=\"0\"/>"
+out+="\n\t\t<rotation name=\"rot_subtract_mirror_box_bot_12\" x=\"0\" y=\"\" z=\"0\"/>"
 out+="\n\t</subtraction>\n"
 #-------------------
 
 # Mirror box top(upper part of the light guide)
-out+="\t<trd name=\"solid_mirror_box_top_1\" lunit=\"mm\" x1=\""+str(thick_mirror_box_bot+2*thick_wall_mirror)+"\"  x2=\""+str(thick_mirror_box_top+2*thick_wall_mirror)+"\" y1=\""+str(width_stack_tungstenquartz+2*thick_wall_mirror)+"\"  y2=\""+str(thick_mirror_box_top+2*thick_wall_mirror)+"\" z=\""+str(length_mirror_box_top)+"\"/>\n"
-out+="\t<trd name=\"solid_mirror_box_top_2\" lunit=\"mm\" x1=\""+str(thick_mirror_box_bot)+"\"  x2=\""+str(thick_mirror_box_top)+"\" y1=\""+str(width_stack_tungstenquartz)+"\"  y2=\""+str(thick_mirror_box_top)+"\" z=\""+str(length_mirror_box_top+1)+"\"/>\n"
+out+="\t<trd name=\"solid_mirror_box_top_1\" lunit=\"mm\" x1=\""+str(x1_mirror_box_top+2*thick_wall_mirror)+"\"  x2=\""+str(x2_mirror_box_top+2*thick_wall_mirror)+"\" y1=\""+str(y1_mirror_box_top+2*thick_wall_mirror)+"\"  y2=\""+str(y2_mirror_box_top+2*thick_wall_mirror)+"\" z=\""+str(length_mirror_box_top)+"\"/>\n"
+out+="\t<trd name=\"solid_mirror_box_top_2\" lunit=\"mm\" x1=\""+str(x1_mirror_box_bot)+"\"  x2=\""+str(x2_mirror_box_top)+"\" y1=\""+str(y1_mirror_box_top)+"\"  y2=\""+str(y2_mirror_box_top)+"\" z=\""+str(length_mirror_box_top+1)+"\"/>\n"
 
 out+="\t<subtraction name=\"solid_mirror_box_top\">"
 out+="\n\t\t<first ref=\"solid_mirror_box_top_1\"/>"
@@ -316,8 +332,8 @@ out+="\t<box name=\"solid_strut\" lunit=\"mm\" x=\""+str(length_strut)+"\" y=\""
 
 # Mother volume single detector
 out+="\t<box name=\"solid_stack_region\" lunit=\"mm\" x=\""+str(length_front_back_plate)+"\" y=\""+str(width_front_back_plate+1.0)+"\" z=\""+str(thick_stack_tungstenquartz+2*thick_wall_mirror+2*thick_front_back_plate+1.0)+"\"/>\n"
-out+="\t<trd name=\"solid_mirror_box_bot_region\" lunit=\"mm\" x1=\""+str(thick_stack_tungstenquartz-thick_tungsten+2*thick_wall_mirror+1.0)+"\"  x2=\""+str(thick_mirror_box_bot+2*thick_wall_mirror+1.0)+"\" y1=\""+str(width_stack_tungstenquartz+2*thick_wall_mirror+1.0)+"\"  y2=\""+str(width_stack_tungstenquartz+2*thick_wall_mirror+1.0)+"\" z=\""+str(length_mirror_box_bot+1.0)+"\"/>\n"
-out+="\t<trd name=\"solid_mirror_box_top_region\" lunit=\"mm\" x1=\""+str(thick_mirror_box_bot+2*thick_wall_mirror+1.0)+"\"  x2=\""+str(thick_mirror_box_top+2*thick_wall_mirror+1.0)+"\" y1=\""+str(width_stack_tungstenquartz+2*thick_wall_mirror+1.0)+"\"  y2=\""+str(thick_mirror_box_top+2*thick_wall_mirror+1.0)+"\" z=\""+str(length_mirror_box_top+1.0)+"\"/>\n"
+out+="\t<trd name=\"solid_mirror_box_bot_region\" lunit=\"mm\" x1=\""+str(x1_mirror_box_bot+2*thick_wall_mirror+1.0)+"\"  x2=\""+str(x2_mirror_box_bot+2*thick_wall_mirror+1.0)+"\" y1=\""+str(y1_mirror_box_bot+2*thick_wall_mirror+1.0)+"\"  y2=\""+str(y2_mirror_box_bot+2*thick_wall_mirror+1.0)+"\" z=\""+str(length_mirror_box_bot+1.0)+"\"/>\n"
+out+="\t<trd name=\"solid_mirror_box_top_region\" lunit=\"mm\" x1=\""+str(x1_mirror_box_top+2*thick_wall_mirror+1.0)+"\"  x2=\""+str(x2_mirror_box_top+2*thick_wall_mirror+1.0)+"\" y1=\""+str(y1_mirror_box_top+2*thick_wall_mirror+1.0)+"\"  y2=\""+str(y2_mirror_box_top+2*thick_wall_mirror+1.0)+"\" z=\""+str(length_mirror_box_top+1.0)+"\"/>\n"
 
 out+="\t<union name=\"solid_singledet_1\">"
 out+="\n\t\t<first ref=\"solid_stack_region\"/>"
@@ -672,17 +688,18 @@ for i in range(0,nSMmodules):
         out+="\n\t\t\t<rotation name=\"rot_logic_back_plate_"+str(i)+"\" x=\""+str(0)+"\" y=\"0\" z=\"0\"/>"
         out+="\n\t\t</physvol>"
 
-        out+="\n\t\t<physvol name=\"web_plate_right_"+str(i)+"\">"
-        out+="\n\t\t\t<volumeref ref=\"logic_web_plate_"+str(i)+"\"/>"
-        out+="\n\t\t\t<position name=\"pos_web_plate_"+str(i)+"\" x=\""+str((length_web_plate-length_front_back_plate)/2)+"\" y=\""+str((width_front_back_plate-width_web_plate)/2)+"\" z=\""+str(0)+"\"/>"
-        out+="\n\t\t\t<rotation name=\"rot_web_plate_"+str(i)+"\" x=\""+str(0)+"\" y=\"0\" z=\"0\"/>"
-        out+="\n\t\t</physvol>"
+        if nSMmodules==28:
+                out+="\n\t\t<physvol name=\"web_plate_right_"+str(i)+"\">"
+                out+="\n\t\t\t<volumeref ref=\"logic_web_plate_"+str(i)+"\"/>"
+                out+="\n\t\t\t<position name=\"pos_web_plate_"+str(i)+"\" x=\""+str((length_web_plate-length_front_back_plate)/2)+"\" y=\""+str((width_front_back_plate-width_web_plate)/2)+"\" z=\""+str(0)+"\"/>"
+                out+="\n\t\t\t<rotation name=\"rot_web_plate_"+str(i)+"\" x=\""+str(0)+"\" y=\"0\" z=\"0\"/>"
+                out+="\n\t\t</physvol>"
 
-        out+="\n\t\t<physvol name=\"web_plate_left_"+str(i)+"\">"
-        out+="\n\t\t\t<volumeref ref=\"logic_web_plate_"+str(i)+"\"/>"
-        out+="\n\t\t\t<position name=\"pos_web_plate_"+str(i)+"\" x=\""+str((length_web_plate-length_front_back_plate)/2)+"\" y=\""+str(-(width_front_back_plate-width_web_plate)/2)+"\" z=\""+str(0)+"\"/>"
-        out+="\n\t\t\t<rotation name=\"rot_web_plate_"+str(i)+"\" x=\""+str(0)+"\" y=\"0\" z=\"0\"/>"
-        out+="\n\t\t</physvol>"
+                out+="\n\t\t<physvol name=\"web_plate_left_"+str(i)+"\">"
+                out+="\n\t\t\t<volumeref ref=\"logic_web_plate_"+str(i)+"\"/>"
+                out+="\n\t\t\t<position name=\"pos_web_plate_"+str(i)+"\" x=\""+str((length_web_plate-length_front_back_plate)/2)+"\" y=\""+str(-(width_front_back_plate-width_web_plate)/2)+"\" z=\""+str(0)+"\"/>"
+                out+="\n\t\t\t<rotation name=\"rot_web_plate_"+str(i)+"\" x=\""+str(0)+"\" y=\"0\" z=\"0\"/>"
+                out+="\n\t\t</physvol>"
 
         out+="\n\t\t<physvol name=\"ledge_right_"+str(i)+"\">"
         out+="\n\t\t\t<volumeref ref=\"logic_ledge_right_"+str(i)+"\"/>"
@@ -818,4 +835,4 @@ out+="</gdml>\n"
 
 f.write(out)
 
-print("Succesfully written to GDML file.")
+print(f"Succesfully written to the file {output_file}.gdml")
