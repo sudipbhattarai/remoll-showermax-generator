@@ -10,6 +10,7 @@ from cmath import pi
 import math
 
 output_file = "showerMaxDetector" # "showerMaxDetector for single det and showerMaxDetectorSystem for whole system"
+simApp = "qsim" # "qsim" or "remoll"
 
 ### Define geometry parameters(dimensions based on ISU elog 576):
 radial_extent = 1020.0          #distance from beam center to tungsten-quartz bottom on US ring
@@ -512,7 +513,8 @@ for i in range(0,nSMmodules):
         out+="\t<volume name=\"logic_pmt_cathode_"+str(i)+"\">"
         out+="\n\t\t<materialref ref=\"Cathode\"/>"
         out+="\n\t\t<solidref ref=\"solid_pmt_cathode\"/>"
-        out+="\n\t\t<auxiliary auxtype=\"SensDet\" auxvalue=\"showerMaxPMTcathode\" />"
+        if simApp=="remoll": out+="\n\t\t<auxiliary auxtype=\"SensDet\" auxvalue=\"showerMaxPMTcathode\" />"
+        if simApp=="qsim": out+="\n\t\t<auxiliary auxtype=\"SensDet\" auxvalue=\"PhotoCathode\" />"
         out+="\n\t\t<auxiliary auxtype=\"DetType\" auxvalue=\"opticalphoton\" />"
         out+="\n\t\t<auxiliary auxtype=\"DetNo\" auxvalue=\""+"7"+str(i).zfill(2)+"16"+"\"/>"
         out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"green\"/>"
