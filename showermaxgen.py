@@ -9,7 +9,7 @@ Date: 04/18/2023
 from cmath import pi
 import math
 
-output_file = "showerMaxDetectorSystem" # "showerMaxDetector for single det and showerMaxDetectorSystem for whole system"
+output_file = "showerMaxDetector" # "showerMaxDetector for single det and showerMaxDetectorSystem for whole system"
 
 ### Define geometry parameters(dimensions based on ISU elog 576):
 radial_extent = 1020.0          #distance from beam center to tungsten-quartz bottom on US ring
@@ -212,7 +212,7 @@ out+="\t<box name=\"solid_ledge\" lunit=\"mm\" x=\""+str(length_ledge)+"\" y=\""
 
 # Mirror box bottom(lower part of the light guide)
 out+="\t<trd name=\"solid_mirror_box_bot_1\" lunit=\"mm\" x1=\""+str(x1_mirror_box_bot+2*thick_wall_mirror)+"\"  x2=\""+str(x2_mirror_box_bot+2*thick_wall_mirror)+"\" y1=\""+str(y1_mirror_box_bot+2*thick_wall_mirror)+"\"  y2=\""+str(y2_mirror_box_bot+2*thick_wall_mirror)+"\" z=\""+str(length_mirror_box_bot)+"\"/>\n"
-out+="\t<trd name=\"solid_mirror_box_bot_2\" lunit=\"mm\" x1=\""+str(x1_mirror_box_top)+"\"  x2=\""+str(x2_mirror_box_top)+"\" y1=\""+str(y1_mirror_box_bot)+"\"  y2=\""+str(width_stack_tungstenquartz)+"\" z=\""+str(length_mirror_box_bot+1)+"\"/>\n"
+out+="\t<trd name=\"solid_mirror_box_bot_2\" lunit=\"mm\" x1=\""+str(x1_mirror_box_bot)+"\"  x2=\""+str(x2_mirror_box_bot)+"\" y1=\""+str(y1_mirror_box_bot)+"\"  y2=\""+str(y1_mirror_box_bot)+"\" z=\""+str(length_mirror_box_bot+1)+"\"/>\n"
 
 out+="\t<subtraction name=\"solid_mirror_box_bot\">"
 out+="\n\t\t<first ref=\"solid_mirror_box_bot_1\"/>"
@@ -224,7 +224,7 @@ out+="\n\t</subtraction>\n"
 
 # Mirror box top(upper part of the light guide)
 out+="\t<trd name=\"solid_mirror_box_top_1\" lunit=\"mm\" x1=\""+str(x1_mirror_box_top+2*thick_wall_mirror)+"\"  x2=\""+str(x2_mirror_box_top+2*thick_wall_mirror)+"\" y1=\""+str(y1_mirror_box_top+2*thick_wall_mirror)+"\"  y2=\""+str(y2_mirror_box_top+2*thick_wall_mirror)+"\" z=\""+str(length_mirror_box_top)+"\"/>\n"
-out+="\t<trd name=\"solid_mirror_box_top_2\" lunit=\"mm\" x1=\""+str(x1_mirror_box_bot)+"\"  x2=\""+str(x2_mirror_box_top)+"\" y1=\""+str(y1_mirror_box_top)+"\"  y2=\""+str(y2_mirror_box_top)+"\" z=\""+str(length_mirror_box_top+1)+"\"/>\n"
+out+="\t<trd name=\"solid_mirror_box_top_2\" lunit=\"mm\" x1=\""+str(x1_mirror_box_top)+"\"  x2=\""+str(x2_mirror_box_top)+"\" y1=\""+str(y1_mirror_box_top)+"\"  y2=\""+str(y2_mirror_box_top)+"\" z=\""+str(length_mirror_box_top+1)+"\"/>\n"
 
 out+="\t<subtraction name=\"solid_mirror_box_top\">"
 out+="\n\t\t<first ref=\"solid_mirror_box_top_1\"/>"
