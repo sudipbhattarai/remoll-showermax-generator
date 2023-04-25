@@ -29,16 +29,17 @@ length_tungsten = length_quartz
 width_tungsten = width_quartz
 thick_tungsten = 8.0
 
-## Spacer in TQ stack (mylar wrap)
-thick_spacer = 0.076
-length_spacer = length_quartz
-width_spacer = width_quartz
-thick_tolerance = 0.00
+## wrap in TQ stack (mylar wrap)
+thick_wrap = 0.076
+thick_tolerance = 0.05 # gap between quartz and wrap, and wrap and tungsten
+length_wrap = length_quartz
+width_wrap = width_quartz
+thick_wrap_quartz = thick_quartz + 2*thick_wrap + 2*thick_tolerance
 
 ## Tungsten-quartz stack
 length_stack_tungstenquartz = length_quartz
 width_stack_tungstenquartz = width_quartz
-thick_stack_tungstenquartz = 4*(thick_quartz+thick_tungsten)+ 8*thick_spacer + 2*thick_tolerance
+thick_stack_tungstenquartz = 4*(thick_quartz+thick_tungsten)+ 8*thick_wrap + 16*thick_tolerance
 
 ## Mirror box bottom (lower part of the light guide)
 length_mirror_box_bot = 67.462  
@@ -105,7 +106,7 @@ length_pmt_gut = 150
 length_pmt_window = 3.0
 length_pmt_filter = 5.0 #Combination of long pass filter and ND filter
 length_pmt_region = length_pmt_filter + length_pmt_window + length_pmt_gut + length_pmt_base
-length_pmt_housing = length_pmt_region + 2.0 + 3.0 # tolernace + lid
+length_pmt_housing = length_pmt_region + 2.0 + 3.0 # tolerance + lid
 length_pmt_cathode = 3e-6
 radius_inner_pmt_housing = radius_top_support_hole
 radius_outer_pmt_housing =  radius_inner_pmt_housing + 3.0
@@ -169,10 +170,20 @@ out+="\t</xtru>\n"
 
 out+="\t<box name=\"solid_tungsten\" lunit=\"mm\" x=\""+str(length_tungsten)+"\" y=\""+str(width_tungsten)+"\" z=\""+str(thick_tungsten)+"\"/>\n"
 
-out+="\t<box name=\"solid_spacer\" lunit=\"mm\" x=\""+str(length_spacer)+"\" y=\""+str(width_spacer)+"\" z=\""+str(thick_spacer-0.02)+"\"/>\n"  # Made 0.02 less thick than actual gap
+# Mylar wrap
+out+="\t<box name=\"solid_wrap_1\" lunit=\"mm\" x=\""+str(length_wrap)+"\" y=\""+str(width_wrap)+"\" z=\""+str(thick_wrap_quartz)+"\"/>\n"
+out+="\t<box name=\"solid_wrap_2\" lunit=\"mm\" x=\""+str(length_wrap)+"\" y=\""+str(width_wrap+1.0)+"\" z=\""+str(thick_quartz+2*thick_tolerance)+"\"/>\n"
+
+out+="\t<subtraction name=\"solid_wrap\">"
+out+="\n\t\t<first ref=\"solid_wrap_1\"/>"
+out+="\n\t\t<second ref=\"solid_wrap_2\"/>"
+out+="\n\t\t<position name=\"pos_subtract_wrap_12\" x=\""+str(thick_wrap)+"\" y=\"0\" z=\"0\"/>"
+out+="\n\t\t<rotation name=\"rot_subtract_wrap_12\" x=\"0\" y=\"0\" z=\"0\"/>"
+out+="\n\t</subtraction>\n"
+#-------------------
 
 # Suitcase box, where the TQ stack rests
-out+="\t<box name=\"solid_suitcase_tungstenquartz_1\" lunit=\"mm\" x=\""+str(length_stack_tungstenquartz+thick_wall_mirror)+"\" y=\""+str(width_stack_tungstenquartz+2*thick_wall_mirror)+"\" z=\""+str(thick_stack_tungstenquartz+2*thick_wall_mirror)+"\"/>\n"
+out+="\t<box name=\"solid_suitcase_tungstenquartz_1\" lunit=\"mm\" x=\""+str(length_stack_tungstenquartz+thick_wall_mirror+0.5)+"\" y=\""+str(width_stack_tungstenquartz+2*thick_wall_mirror)+"\" z=\""+str(thick_stack_tungstenquartz+2*thick_wall_mirror)+"\"/>\n"
 out+="\t<box name=\"solid_suitcase_tungstenquartz_2\" lunit=\"mm\" x=\""+str(length_stack_tungstenquartz+1.0)+"\" y=\""+str(width_stack_tungstenquartz)+"\" z=\""+str(thick_stack_tungstenquartz)+"\"/>\n"
 
 out+="\t<subtraction name=\"solid_suitcase_tungstenquartz\">"
@@ -395,7 +406,10 @@ out+="\t<opticalsurface name=\"quartz_surface\" model=\"glisur\" finish=\"ground
 out+="\t\t<property name=\"REFLECTIVITY\" ref=\"Quartz_REFLECTIVITY\" />\n"
 out+="\t</opticalsurface>\n"
 out+="\t<opticalsurface name=\"Al_mirror_surface\" model=\"glisur\" finish=\"ground\" type=\"dielectric_metal\" value=\"0.98\" >\n"
-out+="\t\t<property name=\"REFLECTIVITY\" ref=\"MiroSilver_REFLECTIVITY_30DEG\" />\n"
+out+="\t\t<property name=\"REFLECTIVITY\" ref=\"MiroIV_REFLECTIVITY_30DEG\" />\n"
+out+="\t</opticalsurface>\n"
+out+="\t<opticalsurface name=\"mylar_surface\" model=\"glisur\" finish=\"polished\" type=\"dielectric_metal\" value=\"0.99\" >\n"
+out+="\t\t<property name=\"REFLECTIVITY\" ref=\"Mylar_REFLECTIVITY_30DEG\" />\n"
 out+="\t</opticalsurface>\n"
 out+="\t<opticalsurface name=\"Cathode_surface\" model=\"glisur\" finish=\"polished\" type=\"dielectric_metal\" value=\"1.0\">\n"
 out+="\t\t<property name=\"REFLECTIVITY\" ref=\"CathodeSurf_REFLECTIVITY\" />\n"
@@ -433,13 +447,11 @@ for i in range(0,nSMmodules):
                 out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"red\"/>"
                 out+="\n\t</volume>\n"
                 
-        for j in range(2*nQuartz):        
-                out+="\t<volume name=\"logic_spacer_"+str(i)+"_"+str(j)+"\">"
-                out+="\n\t\t<materialref ref=\"Nylon\"/>"
-                out+="\n\t\t<solidref ref=\"solid_spacer\"/>"
+        for j in range(nQuartz):        
+                out+="\t<volume name=\"logic_wrap_"+str(i)+"_"+str(j)+"\">"
+                out+="\n\t\t<materialref ref=\"Aluminum_material\"/>"
+                out+="\n\t\t<solidref ref=\"solid_wrap\"/>"
                 out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"black\"/>"
-                out+="\n\t\t<auxiliary auxtype=\"SensDet\" auxvalue=\"showerMaxSpacer\" />"
-                out+="\n\t\t<auxiliary auxtype=\"DetNo\" auxvalue=\""+"7"+str(i).zfill(2)+str(20+j)+"\"/>"
                 out+="\n\t</volume>\n"
 
         out+="\t<volume name=\"logic_suitcase_tungstenquartz_"+str(i)+"\">"
@@ -602,7 +614,7 @@ for i in range(0,nSMmodules):
         # After defining logical volumes for each SM modules, now define physical volumes
         out+="\n\t\t<physvol name=\"suitcase_tungstenquartz_"+str(i)+"\">"
         out+="\n\t\t\t<volumeref ref=\"logic_suitcase_tungstenquartz_"+str(i)+"\"/>"     
-        out+="\n\t\t\t<position name=\"pos_logic_suitcase_tungstenquartz_"+str(i)+"\" x=\""+str(0)+"\" y=\""+str(0)+"\" z=\""+str(0)+"\"/>"
+        out+="\n\t\t\t<position name=\"pos_logic_suitcase_tungstenquartz_"+str(i)+"\" x=\""+str(-0.1)+"\" y=\""+str(0)+"\" z=\""+str(0)+"\"/>"
         out+="\n\t\t\t<rotation name=\"rot_logic_suitcase_tungstenquartz_"+str(i)+"\" x=\""+str(0)+"\" y=\"0\" z=\"0\"/>"
         out+="\n\t\t</physvol>"
 
@@ -744,22 +756,23 @@ for i in range(0,nSMmodules):
         for j in range(0,nQuartz):
                 out+="\n\t\t<physvol name=\"quartz_"+str(i)+"_"+str(j)+"\">"
                 out+="\n\t\t\t<volumeref ref=\"logic_quartz_"+str(i)+"_"+str(j)+"\"/>"             
-                out+="\n\t\t\t<position name=\"pos_logic_quartz_"+str(i)+"_"+str(j)+"\" x=\""+str(0)+"\" y=\""+str(0)+"\" z=\""+str(1.5*thick_quartz+2.0*thick_tungsten+4*thick_spacer+thick_tolerance-j*(thick_quartz+thick_tungsten)-(2*j+1)*thick_spacer)+"\"/>"
+                out+="\n\t\t\t<position name=\"pos_logic_quartz_"+str(i)+"_"+str(j)+"\" x=\""+str(0)+"\" y=\""+str(0)+"\" z=\""+str(1.5*thick_quartz+2.0*thick_tungsten+3*thick_wrap+7*thick_tolerance-j*(thick_quartz+thick_tungsten)-(2*j)*thick_wrap-(4*j)*thick_tolerance)+"\"/>"
                 out+="\n\t\t\t<rotation name=\"rot_logic_quartz_"+str(i)+"_"+str(j)+"\" x=\""+quartz_rotate[j]+"\" y=\"0\" z=\"0\"/>"        
                 out+="\n\t\t</physvol>"
 
                 out+="\n\t\t<physvol name=\"tungsten_"+str(i)+"_"+str(j)+"\">"
                 out+="\n\t\t\t<volumeref ref=\"logic_tungsten_"+str(i)+"_"+str(j)+"\"/>"
-                out+="\n\t\t\t<position name=\"pos_logic_tungsten_"+str(i)+"_"+str(j)+"\" x=\""+str(0)+"\" y=\""+str(0)+"\" z=\""+str(1.5*thick_tungsten+1.0*thick_quartz+4*thick_spacer+thick_tolerance-j*(thick_quartz+thick_tungsten)-2*(j+1)*thick_spacer)+"\"/>"
+                out+="\n\t\t\t<position name=\"pos_logic_tungsten_"+str(i)+"_"+str(j)+"\" x=\""+str(0)+"\" y=\""+str(0)+"\" z=\""+str(1.5*thick_tungsten+1.0*thick_quartz+2*thick_wrap+5*thick_tolerance-j*(thick_quartz+thick_tungsten)-2*j*thick_wrap-4*j*thick_tolerance)+"\"/>"
                 out+="\n\t\t\t<rotation name=\"rot_logic_tungsten_"+str(i)+"_"+str(j)+"\" x=\"0\" y=\"0\" z=\"0\"/>"
                 out+="\n\t\t</physvol>"
 
-        #for j in range(0,2*nQuartz):
-                #out+="\n\t\t<physvol name=\"spacer_"+str(i)+"_"+str(j)+"\">"
-                #out+="\n\t\t\t<volumeref ref=\"logic_spacer_"+str(i)+"_"+str(j)+"\"/>"             
-                #out+="\n\t\t\t<position name=\"pos_logic_spacer_"+str(i)+"_"+str(j)+"\" x=\""+str(0)+"\" y=\""+str(0)+"\" z=\""+str(2.0*thick_quartz+2.0*thick_tungsten+4*thick_spacer+0.074-((j+1)//2)*thick_quartz-(j//2)*thick_tungsten-j*thick_spacer)+"\"/>"
-                #out+="\n\t\t\t<rotation name=\"rot_logic_spacer_"+str(i)+"_"+str(j)+"\" x=\"0\" y=\"0\" z=\"0\"/>"        
-                #out+="\n\t\t</physvol>"
+        for j in range(0,nQuartz):
+                out+="\n\t\t<physvol name=\"wrap_"+str(i)+"_"+str(j)+"\">"
+                out+="\n\t\t\t<volumeref ref=\"logic_wrap_"+str(i)+"_"+str(j)+"\"/>"             
+                #out+="\n\t\t\t<position name=\"pos_logic_wrap_"+str(i)+"_"+str(j)+"\" x=\""+str(0)+"\" y=\""+str(0)+"\" z=\""+str(1.5*(thick_wrap_quartz)+2.0*thick_tungsten-0.04-((j+1)//2)*thick_quartz-(j//2)*thick_tungsten-j*thick_wrap)+"\"/>"
+                out+="\n\t\t\t<position name=\"pos_logic_wrap_"+str(i)+"_"+str(j)+"\" x=\""+str(-thick_tolerance-thick_wrap/2)+"\" y=\""+str(0)+"\" z=\""+str(1.5*thick_quartz+2.0*thick_tungsten+3*thick_wrap+7*thick_tolerance-j*(thick_quartz+thick_tungsten)-(2*j)*thick_wrap-(4*j)* thick_tolerance)+"\"/>"
+                out+="\n\t\t\t<rotation name=\"rot_logic_wrap_"+str(i)+"_"+str(j)+"\" x=\"0\" y=\"0\" z=\"0\"/>"        
+                out+="\n\t\t</physvol>"
 
         out+="\n\t\t<auxiliary auxtype=\"Alpha\" auxvalue=\"0.0\"/>"
         out+="\n\t</volume>\n"
@@ -822,6 +835,12 @@ out+="\t</skinsurface>\n"
 out+="\t<skinsurface name=\"mirror_box_bottom_skin_surface\" surfaceproperty=\"Al_mirror_surface\" >\n"
 for i in range(0,nSMmodules):
     out+="\t\t<volumeref ref=\"logic_mirror_box_bot_"+str(i)+"\"/>\n"
+out+="\t</skinsurface>\n"
+
+out+="\t<skinsurface name=\"wrap_skin_surface\" surfaceproperty=\"mylar_surface\" >\n"
+for iMod in range(0,nSMmodules):
+    for iWrap in range(0,nQuartz):
+        out+="\t\t<volumeref ref=\"logic_wrap_"+str(iMod)+"_"+str(iWrap)+"\"/>\n"
 out+="\t</skinsurface>\n"
 
 out+="\t<skinsurface name=\"cathode_surface\" surfaceproperty=\"Cathode_surface\" >\n"
