@@ -246,6 +246,9 @@ out+="\n\t\t<rotation name=\"rot_subtract_mirror_box_top_12\" x=\"0\" y=\"0\" z=
 out+="\n\t</subtraction>\n"
 #-------------------
 
+# Flap of the lower mirror box (to cover right above the first tungsten plate)
+out+="\t<box name=\"solid_mirror_flap\" lunit=\"mm\" x=\""+str(thick_wall_mirror)+"\" y=\""+str(width_tungsten)+"\" z=\""+str(thick_tungsten)+"\"/>\n"
+
 # Web Plate (side support)
 if nSMmodules==28:
         out+="\t<box name=\"solid_web_plate_1\" lunit=\"mm\" x=\""+str(length_web_plate)+"\" y=\""+str(width_web_plate)+"\" z=\""+str(thick_web_plate)+"\"/>\n"
@@ -494,6 +497,12 @@ for i in range(0,nSMmodules):
         out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"green\"/>"
         out+="\n\t</volume>\n"
 
+        out+="\t<volume name=\"logic_mirror_flap_"+str(i)+"\">"
+        out+="\n\t\t<materialref ref=\"Aluminum_material\"/>"
+        out+="\n\t\t<solidref ref=\"solid_mirror_flap\"/>"
+        out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"green\"/>"
+        out+="\n\t</volume>\n"
+
         out+="\t<volume name=\"logic_top_support_"+str(i)+"\">"
         out+="\n\t\t<materialref ref=\"Aluminum_material\"/>"
         out+="\n\t\t<solidref ref=\"solid_top_support_6\"/>"
@@ -616,6 +625,12 @@ for i in range(0,nSMmodules):
         out+="\n\t\t\t<volumeref ref=\"logic_suitcase_tungstenquartz_"+str(i)+"\"/>"     
         out+="\n\t\t\t<position name=\"pos_logic_suitcase_tungstenquartz_"+str(i)+"\" x=\""+str(-0.1)+"\" y=\""+str(0)+"\" z=\""+str(0)+"\"/>"
         out+="\n\t\t\t<rotation name=\"rot_logic_suitcase_tungstenquartz_"+str(i)+"\" x=\""+str(0)+"\" y=\"0\" z=\"0\"/>"
+        out+="\n\t\t</physvol>"
+
+        out+="\n\t\t<physvol name=\"mirror_flap_"+str(i)+"\">"
+        out+="\n\t\t\t<volumeref ref=\"logic_mirror_flap_"+str(i)+"\"/>"
+        out+="\n\t\t\t<position name=\"pos_logic_mirror_flap_"+str(i)+"\" x=\""+str(length_front_back_plate/2+thick_wall_mirror/2)+"\" y=\""+str(0)+"\" z=\""+str(-(thick_stack_tungstenquartz-thick_tungsten)/2-thick_wall_mirror)+"\"/>"
+        out+="\n\t\t\t<rotation name=\"rot_logic_mirror_flap_"+str(i)+"\" x=\""+str(0)+"\" y=\"0\" z=\"0\"/>"
         out+="\n\t\t</physvol>"
 
         out+="\n\t\t<physvol name=\"mirror_box_bot_"+str(i)+"\">"
@@ -815,11 +830,11 @@ if nSMmodules == 28:
 out+="\n\t\t<auxiliary auxtype=\"Alpha\" auxvalue=\"0.0\"/>"
 out+="\n\t</volume>\n\n"
 
-# Specify surfaces for optical properties
+# Specify surfaces for optical properties (Note that individual surface must be specified for each volume it is used in)
 out+="\t<skinsurface name=\"quartz_skin_surface\" surfaceproperty=\"quartz_surface\" >\n"
 for i in range(0,nSMmodules):
     out+="\t\t<volumeref ref=\"logic_pmt_window_"+str(i)+"\"/>\n"
-    out+="\t\t<volumeref ref=\"logic_pmt_filter_"+str(i)+"\"/>\n"
+    #out+="\t\t<volumeref ref=\"logic_pmt_filter_"+str(i)+"\"/>\n"
 out+="\t</skinsurface>\n"
 
 out+="\t<skinsurface name=\"suitcase_skin_surface\" surfaceproperty=\"Al_mirror_surface\" >\n"
@@ -837,11 +852,11 @@ for i in range(0,nSMmodules):
     out+="\t\t<volumeref ref=\"logic_mirror_box_bot_"+str(i)+"\"/>\n"
 out+="\t</skinsurface>\n"
 
-out+="\t<skinsurface name=\"wrap_skin_surface\" surfaceproperty=\"mylar_surface\" >\n"
 for iMod in range(0,nSMmodules):
     for iWrap in range(0,nQuartz):
+        out+="\t<skinsurface name=\"wrap_skin_surface_"+str(iMod)+"_"+str(iWrap)+"\" surfaceproperty=\"mylar_surface\" >\n"
         out+="\t\t<volumeref ref=\"logic_wrap_"+str(iMod)+"_"+str(iWrap)+"\"/>\n"
-out+="\t</skinsurface>\n"
+        out+="\t</skinsurface>\n"
 
 out+="\t<skinsurface name=\"cathode_surface\" surfaceproperty=\"Cathode_surface\" >\n"
 for i in range(0,nSMmodules):
