@@ -406,16 +406,16 @@ else:
 
 ## Optical Surfaces
 out+="\t<opticalsurface name=\"quartz_surface\" model=\"glisur\" finish=\"ground\" type=\"dielectric_dielectric\" value=\"0.98\" >\n"
-out+="\t\t<property name=\"REFLECTIVITY\" ref=\"Quartz_REFLECTIVITY\" />\n"
+#out+="\t\t<property name=\"REFLECTIVITY\" ref=\"Quartz_REFLECTIVITY\" />\n"
 out+="\t</opticalsurface>\n"
 out+="\t<opticalsurface name=\"Al_mirror_surface\" model=\"glisur\" finish=\"ground\" type=\"dielectric_metal\" value=\"0.98\" >\n"
-out+="\t\t<property name=\"REFLECTIVITY\" ref=\"MiroIV_REFLECTIVITY_30DEG\" />\n"
+out+="\t\t<property name=\"REFLECTIVITY\" ref=\"MiroSilver_REFLECTIVITY_30DEG\" />\n"
 out+="\t</opticalsurface>\n"
-out+="\t<opticalsurface name=\"mylar_surface\" model=\"glisur\" finish=\"polished\" type=\"dielectric_metal\" value=\"0.99\" >\n"
-out+="\t\t<property name=\"REFLECTIVITY\" ref=\"Mylar_REFLECTIVITY_30DEG\" />\n"
+out+="\t<opticalsurface name=\"mylar_wrap_surface\" model=\"glisur\" finish=\"polished\" type=\"dielectric_metal\" value=\"0.99\" >\n"
+out+="\t\t<property name=\"REFLECTIVITY\" ref=\"Mylar_REFLECTIVITY_90DEG\" />\n"
 out+="\t</opticalsurface>\n"
-out+="\t<opticalsurface name=\"Cathode_surface\" model=\"glisur\" finish=\"polished\" type=\"dielectric_metal\" value=\"1.0\">\n"
-out+="\t\t<property name=\"REFLECTIVITY\" ref=\"CathodeSurf_REFLECTIVITY\" />\n"
+out+="\t<opticalsurface name=\"cathode_surface\" model=\"glisur\" finish=\"polished\" type=\"dielectric_metal\" value=\"1.0\">\n"
+out+="\t\t<property name=\"REFLECTIVITY\" ref=\"CathodeSurf_REFLECTIVITY\" />\n" #Reflectivity is already included in the efficiency so 0 cathode reflectivity has to be used in Matrix file
 out+="\t\t<property name=\"EFFICIENCY\" ref=\"Cathode_EFFICIENCY\" />\n"
 out+="\t</opticalsurface>\n"
 
@@ -665,7 +665,7 @@ for i in range(0,nSMmodules):
 
         out+="\n\t\t<physvol name=\"pmt_cathode_"+str(i)+"\">"
         out+="\n\t\t\t<volumeref ref=\"logic_pmt_cathode_"+str(i)+"\"/>"
-        out+="\n\t\t\t<position name=\"pos_logic_pmt_cathode_"+str(i)+"\" x=\""+str(length_quartz/2+length_ledge/2+length_mirror_box_bot+length_mirror_box_top+length_top_support+length_pmt_window+length_pmt_cathode/2)+"\" y=\""+str(0)+"\" z=\""+str(thick_tungsten/2)+"\"/>"
+        out+="\n\t\t\t<position name=\"pos_logic_pmt_cathode_"+str(i)+"\" x=\""+str(length_quartz/2+length_ledge/2+length_mirror_box_bot+length_mirror_box_top+length_top_support+length_pmt_window+length_pmt_cathode)+"\" y=\""+str(0)+"\" z=\""+str(thick_tungsten/2)+"\"/>"
         out+="\n\t\t\t<rotation name=\"rot_logic_pmt_window_"+str(i)+"\" x=\"0\" y=\"-pi/2\" z=\"0\"/>"
         out+="\n\t\t</physvol>"
 
@@ -854,11 +854,11 @@ out+="\t</skinsurface>\n"
 
 for iMod in range(0,nSMmodules):
     for iWrap in range(0,nQuartz):
-        out+="\t<skinsurface name=\"wrap_skin_surface_"+str(iMod)+"_"+str(iWrap)+"\" surfaceproperty=\"mylar_surface\" >\n"
+        out+="\t<skinsurface name=\"wrap_skin_surface_"+str(iMod)+"_"+str(iWrap)+"\" surfaceproperty=\"mylar_wrap_surface\" >\n"
         out+="\t\t<volumeref ref=\"logic_wrap_"+str(iMod)+"_"+str(iWrap)+"\"/>\n"
         out+="\t</skinsurface>\n"
 
-out+="\t<skinsurface name=\"cathode_surface\" surfaceproperty=\"Cathode_surface\" >\n"
+out+="\t<skinsurface name=\"cathode_skin_surface\" surfaceproperty=\"cathode_surface\" >\n"
 for i in range(0,nSMmodules):
     out+="\t\t<volumeref ref=\"logic_pmt_cathode_"+str(i)+"\"/>\n"
 out+="\t</skinsurface>\n"
