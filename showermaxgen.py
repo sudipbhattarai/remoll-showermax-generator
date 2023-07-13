@@ -9,7 +9,14 @@ Date: 04/18/2023
 from cmath import pi
 import math
 
-output_file = "showerMaxDetector" # "showerMaxDetector for single det and showerMaxDetectorSystem for whole system"
+#Version
+verMajor = 3
+verMinor = 0
+verPatch = 0
+version = "{}-{}-{}".format(verMajor,verMinor,verPatch)
+showerMaxName = "showerMaxDetector_v{}-{}-{}".format(verMajor,verMinor,verPatch)
+
+output_file = showerMaxName # "showerMaxName for single det and "showerMaxDetectorSystem" for whole system"
 simApp = "qsim" # "qsim" or "remoll"
 
 ### Define geometry parameters(dimensions based on ISU elog 576):
@@ -865,7 +872,7 @@ out+="\t</skinsurface>\n"
 
 out+="\n</structure>\n"
 
-out+="<setup name=\"showerMaxWorld\" version=\"1.0\">"
+out+="<setup name=\"showerMaxWorld\" version=\""+ version +"\">"
 out+="\n\t<world ref=\"showerMaxMother\"/>"
 out+="\n</setup>\n"
 
