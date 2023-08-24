@@ -11,18 +11,19 @@ import math
 
 #Version
 verMajor = 3
-verMinor = 0
+verMinor = 1
 verPatch = 0
 version = "{}-{}-{}".format(verMajor,verMinor,verPatch)
 showerMaxName = "showerMaxDetector_v{}-{}-{}".format(verMajor,verMinor,verPatch)
 
 output_file = showerMaxName # "showerMaxName for single det and "showerMaxDetectorSystem" for whole system"
 simApp = "qsim" # "qsim" or "remoll"
+useWrap = False # True if wrap is used else False
 
 ### Define geometry parameters(dimensions based on ISU elog 576):
 radial_extent = 1020.0          #distance from beam center to tungsten-quartz bottom on US ring
 nQuartz = 4
-nSMmodules = 1 if output_file == "showerMaxDetector" else 28
+nSMmodules = 1 if output_file == showerMaxName else 28
 in2mm = 25.4
 
 ## Quartz
@@ -178,16 +179,17 @@ out+="\t</xtru>\n"
 out+="\t<box name=\"solid_tungsten\" lunit=\"mm\" x=\""+str(length_tungsten)+"\" y=\""+str(width_tungsten)+"\" z=\""+str(thick_tungsten)+"\"/>\n"
 
 # Mylar wrap
-out+="\t<box name=\"solid_wrap_1\" lunit=\"mm\" x=\""+str(length_wrap)+"\" y=\""+str(width_wrap)+"\" z=\""+str(thick_wrap_quartz)+"\"/>\n"
-out+="\t<box name=\"solid_wrap_2\" lunit=\"mm\" x=\""+str(length_wrap)+"\" y=\""+str(width_wrap+1.0)+"\" z=\""+str(thick_quartz+2*thick_tolerance)+"\"/>\n"
+if useWrap:
+        out+="\t<box name=\"solid_wrap_1\" lunit=\"mm\" x=\""+str(length_wrap)+"\" y=\""+str(width_wrap)+"\" z=\""+str(thick_wrap_quartz)+"\"/>\n"
+        out+="\t<box name=\"solid_wrap_2\" lunit=\"mm\" x=\""+str(length_wrap)+"\" y=\""+str(width_wrap+1.0)+"\" z=\""+str(thick_quartz+2*thick_tolerance)+"\"/>\n"
 
-out+="\t<subtraction name=\"solid_wrap\">"
-out+="\n\t\t<first ref=\"solid_wrap_1\"/>"
-out+="\n\t\t<second ref=\"solid_wrap_2\"/>"
-out+="\n\t\t<position name=\"pos_subtract_wrap_12\" x=\""+str(thick_wrap)+"\" y=\"0\" z=\"0\"/>"
-out+="\n\t\t<rotation name=\"rot_subtract_wrap_12\" x=\"0\" y=\"0\" z=\"0\"/>"
-out+="\n\t</subtraction>\n"
-#-------------------
+        out+="\t<subtraction name=\"solid_wrap\">"
+        out+="\n\t\t<first ref=\"solid_wrap_1\"/>"
+        out+="\n\t\t<second ref=\"solid_wrap_2\"/>"
+        out+="\n\t\t<position name=\"pos_subtract_wrap_12\" x=\""+str(thick_wrap)+"\" y=\"0\" z=\"0\"/>"
+        out+="\n\t\t<rotation name=\"rot_subtract_wrap_12\" x=\"0\" y=\"0\" z=\"0\"/>"
+        out+="\n\t</subtraction>\n"
+        #-------------------
 
 # Suitcase box, where the TQ stack rests
 out+="\t<box name=\"solid_suitcase_tungstenquartz_1\" lunit=\"mm\" x=\""+str(length_stack_tungstenquartz+thick_wall_mirror+0.5)+"\" y=\""+str(width_stack_tungstenquartz+2*thick_wall_mirror)+"\" z=\""+str(thick_stack_tungstenquartz+2*thick_wall_mirror)+"\"/>\n"
@@ -457,12 +459,13 @@ for i in range(0,nSMmodules):
                 out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"red\"/>"
                 out+="\n\t</volume>\n"
                 
-        for j in range(nQuartz):        
-                out+="\t<volume name=\"logic_wrap_"+str(i)+"_"+str(j)+"\">"
-                out+="\n\t\t<materialref ref=\"Aluminum_material\"/>"
-                out+="\n\t\t<solidref ref=\"solid_wrap\"/>"
-                out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"black\"/>"
-                out+="\n\t</volume>\n"
+        if useWrap:
+                for j in range(nQuartz):        
+                        out+="\t<volume name=\"logic_wrap_"+str(i)+"_"+str(j)+"\">"
+                        out+="\n\t\t<materialref ref=\"Aluminum_material\"/>"
+                        out+="\n\t\t<solidref ref=\"solid_wrap\"/>"
+                        out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"black\"/>"
+                        out+="\n\t</volume>\n"
 
         out+="\t<volume name=\"logic_suitcase_tungstenquartz_"+str(i)+"\">"
         out+="\n\t\t<materialref ref=\"Aluminum_material\"/>"
@@ -788,13 +791,14 @@ for i in range(0,nSMmodules):
                 out+="\n\t\t\t<rotation name=\"rot_logic_tungsten_"+str(i)+"_"+str(j)+"\" x=\"0\" y=\"0\" z=\"0\"/>"
                 out+="\n\t\t</physvol>"
 
-        for j in range(0,nQuartz):
-                out+="\n\t\t<physvol name=\"wrap_"+str(i)+"_"+str(j)+"\">"
-                out+="\n\t\t\t<volumeref ref=\"logic_wrap_"+str(i)+"_"+str(j)+"\"/>"             
-                #out+="\n\t\t\t<position name=\"pos_logic_wrap_"+str(i)+"_"+str(j)+"\" x=\""+str(0)+"\" y=\""+str(0)+"\" z=\""+str(1.5*(thick_wrap_quartz)+2.0*thick_tungsten-0.04-((j+1)//2)*thick_quartz-(j//2)*thick_tungsten-j*thick_wrap)+"\"/>"
-                out+="\n\t\t\t<position name=\"pos_logic_wrap_"+str(i)+"_"+str(j)+"\" x=\""+str(-thick_tolerance-thick_wrap/2)+"\" y=\""+str(0)+"\" z=\""+str(1.5*thick_quartz+2.0*thick_tungsten+3*thick_wrap+7*thick_tolerance-j*(thick_quartz+thick_tungsten)-(2*j)*thick_wrap-(4*j)* thick_tolerance)+"\"/>"
-                out+="\n\t\t\t<rotation name=\"rot_logic_wrap_"+str(i)+"_"+str(j)+"\" x=\"0\" y=\"0\" z=\"0\"/>"        
-                out+="\n\t\t</physvol>"
+        if useWrap:
+                for j in range(0,nQuartz):
+                        out+="\n\t\t<physvol name=\"wrap_"+str(i)+"_"+str(j)+"\">"
+                        out+="\n\t\t\t<volumeref ref=\"logic_wrap_"+str(i)+"_"+str(j)+"\"/>"             
+                        #out+="\n\t\t\t<position name=\"pos_logic_wrap_"+str(i)+"_"+str(j)+"\" x=\""+str(0)+"\" y=\""+str(0)+"\" z=\""+str(1.5*(thick_wrap_quartz)+2.0*thick_tungsten-0.04-((j+1)//2)*thick_quartz-(j//2)*thick_tungsten-j*thick_wrap)+"\"/>"
+                        out+="\n\t\t\t<position name=\"pos_logic_wrap_"+str(i)+"_"+str(j)+"\" x=\""+str(-thick_tolerance-thick_wrap/2)+"\" y=\""+str(0)+"\" z=\""+str(1.5*thick_quartz+2.0*thick_tungsten+3*thick_wrap+7*thick_tolerance-j*(thick_quartz+thick_tungsten)-(2*j)*thick_wrap-(4*j)* thick_tolerance)+"\"/>"
+                        out+="\n\t\t\t<rotation name=\"rot_logic_wrap_"+str(i)+"_"+str(j)+"\" x=\"0\" y=\"0\" z=\"0\"/>"        
+                        out+="\n\t\t</physvol>"
 
         out+="\n\t\t<auxiliary auxtype=\"Alpha\" auxvalue=\"0.0\"/>"
         out+="\n\t</volume>\n"
@@ -859,11 +863,12 @@ for i in range(0,nSMmodules):
     out+="\t\t<volumeref ref=\"logic_mirror_box_bot_"+str(i)+"\"/>\n"
 out+="\t</skinsurface>\n"
 
-for iMod in range(0,nSMmodules):
-    for iWrap in range(0,nQuartz):
-        out+="\t<skinsurface name=\"wrap_skin_surface_"+str(iMod)+"_"+str(iWrap)+"\" surfaceproperty=\"mylar_wrap_surface\" >\n"
-        out+="\t\t<volumeref ref=\"logic_wrap_"+str(iMod)+"_"+str(iWrap)+"\"/>\n"
-        out+="\t</skinsurface>\n"
+if useWrap:
+        for iMod in range(0,nSMmodules):
+                for iWrap in range(0,nQuartz):
+                        out+="\t<skinsurface name=\"wrap_skin_surface_"+str(iMod)+"_"+str(iWrap)+"\" surfaceproperty=\"mylar_wrap_surface\" >\n"
+                        out+="\t\t<volumeref ref=\"logic_wrap_"+str(iMod)+"_"+str(iWrap)+"\"/>\n"
+                        out+="\t</skinsurface>\n"
 
 out+="\t<skinsurface name=\"cathode_skin_surface\" surfaceproperty=\"cathode_surface\" >\n"
 for i in range(0,nSMmodules):
