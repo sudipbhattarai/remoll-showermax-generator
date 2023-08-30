@@ -16,9 +16,9 @@ verPatch = 0
 version = "{}-{}-{}".format(verMajor,verMinor,verPatch)
 showerMaxName = "showerMaxDetector_v{}-{}-{}".format(verMajor,verMinor,verPatch)
 
-output_file = showerMaxName # "showerMaxName for single det and "showerMaxDetectorSystem" for whole system"
-simApp = "qsim" # "qsim" or "remoll"
-useWrap = False # True if wrap is used else False
+output_file = "showerMaxDetectorSystem" # "showerMaxName for single det and "showerMaxDetectorSystem" for whole system"
+simApp = "remoll" # "qsim" or "remoll"
+useWrap = True # True if wrap is used else False
 
 ### Define geometry parameters(dimensions based on ISU elog 576):
 radial_extent = 1020.0          #distance from beam center to tungsten-quartz bottom on US ring
@@ -842,26 +842,26 @@ out+="\n\t\t<auxiliary auxtype=\"Alpha\" auxvalue=\"0.0\"/>"
 out+="\n\t</volume>\n\n"
 
 # Specify surfaces for optical properties (Note that individual surface must be specified for each volume it is used in)
-out+="\t<skinsurface name=\"quartz_skin_surface\" surfaceproperty=\"quartz_surface\" >\n"
 for i in range(0,nSMmodules):
+    out+="\t<skinsurface name=\"quartz_skin_surface_"+str(i)+"\" surfaceproperty=\"quartz_surface\" >\n"
     out+="\t\t<volumeref ref=\"logic_pmt_window_"+str(i)+"\"/>\n"
     #out+="\t\t<volumeref ref=\"logic_pmt_filter_"+str(i)+"\"/>\n"
-out+="\t</skinsurface>\n"
+    out+="\t</skinsurface>\n"
 
-out+="\t<skinsurface name=\"suitcase_skin_surface\" surfaceproperty=\"Al_mirror_surface\" >\n"
 for i in range(0,nSMmodules):
+    out+="\t<skinsurface name=\"suitcase_skin_surface_"+str(i)+"\" surfaceproperty=\"Al_mirror_surface\" >\n"
     out+="\t\t<volumeref ref=\"logic_suitcase_tungstenquartz_"+str(i)+"\"/>\n"
-out+="\t</skinsurface>\n"
+    out+="\t</skinsurface>\n"
 
-out+="\t<skinsurface name=\"mirror_box_top_skin_surface\" surfaceproperty=\"Al_mirror_surface\" >\n"
 for i in range(0,nSMmodules):
+    out+="\t<skinsurface name=\"mirror_box_top_skin_surface_"+str(i)+"\" surfaceproperty=\"Al_mirror_surface\" >\n"
     out+="\t\t<volumeref ref=\"logic_mirror_box_top_"+str(i)+"\"/>\n"
-out+="\t</skinsurface>\n"
+    out+="\t</skinsurface>\n"
 
-out+="\t<skinsurface name=\"mirror_box_bottom_skin_surface\" surfaceproperty=\"Al_mirror_surface\" >\n"
 for i in range(0,nSMmodules):
+    out+="\t<skinsurface name=\"mirror_box_bottom_skin_surface_"+str(i)+"\" surfaceproperty=\"Al_mirror_surface\" >\n"
     out+="\t\t<volumeref ref=\"logic_mirror_box_bot_"+str(i)+"\"/>\n"
-out+="\t</skinsurface>\n"
+    out+="\t</skinsurface>\n"
 
 if useWrap:
         for iMod in range(0,nSMmodules):
@@ -870,10 +870,10 @@ if useWrap:
                         out+="\t\t<volumeref ref=\"logic_wrap_"+str(iMod)+"_"+str(iWrap)+"\"/>\n"
                         out+="\t</skinsurface>\n"
 
-out+="\t<skinsurface name=\"cathode_skin_surface\" surfaceproperty=\"cathode_surface\" >\n"
 for i in range(0,nSMmodules):
+    out+="\t<skinsurface name=\"cathode_skin_surface_"+str(i)+"\" surfaceproperty=\"cathode_surface\" >\n"
     out+="\t\t<volumeref ref=\"logic_pmt_cathode_"+str(i)+"\"/>\n"
-out+="\t</skinsurface>\n"
+    out+="\t</skinsurface>\n"
 
 out+="\n</structure>\n"
 
