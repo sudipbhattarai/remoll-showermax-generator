@@ -447,15 +447,15 @@ for i in range(0,nSMmodules):
                 out+="\n\t\t<solidref ref=\"solid_quartz\"/>"
                 out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"blue\"/>"
                 out+="\n\t\t<auxiliary auxtype=\"SensDet\" auxvalue=\"showerMaxQuartz\" />"
-                out+="\n\t\t<auxiliary auxtype=\"DetNo\" auxvalue=\""+"7"+str(i).zfill(2)+str(2*(4-j))+"\"/>"
+                out+="\n\t\t<auxiliary auxtype=\"DetNo\" auxvalue=\""+"7"+str(2*(j+1)).zfill(2)+str(i).zfill(2)+"\"/>"
                 out+="\n\t</volume>\n"
       
                 out+="\t<volume name=\"logic_tungsten_"+str(i)+"_"+str(j)+"\">"
                 out+="\n\t\t<materialref ref=\"Tungsten_material\"/>"
                 out+="\n\t\t<solidref ref=\"solid_tungsten\"/>"
-                if (j == 3):
+                if (j == 1):
                         out+="\n\t\t<auxiliary auxtype=\"SensDet\" auxvalue=\"showerMaxTungsten\" />"
-                        out+="\n\t\t<auxiliary auxtype=\"DetNo\" auxvalue=\""+"7"+str(i).zfill(2)+str(2*(4-j)-1)+"\"/>"
+                        out+="\n\t\t<auxiliary auxtype=\"DetNo\" auxvalue=\""+"7"+str(2*j-1).zfill(2)+str(i).zfill(2)+str(2*(4-j)-1)+"\"/>"
                 out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"red\"/>"
                 out+="\n\t</volume>\n"
                 
@@ -489,7 +489,7 @@ for i in range(0,nSMmodules):
         out+="\n\t\t<materialref ref=\"Nylon\"/>"
         out+="\n\t\t<solidref ref=\"solid_ledge\"/>"
         out+="\n\t\t<auxiliary auxtype=\"SensDet\" auxvalue=\"ledgeLeft\" />"
-        out+="\n\t\t<auxiliary auxtype=\"DetNo\" auxvalue=\""+"7"+str(i).zfill(2)+"28"+"\"/>"
+        out+="\n\t\t<auxiliary auxtype=\"DetNo\" auxvalue=\""+"728"+str(i).zfill(2)+"\"/>"
         out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"brown\"/>"
         out+="\n\t</volume>\n"
 
@@ -497,7 +497,7 @@ for i in range(0,nSMmodules):
         out+="\n\t\t<materialref ref=\"Nylon\"/>"
         out+="\n\t\t<solidref ref=\"solid_ledge\"/>"
         out+="\n\t\t<auxiliary auxtype=\"SensDet\" auxvalue=\"ledgeRight\" />"
-        out+="\n\t\t<auxiliary auxtype=\"DetNo\" auxvalue=\""+"7"+str(i).zfill(2)+"29"+"\"/>"
+        out+="\n\t\t<auxiliary auxtype=\"DetNo\" auxvalue=\""+"729"+str(i).zfill(2)+"\"/>"
         out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"brown\"/>"
         out+="\n\t</volume>\n"
 
@@ -529,7 +529,7 @@ for i in range(0,nSMmodules):
         out+="\n\t\t<materialref ref=\"Quartz\"/>"
         out+="\n\t\t<solidref ref=\"solid_pmt_filter\"/>"
         out+="\n\t\t<auxiliary auxtype=\"SensDet\" auxvalue=\"showerMaxPMTFilter\" />"
-        out+="\n\t\t<auxiliary auxtype=\"DetNo\" auxvalue=\""+"7"+str(i).zfill(2)+"10"+"\"/>"
+        out+="\n\t\t<auxiliary auxtype=\"DetNo\" auxvalue=\""+"710"+str(i).zfill(2)+"\"/>"
         out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"magenta\"/>"
         out+="\n\t</volume>\n"
 
@@ -537,7 +537,7 @@ for i in range(0,nSMmodules):
         out+="\n\t\t<materialref ref=\"Quartz\"/>"
         out+="\n\t\t<solidref ref=\"solid_pmt_window\"/>"
         out+="\n\t\t<auxiliary auxtype=\"SensDet\" auxvalue=\"showerMaxPMTwindow\" />"
-        out+="\n\t\t<auxiliary auxtype=\"DetNo\" auxvalue=\""+"7"+str(i).zfill(2)+"11"+"\"/>"
+        out+="\n\t\t<auxiliary auxtype=\"DetNo\" auxvalue=\""+"711"+str(i).zfill(2)+"\"/>"
         out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"blue\"/>"
         out+="\n\t</volume>\n"
 
@@ -547,7 +547,7 @@ for i in range(0,nSMmodules):
         if simApp=="remoll": out+="\n\t\t<auxiliary auxtype=\"SensDet\" auxvalue=\"showerMaxPMTcathode\" />"
         if simApp=="qsim": out+="\n\t\t<auxiliary auxtype=\"SensDet\" auxvalue=\"PhotoCathode\" />"
         out+="\n\t\t<auxiliary auxtype=\"DetType\" auxvalue=\"opticalphoton\" />"
-        out+="\n\t\t<auxiliary auxtype=\"DetNo\" auxvalue=\""+"7"+str(i).zfill(2)+"16"+"\"/>"
+        out+="\n\t\t<auxiliary auxtype=\"DetNo\" auxvalue=\""+"716"+str(i).zfill(2)+"\"/>"
         out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"green\"/>"
         out+="\n\t</volume>\n"
 
@@ -568,7 +568,7 @@ for i in range(0,nSMmodules):
                 out+="\n\t\t<materialref ref=\"G4_Galactic\"/>"
                 out+="\n\t\t<solidref ref=\"solid_pmt\"/>"
                 out+="\n\t\t<auxiliary auxtype=\"SensDet\" auxvalue=\"showerMaxPMT\" />"
-                out+="\n\t\t<auxiliary auxtype=\"DetNo\" auxvalue=\""+"7"+str(i).zfill(2)+"12"+"\"/>"
+                out+="\n\t\t<auxiliary auxtype=\"DetNo\" auxvalue=\""+"712"+str(i).zfill(2)+"\"/>"
                 out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"yellow\"/>"
                 out+="\n\t</volume>\n"
 
@@ -576,7 +576,7 @@ for i in range(0,nSMmodules):
                 out+="\n\t\t<materialref ref=\"G4_Si\"/>"
                 out+="\n\t\t<solidref ref=\"solid_si_chip\"/>"
                 out+="\n\t\t<auxiliary auxtype=\"SensDet\" auxvalue=\"pmtBaseSiChip\" />"
-                out+="\n\t\t<auxiliary auxtype=\"DetNo\" auxvalue=\""+"7"+str(i).zfill(2)+"14"+"\"/>"
+                out+="\n\t\t<auxiliary auxtype=\"DetNo\" auxvalue=\""+"714"+str(i).zfill(2)+"\"/>"
                 out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"black\"/>"
                 out+="\n\t</volume>\n"
 
@@ -584,7 +584,7 @@ for i in range(0,nSMmodules):
                 out+="\n\t\t<materialref ref=\"G4_Si\"/>"
                 out+="\n\t\t<solidref ref=\"solid_si_chip\"/>"
                 out+="\n\t\t<auxiliary auxtype=\"SensDet\" auxvalue=\"pmtBaseSiChip\" />"
-                out+="\n\t\t<auxiliary auxtype=\"DetNo\" auxvalue=\""+"7"+str(i).zfill(2)+"15"+"\"/>"
+                out+="\n\t\t<auxiliary auxtype=\"DetNo\" auxvalue=\""+"715"+str(i).zfill(2)+"\"/>"
                 out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"black\"/>"
                 out+="\n\t</volume>\n"
 
@@ -602,7 +602,7 @@ for i in range(0,nSMmodules):
                 out+="\n\t\t\t<rotation name=\"rot_logic_si_chip_2_"+str(i)+"\" x=\""+str(0)+"\" y=\"pi/2\" z=\"0\"/>"
                 out+="\n\t\t</physvol>"
                 out+="\n\t\t<auxiliary auxtype=\"SensDet\" auxvalue=\"showerMaxPMTbase\" />"
-                out+="\n\t\t<auxiliary auxtype=\"DetNo\" auxvalue=\""+"7"+str(i).zfill(2)+"13"+"\"/>"
+                out+="\n\t\t<auxiliary auxtype=\"DetNo\" auxvalue=\""+"713"+str(i).zfill(2)+"\"/>"
                 out+="\n\t\t<auxiliary auxtype=\"Color\" auxvalue=\"red\"/>"
                 out+="\n\t\t<auxiliary auxtype=\"Alpha\" auxvalue=\"0.5\"/>"
                 out+="\n\t</volume>\n"
