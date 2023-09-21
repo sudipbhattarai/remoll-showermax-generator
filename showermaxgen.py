@@ -12,11 +12,11 @@ import math
 #Version
 verMajor = 3
 verMinor = 1
-verPatch = 0
+verPatch = 1
 version = "{}-{}-{}".format(verMajor,verMinor,verPatch)
 showerMaxName = "showerMaxDetector_v{}-{}-{}".format(verMajor,verMinor,verPatch)
 
-output_file = "showerMaxDetectorSystem" # "showerMaxName for single det and "showerMaxDetectorSystem" for whole system"
+output_file = "showerMaxDetectorSystem" # showerMaxName for single det and "showerMaxDetectorSystem" for whole system"
 simApp = "remoll" # "qsim" or "remoll"
 useWrap = True # True if wrap is used else False
 
@@ -76,9 +76,9 @@ length_front_plate_hole = 3.20*in2mm
 width_front_plate_hole = 8.40*in2mm
 
 ## Webbed side support structure
-length_web_plate = 432.190
-width_web_plate = 15.875
-thick_web_plate = 63.500
+length_web_plate = 17*in2mm
+width_web_plate =  0.625*in2mm
+thick_web_plate = 2.3*in2mm
 radius_web_plate_hole_small = 31.75/2
 radius_web_plate_hole_big = 25.53
 thick_web_plate_leg = 6.350
@@ -97,7 +97,7 @@ thick_uBracket_legSpace = 38.10
 ## Ledge
 length_ledge = (length_front_back_plate-length_quartz)
 width_ledge = 6.35
-thick_ledge = thick_web_plate
+thick_ledge = thick_web_plate-1.0 # size reduced to avoid overlap with front-back plates
 
 ## Outer radial top support
 length_top_support = 6.350
@@ -256,7 +256,7 @@ out+="\n\t</subtraction>\n"
 #-------------------
 
 # Flap of the lower mirror box (to cover right above the first tungsten plate)
-out+="\t<box name=\"solid_mirror_flap\" lunit=\"mm\" x=\""+str(thick_wall_mirror)+"\" y=\""+str(width_tungsten)+"\" z=\""+str(thick_tungsten)+"\"/>\n"
+out+="\t<box name=\"solid_mirror_flap\" lunit=\"mm\" x=\""+str(thick_wall_mirror)+"\" y=\""+str(width_tungsten)+"\" z=\""+str(thick_tungsten-thick_wall_mirror)+"\"/>\n"
 
 # Web Plate (side support)
 if nSMmodules==28:
@@ -639,7 +639,7 @@ for i in range(0,nSMmodules):
 
         out+="\n\t\t<physvol name=\"mirror_flap_"+str(i)+"\">"
         out+="\n\t\t\t<volumeref ref=\"logic_mirror_flap_"+str(i)+"\"/>"
-        out+="\n\t\t\t<position name=\"pos_logic_mirror_flap_"+str(i)+"\" x=\""+str(length_front_back_plate/2+thick_wall_mirror/2)+"\" y=\""+str(0)+"\" z=\""+str(-(thick_stack_tungstenquartz-thick_tungsten)/2-thick_wall_mirror)+"\"/>"
+        out+="\n\t\t\t<position name=\"pos_logic_mirror_flap_"+str(i)+"\" x=\""+str(length_front_back_plate/2+thick_wall_mirror/2)+"\" y=\""+str(0)+"\" z=\""+str(-(thick_stack_tungstenquartz-thick_tungsten)/2-1.3*thick_wall_mirror)+"\"/>" #1.3 factor is to avoid overlap with lower light guide
         out+="\n\t\t\t<rotation name=\"rot_logic_mirror_flap_"+str(i)+"\" x=\""+str(0)+"\" y=\"0\" z=\"0\"/>"
         out+="\n\t\t</physvol>"
 
