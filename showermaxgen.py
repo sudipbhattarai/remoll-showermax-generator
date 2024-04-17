@@ -10,14 +10,14 @@ from cmath import pi
 import math
 
 #Version
-verMajor = 3
-verMinor = 1
-verPatch = 1
+verMajor = 2
+verMinor = 7
+verPatch = 3
 version = "{}-{}-{}".format(verMajor,verMinor,verPatch)
-showerMaxName = "showerMaxDetector_v{}-{}-{}".format(verMajor,verMinor,verPatch)
+showerMaxName = "showerMaxRetro_v{}-{}-{}".format(verMajor,verMinor,verPatch)
 
-output_file = "showerMaxDetectorSystem" # showerMaxName for single det and "showerMaxDetectorSystem" for whole system"
-simApp = "remoll" # "qsim" or "remoll"
+output_file = showerMaxName # showerMaxName for single det and "showerMaxDetectorSystem" for whole system"
+simApp = "qsim" # "qsim" or "remoll"
 useWrap = True # True if wrap is used else False
 
 ### Define geometry parameters(dimensions based on ISU elog 576):
@@ -33,8 +33,8 @@ thick_quartz = 6.0
 quartz_rotate = ["pi/2", "-pi/2", "pi/2", "-pi/2"]
 
 ## Tungsten 
-length_tungsten = length_quartz
-width_tungsten = width_quartz
+length_tungsten = 105.0
+width_tungsten = 246.0
 thick_tungsten = 8.0
 
 ## wrap in TQ stack (mylar wrap)
@@ -43,26 +43,27 @@ thick_tolerance = 0.05 # gap between quartz and wrap, and wrap and tungsten
 length_wrap = length_quartz
 width_wrap = width_quartz
 thick_wrap_quartz = thick_quartz + 2*thick_wrap + 2*thick_tolerance
+thick_spacer = 0.870 # No material for now
 
 ## Tungsten-quartz stack
 length_stack_tungstenquartz = length_quartz
 width_stack_tungstenquartz = width_quartz
-thick_stack_tungstenquartz = 4*(thick_quartz+thick_tungsten)+ 8*thick_wrap + 16*thick_tolerance
+thick_stack_tungstenquartz = 4*(thick_quartz+thick_tungsten)+ 8*(thick_wrap +thick_spacer) + 24*thick_tolerance
 
 ## Mirror box bottom (lower part of the light guide)
-length_mirror_box_bot = 67.462  
-x1_mirror_box_bot = 1.95*in2mm
-x2_mirror_box_bot = 3.42*in2mm
+length_mirror_box_bot = 2.65*in2mm  
+x1_mirror_box_bot = 2.11*in2mm
+x2_mirror_box_bot = 3.54*in2mm
 y1_mirror_box_bot = width_stack_tungstenquartz
 y2_mirror_box_bot = width_stack_tungstenquartz
 thick_mirror_box_bot = 85.868
 
 ## Mirror box top (upper part of the light guide)
-length_mirror_box_top = 183.058
+length_mirror_box_top = 7.19*in2mm
 x1_mirror_box_top = x2_mirror_box_bot
-x2_mirror_box_top = 2.79*in2mm
+x2_mirror_box_top = 2.82*in2mm
 y1_mirror_box_top = width_stack_tungstenquartz
-y2_mirror_box_top = width_stack_tungstenquartz
+y2_mirror_box_top = 2.94*in2mm
 thick_mirror_box_top = 69.866
 
 ## mirror parameter 
@@ -97,7 +98,7 @@ thick_uBracket_legSpace = 38.10
 ## Ledge
 length_ledge = (length_front_back_plate-length_quartz)
 width_ledge = 6.35
-thick_ledge = thick_web_plate-1.0 # size reduced to avoid overlap with front-back plates
+thick_ledge = thick_stack_tungstenquartz-2.0 # size reduced to avoid overlap with front-back plates
 
 ## Outer radial top support
 length_top_support = 6.350
@@ -417,10 +418,10 @@ else:
 out+="\t<opticalsurface name=\"quartz_surface\" model=\"glisur\" finish=\"ground\" type=\"dielectric_dielectric\" value=\"0.98\" >\n"
 #out+="\t\t<property name=\"REFLECTIVITY\" ref=\"Quartz_REFLECTIVITY\" />\n"
 out+="\t</opticalsurface>\n"
-out+="\t<opticalsurface name=\"Al_mirror_surface\" model=\"glisur\" finish=\"ground\" type=\"dielectric_metal\" value=\"0.98\" >\n"
-out+="\t\t<property name=\"REFLECTIVITY\" ref=\"MiroSilver_REFLECTIVITY_30DEG\" />\n"
+out+="\t<opticalsurface name=\"Al_mirror_surface\" model=\"glisur\" finish=\"ground\" type=\"dielectric_metal\" value=\"1.0\" >\n"
+out+="\t\t<property name=\"REFLECTIVITY\" ref=\"MiroSilver_REFLECTIVITY_60DEG\" />\n"
 out+="\t</opticalsurface>\n"
-out+="\t<opticalsurface name=\"mylar_wrap_surface\" model=\"glisur\" finish=\"polished\" type=\"dielectric_metal\" value=\"0.99\" >\n"
+out+="\t<opticalsurface name=\"mylar_wrap_surface\" model=\"glisur\" finish=\"polished\" type=\"dielectric_metal\" value=\"1.0\" >\n"
 out+="\t\t<property name=\"REFLECTIVITY\" ref=\"Mylar_REFLECTIVITY_90DEG\" />\n"
 out+="\t</opticalsurface>\n"
 out+="\t<opticalsurface name=\"cathode_surface\" model=\"glisur\" finish=\"polished\" type=\"dielectric_metal\" value=\"1.0\">\n"
@@ -781,13 +782,13 @@ for i in range(0,nSMmodules):
         for j in range(0,nQuartz):
                 out+="\n\t\t<physvol name=\"quartz_"+str(i)+"_"+str(j)+"\">"
                 out+="\n\t\t\t<volumeref ref=\"logic_quartz_"+str(i)+"_"+str(j)+"\"/>"             
-                out+="\n\t\t\t<position name=\"pos_logic_quartz_"+str(i)+"_"+str(j)+"\" x=\""+str(0)+"\" y=\""+str(0)+"\" z=\""+str(1.5*thick_quartz+2.0*thick_tungsten+3*thick_wrap+7*thick_tolerance-j*(thick_quartz+thick_tungsten)-(2*j)*thick_wrap-(4*j)*thick_tolerance)+"\"/>"
+                out+="\n\t\t\t<position name=\"pos_logic_quartz_"+str(i)+"_"+str(j)+"\" x=\""+str(0)+"\" y=\""+str(0)+"\" z=\""+str(1.5*thick_quartz+2.0*thick_tungsten+3.5*thick_wrap+4*thick_spacer+11.5*thick_tolerance-j*(thick_quartz+thick_tungsten)-(2*j+1)*(thick_wrap+thick_spacer)-(6*j+1)*thick_tolerance)+"\"/>"
                 out+="\n\t\t\t<rotation name=\"rot_logic_quartz_"+str(i)+"_"+str(j)+"\" x=\""+quartz_rotate[j]+"\" y=\"0\" z=\"0\"/>"        
                 out+="\n\t\t</physvol>"
 
                 out+="\n\t\t<physvol name=\"tungsten_"+str(i)+"_"+str(j)+"\">"
                 out+="\n\t\t\t<volumeref ref=\"logic_tungsten_"+str(i)+"_"+str(j)+"\"/>"
-                out+="\n\t\t\t<position name=\"pos_logic_tungsten_"+str(i)+"_"+str(j)+"\" x=\""+str(0)+"\" y=\""+str(0)+"\" z=\""+str(1.5*thick_tungsten+1.0*thick_quartz+2*thick_wrap+5*thick_tolerance-j*(thick_quartz+thick_tungsten)-2*j*thick_wrap-4*j*thick_tolerance)+"\"/>"
+                out+="\n\t\t\t<position name=\"pos_logic_tungsten_"+str(i)+"_"+str(j)+"\" x=\""+str(-(length_tungsten-length_quartz)/2)+"\" y=\""+str(0)+"\" z=\""+str(1.5*thick_tungsten+1.0*thick_quartz+2*thick_wrap+3*thick_spacer+11*thick_tolerance-j*(thick_quartz+thick_tungsten)-(2*j+1)*(thick_wrap+thick_spacer)-(6*j+1)*thick_tolerance)+"\"/>"
                 out+="\n\t\t\t<rotation name=\"rot_logic_tungsten_"+str(i)+"_"+str(j)+"\" x=\"0\" y=\"0\" z=\"0\"/>"
                 out+="\n\t\t</physvol>"
 
@@ -796,7 +797,7 @@ for i in range(0,nSMmodules):
                         out+="\n\t\t<physvol name=\"wrap_"+str(i)+"_"+str(j)+"\">"
                         out+="\n\t\t\t<volumeref ref=\"logic_wrap_"+str(i)+"_"+str(j)+"\"/>"             
                         #out+="\n\t\t\t<position name=\"pos_logic_wrap_"+str(i)+"_"+str(j)+"\" x=\""+str(0)+"\" y=\""+str(0)+"\" z=\""+str(1.5*(thick_wrap_quartz)+2.0*thick_tungsten-0.04-((j+1)//2)*thick_quartz-(j//2)*thick_tungsten-j*thick_wrap)+"\"/>"
-                        out+="\n\t\t\t<position name=\"pos_logic_wrap_"+str(i)+"_"+str(j)+"\" x=\""+str(-thick_tolerance-thick_wrap/2)+"\" y=\""+str(0)+"\" z=\""+str(1.5*thick_quartz+2.0*thick_tungsten+3*thick_wrap+7*thick_tolerance-j*(thick_quartz+thick_tungsten)-(2*j)*thick_wrap-(4*j)* thick_tolerance)+"\"/>"
+                        out+="\n\t\t\t<position name=\"pos_logic_wrap_"+str(i)+"_"+str(j)+"\" x=\""+str(-thick_tolerance-thick_wrap/2)+"\" y=\""+str(0)+"\" z=\""+str(1.5*thick_quartz+2.0*thick_tungsten+3.5*thick_wrap+4*thick_spacer+11.5*thick_tolerance-j*(thick_quartz+thick_tungsten)-(2*j+1)*(thick_wrap+thick_spacer)-(6*j+1)*thick_tolerance)+"\"/>"
                         out+="\n\t\t\t<rotation name=\"rot_logic_wrap_"+str(i)+"_"+str(j)+"\" x=\"0\" y=\"0\" z=\"0\"/>"        
                         out+="\n\t\t</physvol>"
 
