@@ -1,26 +1,27 @@
 import math
 
-output_file = "ring5"
+output_file = "ring5_2"
 
 ### Define geometry parameters(dimensions based on ISU elog 576):
 nModules = 1
 nQuartz = 1
 in2mm = 25.4
-lightGuide_tilt = 2.5 # tilt angle of the light guide wrt quartz
+lightGuide_tilt = 3.0 # tilt angle of the light guide wrt quartz
 
 ## Quartz
 length_quartz = 140.0
 width_quartz = 80.0
-thick_quartz = 15.0
+thick_quartz = 17.0
+insert_quartz = 1.0 # 1 mm overlap of quartz and mirror box
 
-zPos_Quartz = (length_quartz/2-1)*math.tan(lightGuide_tilt*math.pi/180) # 1 mm overlap of quartz and mirror box
+zPos_Quartz = (length_quartz/2-insert_quartz)*math.tan(lightGuide_tilt*math.pi/180) # 1 mm overlap of quartz and mirror box
 print(zPos_Quartz)
 
 
 ## Mirror box bottom (lower part of the light guide)
 length_mirror_box_bot = 90.0
 x1_mirror_box_bot = 24.0
-x2_mirror_box_bot = 84.131
+x2_mirror_box_bot = 85.979
 y1_mirror_box_bot = 88.0
 y2_mirror_box_bot = 88.0
 
@@ -30,7 +31,7 @@ xPos_mirror_box_bot = xPos_mirror_box_bot_noTilt*math.cos(lightGuide_tilt*math.p
 zPos_mirror_box_bot = xPos_mirror_box_bot_noTilt*math.sin(lightGuide_tilt*math.pi/180) + zPos_mirror_box_bot_noTilt*math.cos(lightGuide_tilt*math.pi/180)
 
 ## Mirror box top (upper part of the light guide)
-length_mirror_box_top = 183.058
+length_mirror_box_top = 239.5
 x1_mirror_box_top = x2_mirror_box_bot
 x2_mirror_box_top = 71.88
 y1_mirror_box_top = y2_mirror_box_bot
@@ -45,17 +46,19 @@ zPos_mirror_box_top = xPos_mirror_box_top_noTilt*math.sin(lightGuide_tilt*math.p
 thick_wall_mirror = 0.5
 
 ## PMT region
-radius_pmt = 1.5*in2mm # Radius of 1.5 inches (for 3 inches PMT)
+radius_pmt_window = 1.5*in2mm # Radius of 1.5 inches (for 3 inches PMT)
+length_pmt_window = 3.5
+radius_pmt_cathode = 35.0
 length_pmt_cathode = 3e-6
-length_pmt_window = 3.0
+offset_pmt = 2.0
 
 xPos_pmt_window_noTilt = length_quartz/2-1+length_mirror_box_bot+length_mirror_box_top+length_pmt_window/2  # 1 mm overlap of quartz and mirror box
-zPos_pmt_window_noTilt = 0.0
+zPos_pmt_window_noTilt = 0.0 + offset_pmt
 xPos_pmt_window = xPos_pmt_window_noTilt*math.cos(lightGuide_tilt*math.pi/180) - zPos_pmt_window_noTilt*math.sin(lightGuide_tilt*math.pi/180) # rotate the mirror box by lightGuide_tilt
 zPos_pmt_window = xPos_pmt_window_noTilt*math.sin(lightGuide_tilt*math.pi/180) + zPos_pmt_window_noTilt*math.cos(lightGuide_tilt*math.pi/180)
 
 xPos_pmt_cathode_noTilt = length_quartz/2-1+length_mirror_box_bot+length_mirror_box_top+length_pmt_window+length_pmt_cathode/2  # 1 mm overlap of quartz and mirror box
-zPos_pmt_cathode_noTilt = 0.0
+zPos_pmt_cathode_noTilt = 0.0 + offset_pmt
 xPos_pmt_cathode = xPos_pmt_cathode_noTilt*math.cos(lightGuide_tilt*math.pi/180) - zPos_pmt_cathode_noTilt*math.sin(lightGuide_tilt*math.pi/180) # rotate the mirror box by lightGuide_tilt
 zPos_pmt_cathode = xPos_pmt_cathode_noTilt*math.sin(lightGuide_tilt*math.pi/180) + zPos_pmt_cathode_noTilt*math.cos(lightGuide_tilt*math.pi/180)
 
@@ -68,7 +71,7 @@ f=open(output_file+".gdml", "w+")
 out="<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\n"
 
 out+="<!DOCTYPE gdml [\n"
-out+="\t<!ENTITY matrices SYSTEM \"showerMaxMatrices.xml\">\n"
+out+="\t<!ENTITY matrices SYSTEM \"mainDetMatrices.xml\">\n"
 out+="]>\n\n"
 
 out+="<gdml"
@@ -170,20 +173,20 @@ out+="\n\t\t<rotation name=\"rot_subtract_mirror_box_top_12\" x=\"0\" y=\"0\" z=
 out+="\n\t</subtraction>\n"
 #-------------------
 
-out+="\t<tube name=\"solid_pmt_window\" rmin=\"0\" rmax=\""+str(radius_pmt)+"\" z=\""+str(length_pmt_window)+"\" deltaphi=\"2*pi\" startphi=\"0\" aunit=\"rad\" lunit=\"mm\"/>\n"
+out+="\t<tube name=\"solid_pmt_window\" rmin=\"0\" rmax=\""+str(radius_pmt_window)+"\" z=\""+str(length_pmt_window)+"\" deltaphi=\"2*pi\" startphi=\"0\" aunit=\"rad\" lunit=\"mm\"/>\n"
 
-out+="\t<tube name=\"solid_pmt_cathode\" rmin=\"0\" rmax=\""+str(radius_pmt)+"\" z=\""+str(length_pmt_cathode)+"\" deltaphi=\"2*pi\" startphi=\"0\" aunit=\"rad\" lunit=\"mm\"/>\n"
+out+="\t<tube name=\"solid_pmt_cathode\" rmin=\"0\" rmax=\""+str(radius_pmt_cathode)+"\" z=\""+str(length_pmt_cathode)+"\" deltaphi=\"2*pi\" startphi=\"0\" aunit=\"rad\" lunit=\"mm\"/>\n"
 
 ## Mother volume single detector
-out+="\t<box name=\"solid_singledet\" lunit=\"mm\" x=\""+str(800)+"\" y=\""+str(300)+"\" z=\""+str(200)+"\"/>\n"
+out+="\t<box name=\"solid_singledet\" lunit=\"mm\" x=\""+str(850)+"\" y=\""+str(300)+"\" z=\""+str(200)+"\"/>\n"
 
 out+="\t<box name=\"solid_ring5Mother\" lunit=\"mm\" x=\""+str(900)+"\" y=\""+str(350)+"\" z=\""+str(250)+"\"/>\n"
 
 ## Optical Surfaces
 out+="\n\t<opticalsurface name=\"quartz_surface\" model=\"glisur\" finish=\"ground\" type=\"dielectric_dielectric\" value=\"0.98\" >\n"
 out+="\t</opticalsurface>\n"
-out+="\t<opticalsurface name=\"Al_mirror_surface\" model=\"glisur\" finish=\"ground\" type=\"dielectric_metal\" value=\"0.98\" >\n"
-out+="\t\t<property name=\"REFLECTIVITY\" ref=\"MiroSilver_REFLECTIVITY_30DEG\" />\n"
+out+="\t<opticalsurface name=\"Al_mirror_surface\" model=\"glisur\" finish=\"ground\" type=\"dielectric_metal\" value=\"1.0\" >\n"
+out+="\t\t<property name=\"REFLECTIVITY\" ref=\"MiroUVC_REFLECTIVITY_30DEG_V1\" />\n"
 out+="\t</opticalsurface>\n"
 out+="\t<opticalsurface name=\"Cathode_surface\" model=\"glisur\" finish=\"polished\" type=\"dielectric_metal\" value=\"1.0\">\n"
 out+="\t\t<property name=\"REFLECTIVITY\" ref=\"CathodeSurf_REFLECTIVITY\" />\n"
@@ -237,25 +240,25 @@ for i in range(0,nModules):
         out+="\n\t\t<physvol name=\"mirror_box_bot_"+str(i)+"\">"
         out+="\n\t\t\t<volumeref ref=\"logic_mirror_box_bot_"+str(i)+"\"/>"
         out+="\n\t\t\t<position name=\"pos_logic_mirror_box_bot_"+str(i)+"\" x=\""+str(xPos_mirror_box_bot)+"\" y=\""+str(0)+"\" z=\""+str(zPos_mirror_box_bot)+"\"/>"
-        out+="\n\t\t\t<rotation name=\"rot_logic_mirror_box_bot_"+str(i)+"\" x=\""+str(0)+"\" y=\"-90+2.5"+"\" z=\"0\" unit=\"deg\"/>"
+        out+="\n\t\t\t<rotation name=\"rot_logic_mirror_box_bot_"+str(i)+"\" x=\""+str(0)+"\" y=\"-90+3.0"+"\" z=\"0\" unit=\"deg\"/>"
         out+="\n\t\t</physvol>"
 
         out+="\n\t\t<physvol name=\"mirror_box_top_"+str(i)+"\">"
         out+="\n\t\t\t<volumeref ref=\"logic_mirror_box_top_"+str(i)+"\"/>"
         out+="\n\t\t\t<position name=\"pos_logic_mirror_box_top_"+str(i)+"\" x=\""+str(xPos_mirror_box_top)+"\" y=\""+str(0)+"\" z=\""+str(zPos_mirror_box_top)+"\"/>"
-        out+="\n\t\t\t<rotation name=\"rot_logic_mirror_box_top_"+str(i)+"\" x=\""+str(0)+"\" y=\"-90+2.5\" z=\"0\" unit=\"deg\"/>"
+        out+="\n\t\t\t<rotation name=\"rot_logic_mirror_box_top_"+str(i)+"\" x=\""+str(0)+"\" y=\"-90+3.0\" z=\"0\" unit=\"deg\"/>"
         out+="\n\t\t</physvol>"
 
         out+="\n\t\t<physvol name=\"pmt_window_"+str(i)+"\">"
         out+="\n\t\t\t<volumeref ref=\"logic_pmt_window_"+str(i)+"\"/>"
         out+="\n\t\t\t<position name=\"pos_logic_pmt_window_"+str(i)+"\" x=\""+str(xPos_pmt_window)+"\" y=\""+str(0)+"\" z=\""+str(zPos_pmt_window)+"\"/>"
-        out+="\n\t\t\t<rotation name=\"rot_logic_pmt_window_"+str(i)+"\" x=\"0\" y=\"-90+2.5\" z=\"0\" unit=\"deg\"/>"
+        out+="\n\t\t\t<rotation name=\"rot_logic_pmt_window_"+str(i)+"\" x=\"0\" y=\"-90+3.0\" z=\"0\" unit=\"deg\"/>"
         out+="\n\t\t</physvol>"
 
         out+="\n\t\t<physvol name=\"pmt_cathode_"+str(i)+"\">"
         out+="\n\t\t\t<volumeref ref=\"logic_pmt_cathode_"+str(i)+"\"/>"
         out+="\n\t\t\t<position name=\"pos_logic_pmt_cathode_"+str(i)+"\" x=\""+str(xPos_pmt_cathode)+"\" y=\""+str(0)+"\" z=\""+str(zPos_pmt_cathode)+"\"/>"
-        out+="\n\t\t\t<rotation name=\"rot_logic_pmt_cathode_"+str(i)+"\" x=\"0\" y=\"-90+2.5\" z=\"0\" unit=\"deg\"/>"
+        out+="\n\t\t\t<rotation name=\"rot_logic_pmt_cathode_"+str(i)+"\" x=\"0\" y=\"-90+3.0\" z=\"0\" unit=\"deg\"/>"
         out+="\n\t\t</physvol>"
 
         out+="\n\t\t<physvol name=\"quartz_"+str(i)+"_"+str(j)+"\">"
@@ -276,7 +279,7 @@ for i in range(0,nModules):
         out+="\n\t\t<physvol name=\"singledet_"+str(i).zfill(2)+"\">"
         out+="\n\t\t\t<volumeref ref=\"logic_singledet_"+str(i).zfill(2)+"\"/>"
         out+="\n\t\t\t<position name=\"pos_singledet_"+str(i)+"\" x=\""+str(0)+"\" y=\""+str(0)+"\" z=\""+str(0)+"\"/>"
-        out+="\n\t\t\t<rotation name=\"rot_singledet_"+str(i)+"\" x=\""+str(0)+"\" y=\""+str(0)+"\" z=\""+str(0)+"\"/>"
+        out+="\n\t\t\t<rotation name=\"rot_singledet_"+str(i)+"\" x=\""+str(math.pi)+"\" y=\""+str(0)+"\" z=\""+str(0)+"\"/>"
         out+="\n\t\t</physvol>"
 
 out+="\n\t\t<auxiliary auxtype=\"Alpha\" auxvalue=\"0.0\"/>"
@@ -293,10 +296,9 @@ out+="\t</skinsurface>\n"
 out+="\t<skinsurface name=\"mirror_box_bottom_skin_surface\" surfaceproperty=\"Al_mirror_surface\" >\n"
 out+="\t\t<volumeref ref=\"logic_mirror_box_bot_"+str(i)+"\"/>\n"
 out+="\t</skinsurface>\n"
-out+="\t<bordersurface name=\"cathode_window_border_surface\" surfaceproperty=\"Cathode_surface\" >\n"
-out+="\t<physvolref ref=\"pmt_window_"+str(i)+"\"/>\n"
-out+="\t<physvolref ref=\"pmt_cathode_"+str(i)+"\"/>\n"
-out+="\t</bordersurface>\n"
+out+="\t<skinsurface name=\"cathode_skin_surface\" surfaceproperty=\"Cathode_surface\" >\n"
+out+="\t\t<volumeref ref=\"logic_pmt_cathode_"+str(i)+"\"/>\n"
+out+="\t</skinsurface>\n"
 
 out+="\n</structure>\n"
 
@@ -308,4 +310,4 @@ out+="</gdml>\n"
 
 f.write(out)
 
-print("Succesfully written to GDML file.")
+print(f"Succesfully written to {output_file} GDML file.")
