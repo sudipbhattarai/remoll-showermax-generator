@@ -1,8 +1,7 @@
 """
-Description: Creates a showermax detector geometry for the retro SM detector 
-        with straight upper light guide.
+Description: Creates a showermax detector geometry for the retro SM detector.
 Author: Sudip Bhattarai
-Date: 04/18/2023
+Date: 04/18/2023, 04/17/2024
 """
 
 
@@ -11,13 +10,13 @@ import math
 
 #Version
 verMajor = 2
-verMinor = 7
-verPatch = 3
+verMinor = 3
+verPatch = 2
 version = "{}-{}-{}".format(verMajor,verMinor,verPatch)
 showerMaxName = "showerMaxRetro_v{}-{}-{}".format(verMajor,verMinor,verPatch)
 
 output_file = showerMaxName # showerMaxName for single det and "showerMaxDetectorSystem" for whole system"
-simApp = "qsim" # "qsim" or "remoll"
+simApp = "qsim" # "qsim" or "remoll" 
 useWrap = True # True if wrap is used else False
 
 ### Define geometry parameters(dimensions based on ISU elog 576):
@@ -110,10 +109,12 @@ thick_top_support_corner_cut = 20.0
 
 ## PMT region
 radius_pmt = 1.5*in2mm # Radius of 1.5 inches (for 3 inches PMT)
+radius_pmt_cathode = 35.0 # Active area of the PMT cathode (from et enterprises datasheet)
 length_pmt_base = 50
 length_pmt_gut = 150
 length_pmt_window = 3.0
-length_pmt_filter = 5.0 #Combination of long pass filter and ND filter
+length_pmt_filter = 3.0 #Long pass filter
+length_pmt_filter_seat = 1.0 # Thickness of the lip in PMT housing where LP filter sits
 length_pmt_region = length_pmt_filter + length_pmt_window + length_pmt_gut + length_pmt_base
 length_pmt_housing = length_pmt_region + 2.0 + 3.0 # tolerance + lid
 length_pmt_cathode = 3e-6
@@ -257,7 +258,7 @@ out+="\n\t</subtraction>\n"
 #-------------------
 
 # Flap of the lower mirror box (to cover right above the first tungsten plate)
-out+="\t<box name=\"solid_mirror_flap\" lunit=\"mm\" x=\""+str(thick_wall_mirror)+"\" y=\""+str(width_tungsten)+"\" z=\""+str(thick_tungsten-thick_wall_mirror)+"\"/>\n"
+out+="\t<box name=\"solid_mirror_flap\" lunit=\"mm\" x=\""+str(thick_wall_mirror)+"\" y=\""+str(width_quartz)+"\" z=\""+str(thick_tungsten-thick_wall_mirror+4*thick_spacer)+"\"/>\n"
 
 # Web Plate (side support)
 if nSMmodules==28:
@@ -334,7 +335,7 @@ out+="\t<tube name=\"solid_pmt_filter\" rmin=\"0\" rmax=\""+str(radius_pmt)+"\" 
 
 out+="\t<tube name=\"solid_pmt_window\" rmin=\"0\" rmax=\""+str(radius_pmt)+"\" z=\""+str(length_pmt_window)+"\" deltaphi=\"2*pi\" startphi=\"0\" aunit=\"rad\" lunit=\"mm\"/>\n"
 
-out+="\t<tube name=\"solid_pmt_cathode\" rmin=\"0\" rmax=\""+str(radius_pmt)+"\" z=\""+str(length_pmt_cathode)+"\" deltaphi=\"2*pi\" startphi=\"0\" aunit=\"rad\" lunit=\"mm\"/>\n"
+out+="\t<tube name=\"solid_pmt_cathode\" rmin=\"0\" rmax=\""+str(radius_pmt_cathode)+"\" z=\""+str(length_pmt_cathode)+"\" deltaphi=\"2*pi\" startphi=\"0\" aunit=\"rad\" lunit=\"mm\"/>\n"
 
 if nSMmodules==28:
         out+="\t<tube name=\"solid_pmt\" rmin=\"0\" rmax=\""+str(radius_pmt)+"\" z=\""+str(length_pmt_gut)+"\" deltaphi=\"2*pi\" startphi=\"0\" aunit=\"rad\" lunit=\"mm\"/>\n"
@@ -415,14 +416,15 @@ else:
         out+="\t<cone name=\"solid_showerMaxMother\" rmin1=\""+str(0)+"\"  rmax1=\""+str(1000)+"\" rmin2=\""+str(0)+"\" rmax2=\""+str(1000)+"\"  z=\""+str(thick_mother)+"\" startphi=\"0\" deltaphi=\"360\" aunit=\"deg\" lunit=\"mm\"/>\n\n"
 
 ## Optical Surfaces
-out+="\t<opticalsurface name=\"quartz_surface\" model=\"glisur\" finish=\"ground\" type=\"dielectric_dielectric\" value=\"0.98\" >\n"
-#out+="\t\t<property name=\"REFLECTIVITY\" ref=\"Quartz_REFLECTIVITY\" />\n"
+out+="\t<opticalsurface name=\"quartz_surface\" model=\"glisur\" finish=\"ground\" type=\"dielectric_dielectric\" value=\"1.0\" >\n"
 out+="\t</opticalsurface>\n"
-out+="\t<opticalsurface name=\"Al_mirror_surface\" model=\"glisur\" finish=\"ground\" type=\"dielectric_metal\" value=\"1.0\" >\n"
-out+="\t\t<property name=\"REFLECTIVITY\" ref=\"MiroSilver_REFLECTIVITY_60DEG\" />\n"
+out+="\t<opticalsurface name=\"Al_mirror_surface\" model=\"glisur\" finish=\"polished\" type=\"dielectric_metal\" value=\"1.0\" >\n" # polished finish has no value parameter
+out+="\t\t<property name=\"REFLECTIVITY\" ref=\"MiroIV_REFLECTIVITY_60DEG\" />\n"
 out+="\t</opticalsurface>\n"
 out+="\t<opticalsurface name=\"mylar_wrap_surface\" model=\"glisur\" finish=\"polished\" type=\"dielectric_metal\" value=\"1.0\" >\n"
 out+="\t\t<property name=\"REFLECTIVITY\" ref=\"Mylar_REFLECTIVITY_90DEG\" />\n"
+out+="\t</opticalsurface>\n"
+out+="\t<opticalsurface name=\"pmt_window_surface\" model=\"glisur\" finish=\"polished\" type=\"dielectric_dielectric\" value=\"1.0\" >\n"
 out+="\t</opticalsurface>\n"
 out+="\t<opticalsurface name=\"cathode_surface\" model=\"glisur\" finish=\"polished\" type=\"dielectric_metal\" value=\"1.0\">\n"
 out+="\t\t<property name=\"REFLECTIVITY\" ref=\"CathodeSurf_REFLECTIVITY\" />\n" #Reflectivity is already included in the efficiency so 0 cathode reflectivity has to be used in Matrix file
@@ -670,13 +672,13 @@ for i in range(0,nSMmodules):
 
         out+="\n\t\t<physvol name=\"pmt_window_"+str(i)+"\">"
         out+="\n\t\t\t<volumeref ref=\"logic_pmt_window_"+str(i)+"\"/>"
-        out+="\n\t\t\t<position name=\"pos_logic_pmt_window_"+str(i)+"\" x=\""+str(length_quartz/2+length_ledge/2+length_mirror_box_bot+length_mirror_box_top+length_top_support+length_pmt_window/2)+"\" y=\""+str(0)+"\" z=\""+str(thick_tungsten/2)+"\"/>"
+        out+="\n\t\t\t<position name=\"pos_logic_pmt_window_"+str(i)+"\" x=\""+str(length_front_back_plate/2+length_mirror_box_bot+length_mirror_box_top+length_pmt_filter_seat+length_pmt_filter+length_pmt_window/2)+"\" y=\""+str(0)+"\" z=\""+str(thick_tungsten/2)+"\"/>"
         out+="\n\t\t\t<rotation name=\"rot_logic_pmt_window_"+str(i)+"\" x=\"0\" y=\"-pi/2\" z=\"0\"/>"
         out+="\n\t\t</physvol>"
 
         out+="\n\t\t<physvol name=\"pmt_cathode_"+str(i)+"\">"
         out+="\n\t\t\t<volumeref ref=\"logic_pmt_cathode_"+str(i)+"\"/>"
-        out+="\n\t\t\t<position name=\"pos_logic_pmt_cathode_"+str(i)+"\" x=\""+str(length_quartz/2+length_ledge/2+length_mirror_box_bot+length_mirror_box_top+length_top_support+length_pmt_window+length_pmt_cathode)+"\" y=\""+str(0)+"\" z=\""+str(thick_tungsten/2)+"\"/>"
+        out+="\n\t\t\t<position name=\"pos_logic_pmt_cathode_"+str(i)+"\" x=\""+str(length_front_back_plate/2+length_mirror_box_bot+length_mirror_box_top+length_pmt_filter_seat+length_pmt_filter+length_pmt_window+length_pmt_cathode)+"\" y=\""+str(0)+"\" z=\""+str(thick_tungsten/2)+"\"/>"
         out+="\n\t\t\t<rotation name=\"rot_logic_pmt_window_"+str(i)+"\" x=\"0\" y=\"-pi/2\" z=\"0\"/>"
         out+="\n\t\t</physvol>"
 
@@ -844,10 +846,10 @@ out+="\n\t</volume>\n\n"
 
 # Specify surfaces for optical properties (Note that individual surface must be specified for each volume it is used in)
 for i in range(0,nSMmodules):
-    out+="\t<skinsurface name=\"quartz_skin_surface_"+str(i)+"\" surfaceproperty=\"quartz_surface\" >\n"
-    out+="\t\t<volumeref ref=\"logic_pmt_window_"+str(i)+"\"/>\n"
-    #out+="\t\t<volumeref ref=\"logic_pmt_filter_"+str(i)+"\"/>\n"
-    out+="\t</skinsurface>\n"
+    for j in range(0,nQuartz):
+        out+="\t<skinsurface name=\"quartz_skin_surface_"+str(i)+"_"+str(j)+"\" surfaceproperty=\"quartz_surface\" >\n"
+        out+="\t\t<volumeref ref=\"logic_quartz_"+str(i)+"_"+str(j)+"\"/>\n"
+        out+="\t</skinsurface>\n"       
 
 for i in range(0,nSMmodules):
     out+="\t<skinsurface name=\"suitcase_skin_surface_"+str(i)+"\" surfaceproperty=\"Al_mirror_surface\" >\n"
@@ -870,6 +872,11 @@ if useWrap:
                         out+="\t<skinsurface name=\"wrap_skin_surface_"+str(iMod)+"_"+str(iWrap)+"\" surfaceproperty=\"mylar_wrap_surface\" >\n"
                         out+="\t\t<volumeref ref=\"logic_wrap_"+str(iMod)+"_"+str(iWrap)+"\"/>\n"
                         out+="\t</skinsurface>\n"
+
+for i in range(0,nSMmodules):
+    out+="\t<skinsurface name=\"pmt_window_skin_surface_"+str(i)+"\" surfaceproperty=\"pmt_window_surface\" >\n"
+    out+="\t\t<volumeref ref=\"logic_pmt_window_"+str(i)+"\"/>\n"
+    out+="\t</skinsurface>\n"
 
 for i in range(0,nSMmodules):
     out+="\t<skinsurface name=\"cathode_skin_surface_"+str(i)+"\" surfaceproperty=\"cathode_surface\" >\n"
